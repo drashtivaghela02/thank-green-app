@@ -21,9 +21,9 @@ const AuthNavigator = () => {
   return (
     <NavigationContainer>
       <AuthStack.Navigator>
-        <AuthStack.Screen name="FormNavigator" component={FormNavigator}  options = {{headerShown: false}}/>
         <AuthStack.Screen name="SignUp" component={SignUp}  options = {{headerShown: false}}/>
         <AuthStack.Screen name="VerificationCode" component={VerificationCode} options = {{headerShown: false}} />
+        <AuthStack.Screen name="FormNavigator" component={FormNavigator}  options = {{headerShown: false}}/>
         <AuthStack.Screen name="Home" component={Home}  options = {{headerShown: false}}/>
         <AuthStack.Screen name="ForgetPassword" component={ForgetPassword} options = {{headerShown: false}} />
       </AuthStack.Navigator>

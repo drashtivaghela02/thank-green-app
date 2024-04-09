@@ -1,32 +1,27 @@
-import { Button, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {ScrollView,  Button, Image, StyleSheet, Text, TextInput, TouchableOpacity, View, Dimensions } from "react-native";
 import React, { useState } from 'react';
 
 import { AntDesign } from '@expo/vector-icons';
-// import OTPInputView from '@twotalltotems/react-native-otp-input';
 import OtpInput from "../Components/UI/OtpInput" ;
 import { Clipboard } from '@react-native-community/clipboard'; // Import Clipboard module
 import { useRef } from "react";
+import OTPTextInput from 'react-native-otp-textinput';
 
 const VerificationCode = props => {
+    // const {width, height} = Dimensions.getWindow();
+    // console.log(height, width)
     const [copiedText, setCopiedText] = useState('');
     const _otpRef = useRef(null);
 
     const [otp, setOTP] = useState('');
-    const copyToClipboard = () => {
-        Clipboard.setString(copiedText); // Set the text you want to copy to clipboard
-    };
+    const [wholeOTP, setWholeOTP] = useState('');
     
-    const fetchCopiedText = async () => {
-        const text = await Clipboard.getString();
-        setCopiedText(text);
-    };
+    const handleOTPText =(text)=>{
+        console.log(otp);
+        console.log('w', wholeOTP);
 
-    const handleVerify = () => {
-        // Call fetchCopiedText to get the text from the clipboard
-        fetchCopiedText();
-        // Proceed with verification using the copied text if necessary
-    };
-
+    }
+    
     return (
         <View style={styles.container} >
             <View style={styles.header} >
@@ -38,30 +33,17 @@ const VerificationCode = props => {
             </View>
             
             <View style={styles.body} > 
+                <ScrollView>
+                {/* <OtpInput /> */}
 
-                <OtpInput />
-
-                {/* <OTPInputView
-                    style={{width: "100%", height: 200, paddingHorizontal: 32}}
-                    pinCount={4}
-                    autoFocusOnLoad
-                    keyboardType='decimal-pad'
-                    codeInputFieldStyle={{
-                        width: 30,
-                        height: 45,
-                        color: 'black',
-                        borderWidth: 8,
-                        borderBottomWidth: 3,
-                        borderBottomColor: '#3e4854'
-                    }}
-                    codeInputHighlightStyle={{
-                        borderColor: 'black'
-                    }}
-                    onCodeFilled={(code)=> {console.log(`code is ${code}`)}}
-                 /> */}
-
-                {/* Call copyToClipboard function onPress */}
-                <TouchableOpacity style={styles.verify} onPress={copyToClipboard}> 
+                <OTPTextInput
+                    inputCount = {4}
+                    inputCellLength = {1}
+                    handleTextChange={text => setOTP(text)}
+                    onFilled={text => setWholeOTP(text)}
+                />
+                
+                <TouchableOpacity style={styles.verify} onPress={handleOTPText}> 
                     <Text style={styles.verifyButton}>Verify</Text>
                 </TouchableOpacity>
                 <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 30}}>
@@ -71,6 +53,7 @@ const VerificationCode = props => {
                     </TouchableOpacity>
 
                 </View>
+                </ScrollView>
             </View>
         </View>
     );
@@ -102,6 +85,8 @@ const styles = StyleSheet.create({
     body: {
         height: '80%',
         paddingHorizontal: 60,
+        justifyContent: 'center',
+        alignItems: 'center'
         // borderTopLeftRadius: 40,
         // borderTopRightRadius: 40,
     },

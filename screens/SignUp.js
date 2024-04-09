@@ -5,28 +5,14 @@ import PhoneInput from "react-native-phone-number-input";
 import ImagePicker from '../Components/Image/ImagePicker';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import * as authActions from '../store/actions/Auth';
+import {useDispatch} from 'react-redux';
 
 const SignUp = props => {
-
-    // const [value, setValue] = useState('')
-    // const [formatedNumber, setFormatedNumber] = useState('');
-    // const [valid, setValid] = useState(false)
-    // const [showMessage, setShowMessage] = useState(false);
-    // const phoneInput = useRef();
-
-    // const [countryCode, setCountryCode] = useState('+1'); // Default country code
-    // const [phoneNumber, setPhoneNumber] = useState('');
-
-    // const handleCountryCodeChange = (code) => {
-    //     setCountryCode(code);
-    // };
-
-    // const handlePhoneNumberChange = (number) => {
-    //     setPhoneNumber(number);
-    // };
-
-
-    const [formatedNumber, setFormatedNumber] = useState('') //for phone number with code
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState();
+    const dispatch = useDispatch();
+    const [formatedNumber, setFormatedNumber] = useState(''); //for phone number with code
     const [validate, setValidate] = useState(true)
     const phoneInput = useRef()
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -52,14 +38,39 @@ const SignUp = props => {
     });
     // console.log(validationSchema)
     const SubmitHandler = (values) => {
-        console.log(phoneNumber)
+        const countryCode = '+' + phoneInput.current?.getCallingCode()
         values.phoneNumber = phoneNumber
+        values.countryCode = countryCode
         console.log(values);
         const checkValid = phoneInput.current?.isValidNumber(phoneNumber)
         setValidate(checkValid ? checkValid : false)
-        if (checkValid === true) {
-            props.navigation.navigate('VerificationCode')
+        
+        let action;
+        const formData = new FormData();
+
+            formData.append('image',values.image);
+            formData.append('name',values.name);
+            formData.append('countryCode',values.countryCode);
+            formData.append('phoneNumber',values.phoneNumber);
+            formData.append('email',values.email);
+            formData.append('password',values.password);
+            formData.append('cpassword',values.cpassword);
+        // console.log(formData);
+        
+        setError(null);
+        setIsLoading(true);
+        try {
+            if(dispatch(authActions.signup(formData))){
+                if (checkValid === true) {
+                    props.navigation.navigate('VerificationCode')
+                }
+            }
+        } catch (err) {
+            setError(err.message);
+            setIsLoading(false);
         }
+        
+
     }
     
 
@@ -68,7 +79,7 @@ const SignUp = props => {
             <View style={styles.screen}>
                 <KeyboardAvoidingView>
                 <Formik
-                    initialValues={{name: '', email: '', phoneNumber: '', password: '', cpassword: ''}} //after setup add image
+                    initialValues={{image: '', name: '', email: '',countryCode: '', phoneNumber: '', password: '', cpassword: ''}} //after setup add image
                     validationSchema={Validation}
                     onSubmit={SubmitHandler}
                 >
@@ -113,7 +124,7 @@ const SignUp = props => {
                                     <PhoneInput     //make setup for formik 
                                         ref={phoneInput}
                                         defaultCode='IN'
-                                        defaultValue={values.phoneNumber}
+                                        defaultValue={phoneNumber}
                                         onChangeText={(text) => setPhoneNumber(text)}
                                         onChangeFormattedText={(text) => setFormatedNumber(text)}
                                         withShadow
