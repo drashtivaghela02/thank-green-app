@@ -18,7 +18,7 @@ export default function App() {
     //   <StatusBar style="auto" />
     // </View>
     <Provider store={store} >
-      <AuthNavigator />
+      {/* <AuthNavigator /> */}
     </Provider>
   );
 }
