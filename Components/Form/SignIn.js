@@ -1,45 +1,117 @@
-import React, { useRef } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, ScrollView } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import { useDispatch, useSelector } from 'react-redux';
+import * as authActions from '../../store/actions/Auth';
+import { Button } from 'react-native';
 
 const SignIn = (props) => {
+    const [isLoading, setIsLoading] = useState(false);
+    const [errors, setError] = useState();
+    const dispatch = useDispatch();
+    
+    
+    const state = useSelector(state => state.auth.status);
+    console.log(state)
+    
 
     const Validation = Yup.object({
         emailOrContact: Yup.string()
             .required('Email or Contact number is Required'),
         password: Yup.string()
-            .min(8, 'Must be at least 8 characters')
+            .min(6, 'Must be at least 6 characters')
             .matches(/(?=.*[0-9])/, 'Password must contain a number.')
             .matches(/(?=.*[a-z])/, 'Password must contain a lowercase letter.')
             .matches(/(?=.*[A-Z])/, 'Password must contain an uppercase letter.')
-            .matches(/(?=.*[!@#$%^&*])/, 'Password must contain a Symbol')
+            // .matches(/(?=.*[!@#$%^&*])/, 'Password must contain a Symbol')
             .required('Password is Required'),
     });
     // console.log(validationSchema)
-    const SubmitHandler = (values) => {
-        console.log(values);
+    
+    const SubmitHandler = async (values) => {
+        // console.log(values);
+        let value = {}
+        setError(null);
+        setIsLoading(true);
+
         if(isNaN(values.emailOrContact)){
-            values['email'] = values['emailOrContact']
-            delete values['emailOrContact']
+            value['email'] = values['emailOrContact']
+            value['password'] = values['password']
+            // delete values['emailOrContact']
+            
+            try {
+                await dispatch(authActions.loginEmail(value.email, value.password)).then((state) => {
+                    console.log("state.statusstate.statusstate.statusstate.status", state)
+                    if (state.status == 'success') {
+                        setIsLoading(false)
+                        props.navigation.navigate('Home');
+                    }
+                    else {
+                        Alert.alert('Alert', state.msg || state.error, [{
+                            text: 'Cancel',
+                            onPress: () => console.log('Cancel Pressed'),
+                            style: 'cancel',
+                        },
+                        { text: 'OK', onPress: () => console.log('OK Pressed') },
+                    ])
+                    setIsLoading(false)
+                    }
+                }) 
+            } catch (err) {
+                setError(err.message);
+                setIsLoading(false);
+            }
         }
-        else{
-            values['contact'] = values['emailOrContact']
-            delete values['emailOrContact']
+        else {//if(Number.isInteger(values.emailOrContact) && length(values.emailOrContact) ===  10){
+            value['contact'] = values['emailOrContact']
+            value['password'] = values['password']
+            // delete values['emailOrContact']
+            console.log("data to be sent",value)
+            try {
+                dispatch(authActions.loginContact(value.contact, value.password)).then((state) => {
+                    if (state.status == 'success') {
+                        setIsLoading(false)
+                        props.navigation.navigate('Home');
+                    }
+                    else {
+                        Alert.alert('Alert', state.msg || state.error, [
+                            {
+                            text: 'Cancel',
+                            onPress: () => console.log('Cancel Pressed'),
+                            style: 'cancel',
+                            },
+                            {text: 'OK', onPress: () => console.log('OK Pressed')},
+                        ])
+                        setIsLoading(false)
+                    }
+                })                  
+            } catch (err) {
+                setError(err.message);
+                setIsLoading(false);
+            }
         }
-        console.log(values)
-        // props.navigation.navigate('Home')
+        console.log("data to be sent",value)
+        
+        // if (dispatch(authActions.loginContact(value.contact, value.password))) {
+        //     props.navigation.navigate('Home')
+        // }
+        
     }
 
 
     return (
-        <LinearGradient colors={['#2c843e', '#1e4c5e']} style={styles.gradient}>
+        <LinearGradient
+            colors={['#2c843e', '#1e4c5e']}
+            style={styles.gradient}
+            end={{x: 0.5, y: 0.7}} 
+        >
             <View style={styles.screen} >
             <KeyboardAvoidingView>
                 <ScrollView>
-                    <TouchableOpacity onPress={() => console.log('pressed')}>
+                    <TouchableOpacity onPress={() => props.navigation.navigate('Home')}>
                         <Text style={styles.skipText}>SKIP</Text>
                     </TouchableOpacity>
                     <View style={styles.logoContainer}>
@@ -54,7 +126,7 @@ const SignIn = (props) => {
                         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
                             <View>
                                 <View style={styles.inputContainer}>
-                                    <Text style={styles.label}>Email/ContactNumber</Text>
+                                    <Text style={styles.label}>Email ID or Mobile Number</Text>
                                     <TextInput
                                         style={styles.input}
                                         value={values.emailOrContact}
@@ -88,12 +160,14 @@ const SignIn = (props) => {
                                 <View style={styles.checkbox}>
                                     <MaterialCommunityIcons name="checkbox-blank-outline" size={24} color="white" />
                                     <Text style={styles.checkboxText}> Remember me</Text>
-                                </View>
-                            
-                            
-                            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                                <Text style={styles.btntext}>Sign IN</Text>
-                            </TouchableOpacity>
+                                    </View>
+                                    
+                                    <TouchableOpacity style={styles.verify} onPress={handleSubmit}> 
+                                        {isLoading ?
+                                            <ActivityIndicator size={25}/> :
+                                            <Text style={styles.verifyButton}>SIGN IN</Text>}
+                                    </TouchableOpacity>
+                                    
                             </View>
                     )}
                     </Formik>
@@ -106,7 +180,7 @@ const SignIn = (props) => {
 
                     <View style={styles.signUpContainer}>
                         <Text style={styles.signUpText}>Don't have an account?</Text>
-                        <TouchableOpacity onPress={() => props.navigation.navigate('SignUp')}>
+                        <TouchableOpacity onPress={() => props.navigation.navigate('SignUp')}> 
                             <Text style={[styles.signUpText, styles.signUpLink]}>SignUp</Text>
                         </TouchableOpacity>
                     </View>
@@ -127,6 +201,7 @@ const styles = StyleSheet.create({
     screen: {
         width: '100%',
         padding: 20,
+        paddingHorizontal: 30,
         flex: 1,
         marginVertical: 30
     },
@@ -134,7 +209,7 @@ const styles = StyleSheet.create({
         color: 'white',
         alignSelf: 'flex-end',
         fontSize: 16,
-        marginBottom: 20,
+        // marginBottom: 20,
     },
     logoContainer: {
         alignItems: 'center',
@@ -145,11 +220,13 @@ const styles = StyleSheet.create({
         height: 200
     },
     inputContainer: {
-        marginBottom: 10
+        marginBottom: 10,
+        marginTop: 20,
     },
     label: {
         color: 'white',
-        marginBottom: 8
+        marginBottom: 8,
+        fontSize: 16
     },
     input: {
         borderWidth: 1,
@@ -162,10 +239,25 @@ const styles = StyleSheet.create({
     },
     forgotPasswordContainer: {
         alignItems: 'flex-end',
-        marginBottom: 10
+        // marginBottom: 5
     },
     forgotPasswordText: {
         color: 'white'
+    },
+    verify: {
+        marginTop: 40,
+        marginBottom: 0,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        backgroundColor: '#2c843e',
+        borderRadius: 10,
+        width: '100%',
+    },
+    verifyButton: {
+        color: 'white',
+        fontSize: 18,
+        alignSelf: 'center'
+
     },
     signUpContainer: {
         flexDirection: 'row',
@@ -173,7 +265,7 @@ const styles = StyleSheet.create({
         marginTop: 20
     },
     checkbox: {
-        marginVertical: 10,
+        // marginVertical: 10,
         flexDirection: 'row'
     },
     checkboxText: {
@@ -208,7 +300,7 @@ const styles = StyleSheet.create({
     },
     signUpLink: {
         marginLeft: 5,
-        textDecorationLine: 'underline',
+        fontWeight: 'bold',
         color: '#2c843e'
     }
 });

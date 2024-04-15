@@ -1,22 +1,25 @@
 import React, { useRef, useState } from 'react';
-import { Button, Image, TextInput, StyleSheet, Text, View, TouchableOpacity, KeyboardAvoidingView, ScrollView } from "react-native";
+import { Button, Image, TextInput, StyleSheet, Text, View, TouchableOpacity, KeyboardAvoidingView, ScrollView, Alert } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import PhoneInput from "react-native-phone-number-input";
 import ImagePicker from '../Components/Image/ImagePicker';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import * as authActions from '../store/actions/Auth';
-import {useDispatch} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const SignUp = props => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
     const dispatch = useDispatch();
+    const [source, setSource] = useState('');
     const [formatedNumber, setFormatedNumber] = useState(''); //for phone number with code
     const [validate, setValidate] = useState(true)
     const phoneInput = useRef()
     const [phoneNumber, setPhoneNumber] = useState('');
 
+    const state = useSelector(state => state.auth.signUpData);
+console.log(state)
     const Validation = Yup.object({
         name: Yup.string()
             .max(15, 'Must be 15 characters or less')
@@ -25,14 +28,14 @@ const SignUp = props => {
             .matches(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, ' Email address is not valid')
             .required('Email is Required'),
         password: Yup.string()
-            .min(8, 'Must be at least 8 characters')
+            .min(6, 'Must be at least 8 characters')
             .matches(/(?=.*[0-9])/, 'Password must contain a number.')
             .matches(/(?=.*[a-z])/, 'Password must contain a lowercase letter.')
             .matches(/(?=.*[A-Z])/, 'Password must contain an uppercase letter.')
-            .matches(/(?=.*[!@#$%^&*])/, 'Password must contain a Symbol')
+            // .matches(/(?=.*[!@#$%^&*])/, 'Password must contain a Symbol')
             .required('Password is Required'),
         cpassword: Yup.string()
-            .min(8, 'Must be at least 8 characters')
+            .min(6, 'Must be at least 8 characters')
             .required('Password is Required')
             // .matches(values.password, 'Confirm Password must be match with Password')
     });
@@ -48,23 +51,33 @@ const SignUp = props => {
         let action;
         const formData = new FormData();
 
-            formData.append('image',values.image);
+            formData.append('profileImage',source);
             formData.append('name',values.name);
             formData.append('countryCode',values.countryCode);
             formData.append('phoneNumber',values.phoneNumber);
             formData.append('email',values.email);
             formData.append('password',values.password);
-            formData.append('cpassword',values.cpassword);
-        // console.log(formData);
+            formData.append('confirmPassword',values.cpassword);
+        console.log(formData);
         
         setError(null);
         setIsLoading(true);
         try {
-            if(dispatch(authActions.signup(formData))){
-                if (checkValid === true) {
-                    props.navigation.navigate('VerificationCode')
-                }
+            dispatch(authActions.signup(formData))
+            if(state.status == 'success'){
+                props.navigation.navigate('VerificationCode');
             }
+            else {
+                Alert.alert('Alert', state.msg, [
+                    {
+                      text: 'Cancel',
+                      onPress: () => console.log('Cancel Pressed'),
+                      style: 'cancel',
+                    },
+                    {text: 'OK', onPress: () => console.log('OK Pressed')},
+                  ])
+            }
+            
         } catch (err) {
             setError(err.message);
             setIsLoading(false);
@@ -79,14 +92,14 @@ const SignUp = props => {
             <View style={styles.screen}>
                 <KeyboardAvoidingView>
                 <Formik
-                    initialValues={{image: '', name: '', email: '',countryCode: '', phoneNumber: '', password: '', cpassword: ''}} //after setup add image
+                    initialValues={{profileImage: '', name: '', email: '',countryCode: '', phoneNumber: '', password: '', cpassword: ''}} //after setup add image
                     validationSchema={Validation}
                     onSubmit={SubmitHandler}
                 >
                     {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
                         <ScrollView>
                             <View style={styles.image}>
-                                <ImagePicker  />
+                                    <ImagePicker onClick={(source) => setSource(source) } />
                             </View>     
                                        
                             <View style={styles.inputContainer}>
@@ -206,7 +219,7 @@ const SignUp = props => {
 
                 <View style={styles.signUpContainer}>
                     <Text style={styles.signUpText}>Already have account? </Text>
-                    <TouchableOpacity onPress={()=>props.navigation.navigate('SignIn')} >
+                    <TouchableOpacity onPress={()=>props.navigation.navigate('FormNavigator')} >
                         <Text style={[styles.signUpText, styles.signUpLink]}>SignIn</Text>
                     </TouchableOpacity>
                 </View>

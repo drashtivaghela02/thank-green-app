@@ -2,7 +2,7 @@ import { launchCameraAsync } from "expo-image-picker";
 import { useState } from "react";
 import { Button, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-function ImagePicker() {
+const ImagePicker = (props) => {
     let imagePreview = <Image source={require('../../assets/Sample_User_Icon.png')} style={styles.image} tintColor='#2c843e' />;
     const [pickedImage, setPickedImage] = useState();
     async function takeImageHandler() {

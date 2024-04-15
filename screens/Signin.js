@@ -1,6 +1,5 @@
 import { Button, View, Text, StyleSheet } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
-import SignIn from "../Components/Form/SignIn";
+import SignIn from "../../Components/Form/SignIn";
 
 
 const Signin = () => {
