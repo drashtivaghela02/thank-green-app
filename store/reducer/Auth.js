@@ -34,7 +34,8 @@ export default (state = initialState, action) => {
       return {
         ...state,
         source: action.source,
-        signUpData: action.resData
+        signUpData: action.values,
+        otpID: action.resData
       };
     case VERIFYOTP:
       return {

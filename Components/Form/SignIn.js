@@ -104,9 +104,9 @@ const SignIn = (props) => {
 
     return (
         <LinearGradient
-            colors={['#2c843e', '#1e4c5e']}
+            colors={['#2c843e', '#205065']}
             style={styles.gradient}
-            end={{x: 0.5, y: 0.7}} 
+            // end={{x: 0.5, y: 0.7}} 
         >
             <View style={styles.screen} >
             <KeyboardAvoidingView>
@@ -162,7 +162,7 @@ const SignIn = (props) => {
                                     <Text style={styles.checkboxText}> Remember me</Text>
                                     </View>
                                     
-                                    <TouchableOpacity style={styles.verify} onPress={handleSubmit}> 
+                                    <TouchableOpacity disabled={isLoading} style={styles.verify} onPress={handleSubmit}> 
                                         {isLoading ?
                                             <ActivityIndicator size={25}/> :
                                             <Text style={styles.verifyButton}>SIGN IN</Text>}
@@ -176,7 +176,11 @@ const SignIn = (props) => {
                         <View style={styles.lines}></View>
                         <View><Text style={{ color: 'white', marginHorizontal: 15 }}> OR CONNECT WITH </Text></View>
                         <View style={styles.lines}></View>
-                    </View>
+                        </View>
+                        <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                            <Image source={require('../../assets/google_logo.png')} style={styles.GoogleLogo} />
+                            <Image source={require('../../assets/facebook_logo.png')} style={styles.FacebookLogo} />
+                        </View>
 
                     <View style={styles.signUpContainer}>
                         <Text style={styles.signUpText}>Don't have an account?</Text>
@@ -203,7 +207,7 @@ const styles = StyleSheet.create({
         padding: 20,
         paddingHorizontal: 30,
         flex: 1,
-        marginVertical: 30
+        marginTop: 30
     },
     skipText: {
         color: 'white',
@@ -213,15 +217,24 @@ const styles = StyleSheet.create({
     },
     logoContainer: {
         alignItems: 'center',
-        marginBottom: 10
+        // marginBottom: 10
     },
     logo: {
         width: 250,
         height: 200
     },
+    GoogleLogo: {
+        marginTop:15,
+        width: 40,
+        height: 40
+    },
+    FacebookLogo: {
+        width: 70,
+        height: 70
+    },
     inputContainer: {
         marginBottom: 10,
-        marginTop: 20,
+        // marginTop: 10,
     },
     label: {
         color: 'white',
@@ -231,7 +244,7 @@ const styles = StyleSheet.create({
     input: {
         borderWidth: 1,
         borderRadius: 10,
-        backgroundColor: '#1e4c5e',
+        backgroundColor: '#1C4858',
         borderColor: '#1e4c5e',
         color: 'white',
         paddingHorizontal: 10,
@@ -262,7 +275,7 @@ const styles = StyleSheet.create({
     signUpContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginTop: 20
+        marginTop: 10
     },
     checkbox: {
         // marginVertical: 10,
@@ -283,13 +296,7 @@ const styles = StyleSheet.create({
         height: 2,
         flex: 1
     },
-    button: {
-        alignSelf: "stretch",
-        alignItems: "center",
-        padding: 20,
-        backgroundColor: "#59cbbd",
-        borderBottomWidth: 1
-    },
+
     btntext: {
         color: "#fff",
         fontWeight: "bold"
@@ -302,7 +309,11 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         fontWeight: 'bold',
         color: '#2c843e'
-    }
+    },
+    errorText: {
+        color: 'red',
+        marginBottom: 5,
+    },
 });
 
 export default SignIn;

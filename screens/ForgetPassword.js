@@ -1,20 +1,26 @@
 import { AntDesign } from '@expo/vector-icons';
-import { Button, Image, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { LinearGradient } from 'expo-linear-gradient';
+import { Button, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity } from "react-native";
 
 const ForgetPassword = props => {
     return (
         <View style={styles.container} >
-            <View style={styles.header} >
-                <View>
-                    <AntDesign name="arrowleft" size={28} color="black" />
+              <LinearGradient
+                colors={['#2c843e', '#1e4c5e']}
+                start={{x: 0.5, y: 0}}
+                end={{x: 0.7, y: 1}}                
+            >
+                <View style={styles.header}>
+                    <AntDesign name="arrowleft" size={28} color='white' />
                     <Text style={styles.heading}>Forgot Password</Text>
                     <Text style={styles.subHeading}>Enter the email address</Text>
                 </View>
-            </View>
+            </LinearGradient>
+
             <View style={styles.body} > 
                 <ScrollView>
-                <View style={styles.bodyImage} >
-                    <Image /> 
+                <View style={styles.logoContainer} >
+                <Image source={require('../assets/Secure_login-pana.png')} style={styles.logo} />
                     <Text style={styles.bodyText}>Enter the email address associated with your account.</Text>
                 </View>
                 <View>
@@ -24,9 +30,10 @@ const ForgetPassword = props => {
                         style={styles.textInput}
                     />
                 </View>
-                <View style={styles.submit}>
-                    <Button title="Submit" color='#2c843e' style={styles.submitButton} />
-                </View>
+                <TouchableOpacity style={styles.verify} onPress={()=>{console.log('Pressed');}}> 
+
+                                            <Text style={styles.verifyButton}>SUBMIT</Text>
+                                    </TouchableOpacity>
                 </ScrollView>
             </View>
         </View>
@@ -37,48 +44,72 @@ export default ForgetPassword;
 
 const styles = StyleSheet.create({
     container: {
-        // backgroundColor: 'black',
-        // justifyContent: 'space-around',
-        // alignItems: 'center'
+        flex: 1,
+        backgroundColor: 'white',
     },
     header: {
-        height: '20%',
-        backgroundColor: '#2c843e',
-        paddingTop: 30,
+        paddingTop: 40,
         paddingHorizontal: 20,
-        flex: 1
+        height: Dimensions.get('window').height*0.20
     },
     heading: {
         fontWeight: 'bold',
         fontSize: 25,
-        paddingTop: 4
+        paddingTop: 8,
+        color: 'white',
     },
     subHeading: {
-        paddingTop: 4
+        paddingTop: 4,
+        color: 'white',
+        fontWeight: 'bold',
     },
     body: {
-        height: '80%',
-        paddingHorizontal: 60,
-        // borderTopLeftRadius: 40,
-        // borderTopRightRadius: 40,
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 30,
     },
-    bodyImage: {
-
+    logoContainer: {
+        alignItems: 'center',
+        marginVertical: 30
+    },
+    logo: {
+        width: 280,
+        height: 280
     },
     bodyText: {
         textAlign: 'center',
-        fontSize: 16,
-        color: '#3e4854',
+        fontSize: 17,
+        color: '#b4b4b4',
         paddingVertical: 20
         
 
     },
     email:{
-        color: '#3e4854',
+        color: '#b4b4b4',
+        fontSize: 16,
     },
     textInput : {
         borderBottomWidth: 1, 
-        borderBottomColor: '#3e4854'
+        borderBottomColor: '#b4b4b4',
+        fontSize: 16,
+        paddingVertical: 6
+    },
+    verify: {
+        marginTop: 40,
+        marginBottom: 60,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        backgroundColor: '#2c843e',
+        borderRadius: 10,
+        width: '100%',
+    },
+    verifyButton: {
+        color: 'white',
+        fontSize: 20,
+        alignSelf: 'center',
+        fontWeight: '500'
+
     },
     submit : {
         marginVertical: 20

@@ -1,4 +1,4 @@
-import { ScrollView, Button, Image, StyleSheet, Text, TextInput, TouchableOpacity, View, Dimensions } from "react-native";
+import { ScrollView, Button, Image, StyleSheet, Text, TextInput, TouchableOpacity, View, Dimensions, ActivityIndicator, Alert } from "react-native";
 import React, { useState } from 'react';
 
 import { AntDesign } from '@expo/vector-icons';
@@ -23,39 +23,54 @@ const VerificationCode = props => {
     const dispatch = useDispatch();
     const statusOfOtp = useSelector(state => state.auth.signUpData);
 
-    const state = useSelector(state => state.auth);
-    console.log("state",state)
+    const state = useSelector(state => state.auth.otpID);
+    // console.log("state reducer", statusOfOtp.profileImage)
+    // console.log("state reducer",state.data.otpId)
     const handleOTPText = () => {
-        const values = {
-            profileImageUrl: null,
-            name: statusOfOtp.data.name,
-            email: statusOfOtp.data.email,
-            countryCode: statusOfOtp.data.countryCode,
-            phoneNumber: statusOfOtp.data.phoneNumber,
-            password: statusOfOtp.data.password,
-            otpId: statusOfOtp.data.otpId,
-            otp: otp
-        };
-
-
         setError(null);
         setIsLoading(true);
+        // const values = {
+        //     profileImage: statusOfOtp.data.profileImage,
+        //     name: statusOfOtp.data.name,
+        //     email: statusOfOtp.data.email,
+        //     countryCode: statusOfOtp.data.countryCode,
+        //     phoneNumber: statusOfOtp.data.phoneNumber,
+        //     password: statusOfOtp.data.password,
+        //     otpId: state.data.otpId,
+        //     otp: otp
+        // };
+        const formData = new FormData();
+        formData.append('profileImage', {
+            uri: statusOfOtp.profileImage,
+            type: 'image/jpeg', // adjust the type according to your image
+            name: 'photo.jpg',
+          });
+        formData.append('name', statusOfOtp.name);
+        formData.append('email', statusOfOtp.email);
+        formData.append('countryCode', statusOfOtp.countryCode);
+        formData.append('phoneNumber', statusOfOtp.phoneNumber);
+        formData.append('password', statusOfOtp.password);
+        formData.append('otpId', state.data.otpId);
+        formData.append('otp', otp);
+
         try {
-            dispatch(authActions.verifyOTP(values))
-            if(state.status == 'success'){
-                props.navigation.navigate('FormNavigator');
-            }
-            else {
-                Alert.alert('Alert', state.msg, [
-                    {
-                      text: 'Cancel',
-                      onPress: () => console.log('Cancel Pressed'),
-                      style: 'cancel',
-                    },
-                    {text: 'OK', onPress: () => console.log('OK Pressed')},
-                  ])
-            }
-            
+            dispatch(authActions.verifyOTP(formData)).then((state) => {
+                if (state.status == 'success') {
+                    setIsLoading(false);
+                    props.navigation.navigate('FormNavigator');
+                }
+                else {
+                    Alert.alert('Alert', state.msg || state.error , [
+                        {
+                          text: 'Cancel',
+                          onPress: () => console.log('Cancel Pressed'),
+                          style: 'cancel',
+                        },
+                        {text: 'OK', onPress: () => console.log('OK Pressed')},
+                    ])
+                    setIsLoading(false);
+                }
+            })    
         } catch (err) {
             setError(err.message);
             setIsLoading(false);
@@ -85,8 +100,11 @@ const VerificationCode = props => {
                     onFilled={text => setWholeOTP(text)}
                 />
                 
-                <TouchableOpacity style={styles.verify} onPress={handleOTPText}> 
-                    <Text style={styles.verifyButton}>Verify</Text>
+                <TouchableOpacity disabled={isLoading} style={styles.verify} onPress={handleOTPText}> 
+                    {isLoading ?
+                        <ActivityIndicator size={25} /> :
+                        <Text style={styles.verifyButton}>Verify</Text>
+                    }
                 </TouchableOpacity>
 
                 <View style={styles.resendContainer}>
@@ -129,6 +147,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 60,
     },
+    
     verify: {
         marginTop: 40,
         marginBottom: 60,

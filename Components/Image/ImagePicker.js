@@ -8,11 +8,12 @@ const ImagePicker = (props) => {
     async function takeImageHandler() {
         const image = await launchCameraAsync({
             allowsEditing: true,
-            aspect: [16,9],
+            aspect: [4,4],
             quality: 0.5,
         });
         setPickedImage(image.assets[0].uri)
-        // console.log(image.assets[0].uri);
+        props.onImagePicked(image.assets[0].uri);
+        console.log(image.assets[0].uri);
         // console.log(image);
 
     }

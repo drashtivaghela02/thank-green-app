@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Button, Image, TextInput, StyleSheet, Text, View, TouchableOpacity, KeyboardAvoidingView, ScrollView, Alert } from "react-native";
+import { Button, Image, TextInput, StyleSheet, Text, View, TouchableOpacity, KeyboardAvoidingView, ScrollView, Alert, ActivityIndicator } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import PhoneInput from "react-native-phone-number-input";
 import ImagePicker from '../Components/Image/ImagePicker';
@@ -12,18 +12,26 @@ const SignUp = props => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
     const dispatch = useDispatch();
-    const [source, setSource] = useState('');
+    const [imagePath, setImagePath] = useState(null);
     const [formatedNumber, setFormatedNumber] = useState(''); //for phone number with code
     const [validate, setValidate] = useState(true)
     const phoneInput = useRef()
     const [phoneNumber, setPhoneNumber] = useState('');
 
+    const handleImagePicked = (path) => {
+        setImagePath(path);
+        // Show alert message
+        Alert.alert('Image Path Received', `Image Path: ${path}`);
+    }
+
     const state = useSelector(state => state.auth.signUpData);
-console.log(state)
+    console.log(state)
     const Validation = Yup.object({
         name: Yup.string()
             .max(15, 'Must be 15 characters or less')
             .required('Name is Required'),
+        phoneNumber: Yup.number()
+            .required('Phone NUmber is required'),
         email: Yup.string()
             .matches(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, ' Email address is not valid')
             .required('Email is Required'),
@@ -41,42 +49,55 @@ console.log(state)
     });
     // console.log(validationSchema)
     const SubmitHandler = (values) => {
+        setError(null);
+        setIsLoading(true);
         const countryCode = '+' + phoneInput.current?.getCallingCode()
         values.phoneNumber = phoneNumber
         values.countryCode = countryCode
-        console.log(values);
         const checkValid = phoneInput.current?.isValidNumber(phoneNumber)
         setValidate(checkValid ? checkValid : false)
         
-        let action;
         const formData = new FormData();
-
-            formData.append('profileImage',source);
-            formData.append('name',values.name);
-            formData.append('countryCode',values.countryCode);
-            formData.append('phoneNumber',values.phoneNumber);
-            formData.append('email',values.email);
-            formData.append('password',values.password);
-            formData.append('confirmPassword',values.cpassword);
-        console.log(formData);
+        formData.append('profileImage',imagePath);
+        formData.append('name',values.name);
+        formData.append('countryCode',values.countryCode);
+        formData.append('phoneNumber',values.phoneNumber);
+        formData.append('email',values.email);
+        formData.append('password',values.password);
+        formData.append('confirmPassword',values.cpassword);
+        console.log(" =>>>>>>>>>>", formData);
         
-        setError(null);
-        setIsLoading(true);
+        const value = {
+            profileImage: imagePath,
+            name: values.name,
+            email: values.email,
+            countryCode: values.countryCode,
+            phoneNumber: values.phoneNumber,
+            password: values.password,
+            confirmPassword: values.cpassword,
+        };
+  
         try {
-            dispatch(authActions.signup(formData))
-            if(state.status == 'success'){
-                props.navigation.navigate('VerificationCode');
+            dispatch(authActions.signup(value)).then((state) => {
+                console.log("Staet sign up =====> ", state)
+                if (state.status == 'success') {
+                    setIsLoading(false)
+                    props.navigation.navigate('VerificationCode');
+                }
+                else {
+                    Alert.alert('Alert', state.msg || state.error , [
+                        {
+                          text: 'Cancel',
+                          onPress: () => console.log('Cancel Pressed'),
+                          style: 'cancel',
+                        },
+                        {text: 'OK', onPress: () => console.log('OK Pressed')},
+                    ])
+                    setIsLoading(false)
+                }
             }
-            else {
-                Alert.alert('Alert', state.msg, [
-                    {
-                      text: 'Cancel',
-                      onPress: () => console.log('Cancel Pressed'),
-                      style: 'cancel',
-                    },
-                    {text: 'OK', onPress: () => console.log('OK Pressed')},
-                  ])
-            }
+            )
+            
             
         } catch (err) {
             setError(err.message);
@@ -99,7 +120,10 @@ console.log(state)
                     {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
                         <ScrollView>
                             <View style={styles.image}>
-                                    <ImagePicker onClick={(source) => setSource(source) } />
+                                    <ImagePicker
+                                        onImagePicked={handleImagePicked}
+                                        value={values.profileImage = imagePath}
+                                     />
                             </View>     
                                        
                             <View style={styles.inputContainer}>
@@ -138,6 +162,7 @@ console.log(state)
                                         ref={phoneInput}
                                         defaultCode='IN'
                                         defaultValue={phoneNumber}
+                                        value={values.phoneNumber = phoneNumber}
                                         onChangeText={(text) => setPhoneNumber(text)}
                                         onChangeFormattedText={(text) => setFormatedNumber(text)}
                                         withShadow
@@ -154,7 +179,9 @@ console.log(state)
                                         flagButtonStyle ={{olor: 'white'}}
                                     />
                                 </View>
-
+                                {touched.phoneNumber && errors.phoneNumber ? (
+                                    <Text style={styles.errorText}>{errors.phoneNumber}</Text>
+                                ) : null}
                                 {!validate ? <Text style={styles.errorText}>Phone number is Required</Text> : null}
                                 {/* <Text style={styles.label}>Contact Number</Text>
                                 <View style={{flexDirection: 'row'}}>
@@ -206,13 +233,12 @@ console.log(state)
                                 {touched.cpassword && errors.cpassword ? (
                                     <Text style={styles.errorText}>{errors.cpassword}</Text>
                                 ) : null}
-                            </View>
-                            <View style = {{marginTop: 10}}>
-                                <Button 
-                                    title="SIGN UP" 
-                                    color='#2c843e' 
-                                    onPress={handleSubmit} />
-                            </View>
+                                </View>
+                                <TouchableOpacity disabled={isLoading} style={styles.verify} onPress={handleSubmit}> 
+                                        {isLoading ?
+                                            <ActivityIndicator size={25}/> :
+                                            <Text style={styles.verifyButton}>SIGN UP</Text>}
+                                </TouchableOpacity>
                         </ScrollView> 
                     )}
                 </Formik>
@@ -262,6 +288,21 @@ const styles = StyleSheet.create({
         color: 'white',
         paddingHorizontal: 10,
         paddingVertical: 8
+    },
+    verify: {
+        marginTop: 40,
+        marginBottom: 0,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        backgroundColor: '#2c843e',
+        borderRadius: 10,
+        width: '100%',
+    },
+    verifyButton: {
+        color: 'white',
+        fontSize: 18,
+        alignSelf: 'center'
+
     },
     signUpContainer: {
         flexDirection: 'row',

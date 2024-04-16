@@ -4,31 +4,33 @@ export const LOGINCONTACT = 'LOGINCONTACT';
 export const VERIFYOTP = 'VERIFYOTP';
 export const RESENDOTP = 'RESENDOTP';
 
-export const signup = (formData) => {
-  
+export const signup = (values) => {
+
   return async dispatch => {
     try {
-      console.log('sdfugy', formData);
+      console.log('sdfugy', values);
       const response = await fetch('https://thankgreen.onrender.com/api/auth/signup',
         {
           method: 'POST',
-          body: formData
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: values.name,
+            email: values.email,
+            countryCode: values.countryCode,
+            phoneNumber: values.phoneNumber,
+            password: values.password,
+            confirmPassword: values.confirmPassword,
+          })
         }
       );
-      // if (!response.ok) {
-      //   // const errorResData = await response.json();
-      //   // const errorId = errorResData.error.message;
-      //   let message = 'Something went wrong!';
-        
-      //   throw new Error(message);
-      // }
-      // console.log(response);
       const resData = await response.json();
-      console.log("resData",resData);
-      dispatch({ type: SIGNUP, resData});
-      
+      console.log("resData", resData);
+      dispatch({ type: SIGNUP, values, resData });
+      return resData;
     } catch (error) {
-        console.error("Sign up error", error);
+      console.error("Sign up error", error);
     }
   };
 };
@@ -41,15 +43,17 @@ export const verifyOTP = (values) => {
           console.log("verify otp values ",values);
             const response = await fetch('https://thankgreen.onrender.com/api/auth/verify-otp', {
               method: 'POST',
+              body: values,
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'multipart/form-data',
+                // add any additional headers needed here
               },
-              body: JSON.stringify(values),
             });
             console.log("response ",response);
             const resData = await response.json();
             console.log('otpVerify',resData);
-            dispatch({type: VERIFYOTP, resData})
+      dispatch({ type: VERIFYOTP, resData })
+      return resData;
     };
 
 }
@@ -73,6 +77,7 @@ export const resendOTP = (otpId) => {
       const resData = await response.json();
       console.log("res data resend: ", resData);
       dispatch({ type: RESENDOTP, resData });
+      return resData;
     } catch (error) {
       console.error('Resend OTP error:', error);
       // Handle error, dispatch an action if needed
