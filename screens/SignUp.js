@@ -130,7 +130,7 @@ const SignUp = props => {
                                 <Text style={styles.label}>Name</Text>
                                 <TextInput 
                                     style={styles.input} 
-                                    keyboardType='default'
+                                    c
                                     onChangeText={handleChange('name')}
                                     onBlur={handleBlur('name')}
                                     value={values.name}

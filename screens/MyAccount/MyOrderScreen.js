@@ -1,11 +1,13 @@
 import { Text } from "react-native";
 import { StyleSheet, View } from "react-native"
+import CustomHeader from "../../Components/UI/CustomHeader";
 
-const MyOrderScreen = props => {
+const FAQScreen = props => {
   return (
-    <View style={styles.container}>
-      <Text>My orders Screen</Text>
-    </View>
+    <View style={styles.container} >
+      <CustomHeader label='My Order' press={() => { props.navigation.goBack() }} />
+      </View>
+
   )
   
 }
@@ -13,9 +15,8 @@ const MyOrderScreen = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
+    backgroundColor: 'white',
+},
 });
 
-export default MyOrderScreen;
+export default FAQScreen;

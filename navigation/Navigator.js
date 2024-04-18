@@ -20,6 +20,9 @@ import ReferAFriendScreen from '../screens/MyAccount/ReferAFriendScreen';
 import FAQScreen from '../screens/MyAccount/FAQScreen';
 import ChangePasswordScreen from '../screens/MyAccount/ChangePasswordScreen';
 import LogoutScreen from '../screens/MyAccount/LogoutScreen'
+import ContactUsScreen from '../screens/Shop/ContactUsScreen';
+import ShopCategoryScreen from '../screens/Shop/ShopCategoryScreen';
+import AddNewCardDetailsScreen from '../screens/Payment/AddNewCardDetailsScreen';
 
 const FormStack = createStackNavigator();
 const FormNavigator = () => {
@@ -35,9 +38,9 @@ const AuthNavigator = () => {
   return (
     <NavigationContainer>
       <AuthStack.Navigator>
-        <AuthStack.Screen name="Home" component={TabsNavigator}  options = {{headerShown: false}}/>
         <AuthStack.Screen name="FormNavigator" component={FormNavigator}  options = {{headerShown: false}}/>
         <AuthStack.Screen name="VerificationCode" component={VerificationCode} options = {{headerShown: false}} />
+        <AuthStack.Screen name="Home" component={TabsNavigator}  options = {{headerShown: false}}/>
         <AuthStack.Screen name="SignUp" component={SignUp}  options = {{headerShown: false}}/>
         <AuthStack.Screen name="ForgetPassword" component={ForgetPassword} options = {{headerShown: false}} />
       </AuthStack.Navigator>
@@ -54,6 +57,17 @@ const HomeScreen = () => {
   )
 }
 
+const PaymentStack = createStackNavigator();
+const PaymentDetailScreen = () => {
+  return (
+    <PaymentStack.Navigator>
+      <PaymentStack.Screen name='PaymentScreen' component={PaymentScreen} options={{ headerShown: false }} />
+      <PaymentStack.Screen name='AddNewCard' component={AddNewCardDetailsScreen} options={{ headerShown: false }} />
+
+    </PaymentStack.Navigator>
+  )
+}
+
 const MyAccountStack = createStackNavigator();
 const MyAccountScreen = () => {
   return (
@@ -61,11 +75,11 @@ const MyAccountScreen = () => {
       <MyAccountStack.Screen name='MyAccountScreen' component={MyAccount} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='Personal Information' component={PersonalInformationScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='SavedAddress' component={SavedAddressScreen} options={{ headerShown: false }} />
-      <MyAccountStack.Screen name='Payment' component={PaymentScreen} options={{ headerShown: false }} />
+      <MyAccountStack.Screen name='Payment' component={PaymentDetailScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='MyOrders' component={MyOrderScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='Favorites' component={FavoritesScreen} options={{ headerShown: false }} />
-      <MyAccountStack.Screen name='ReferAFriends' component={ReferAFriendScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='ChangePassword' component={ChangePasswordScreen} options={{ headerShown: false }} />
+      <MyAccountStack.Screen name='ReferAFriends' component={ReferAFriendScreen} options={{ headerShown: false , }} />
       <MyAccountStack.Screen name='FAQ' component={FAQScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='Logout' component={LogoutScreen} options={{ headerShown: false }} />
     </MyAccountStack.Navigator>
@@ -78,6 +92,7 @@ const TabsNavigator = () => {
     <BottomTab.Navigator
       // shifting={true}
       activeColor={Colors.green}
+      inactiveColor='#AFAFAF'
       // barStyle={{ backgroundColor: 'white' }}
       
     >
@@ -87,18 +102,18 @@ const TabsNavigator = () => {
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ color }) => (
-            <FontAwesome name="home" size={24} color={color} />
+            <FontAwesome name="home" size={26} color={color} />
           ),
         }}
       />
 
       <BottomTab.Screen
         name="Shop"
-        component={HomeScreen}
+        component={ShopCategoryScreen}
         options={{
           tabBarLabel: 'Shop',
           tabBarIcon: ({ color }) => (
-            <Fontisto name="shopping-store" size={24} color={color} />
+            <Fontisto name="shopping-store" size={26} color={color} />
           ),
         }}
       />
@@ -109,18 +124,18 @@ const TabsNavigator = () => {
         options={{
           tabBarLabel: 'CheckOut',
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="cart-variant" size={24} color={color} />
+            <MaterialCommunityIcons name="cart-variant" size={26} color={color} />
           ),
         }}
       />
 
       <BottomTab.Screen
         name="Contact"
-        component={HomeScreen}
+        component={ContactUsScreen}
         options={{
           tabBarLabel: 'Contact',
           tabBarIcon: ({ color }) => (
-            <MaterialIcons name="help" size={24} color={color} />
+            <MaterialIcons name="help" size={26} color={color} />
           ),
         }}
       />
@@ -131,7 +146,7 @@ const TabsNavigator = () => {
         options={{
           tabBarLabel: 'MyAccount',
           tabBarIcon: ({ color }) => (
-            <FontAwesome name="user" size={24} color={color} />
+            <FontAwesome name="user" size={26} color={color} />
           ),
         }}
       />

@@ -172,22 +172,22 @@ const SignIn = (props) => {
                     )}
                     </Formik>
 
-                    <View style={styles.orData}>
-                        <View style={styles.lines}></View>
-                        <View><Text style={{ color: 'white', marginHorizontal: 15 }}> OR CONNECT WITH </Text></View>
-                        <View style={styles.lines}></View>
+                        <View style={styles.orData}>
+                            <View style={styles.lines}></View>
+                            <View><Text style={{ color: 'white', marginHorizontal: 15 }}> OR CONNECT WITH </Text></View>
+                            <View style={styles.lines}></View>
                         </View>
-                        <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                             <Image source={require('../../assets/google_logo.png')} style={styles.GoogleLogo} />
                             <Image source={require('../../assets/facebook_logo.png')} style={styles.FacebookLogo} />
                         </View>
 
-                    <View style={styles.signUpContainer}>
-                        <Text style={styles.signUpText}>Don't have an account?</Text>
-                        <TouchableOpacity onPress={() => props.navigation.navigate('SignUp')}> 
-                            <Text style={[styles.signUpText, styles.signUpLink]}>SignUp</Text>
-                        </TouchableOpacity>
-                    </View>
+                        <View style={styles.signUpContainer}>
+                            <Text style={styles.signUpText}>Don't have an account?</Text>
+                            <TouchableOpacity onPress={() => props.navigation.navigate('SignUp')}>
+                                <Text style={[styles.signUpText, styles.signUpLink]}>SignUp</Text>
+                            </TouchableOpacity>
+                        </View>
                     
                 </ScrollView>
             </KeyboardAvoidingView>

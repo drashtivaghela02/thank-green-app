@@ -1,5 +1,5 @@
 import { ScrollView, Button, Image, StyleSheet, Text, TextInput, TouchableOpacity, View, Dimensions } from "react-native";
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 
 import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
@@ -10,83 +10,15 @@ import RBSheet from "react-native-raw-bottom-sheet";
 import { MaterialIcons } from '@expo/vector-icons';
 
 const MyAccount = props => {
-    const sheet = useRef(null); // Initialize the ref with null
+    const sheetRef = useRef(null); // Initialize the ref
 
-    useEffect(() => {
-        if (sheet.current) {
-            sheet.current.open(); // Check if ref is defined before calling open()
-        }
-    }, [sheet.current]); // Add sheet.current as a dependency
+    const handleLogout = () => {
+        // Add logout logic here
+        console.log('logout');
+        // Close the bottom sheet
+        sheetRef.current.close();
+    };
 
-    const renderAccountItem = (item, index) => {
-
-        const handleLogOut = () => {
-
-            return (
-                <RBSheet
-                    customStyles={{ container: styles.sheet }}
-                    height={360}
-                    // openDuration={250}
-                    ref={sheet}>
-                    <View style={styles.sheetContent}>
-                        <MaterialIcons
-                            name="logout"
-                            size={48}
-                            color="#2c843e"
-                            style={{
-                                alignSelf: 'center',
-                            }} />
-
-
-                        <Text style={styles.title}>Are you sure you want to logout?</Text>
-
-                        <TouchableOpacity
-                            onPress={() => {
-                                // handle onPress
-                            }}>
-                            <View style={styles.btn}>
-                                <Text style={styles.btnText}>LOGOUT</Text>
-                            </View>
-                        </TouchableOpacity>
-
-                        <View style={styles.spacer} />
-
-                        <TouchableOpacity
-                            onPress={() => {
-                                sheet.current.close();
-                            }}>
-                            <View style={styles.btnSecondary}>
-                                <Text style={styles.btnSecondaryText}>Cancel</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </RBSheet>
-            );
-            console.log('logout')
-        }
-
-        console.log(item.screenName);
-        return (
-            <View>
-                <TouchableOpacity style={styles.itemContainer} onPress={() => {
-                    if (item.label == 'Logout') {
-                        handleLogOut()
-                        sheet.current.open();
-                    }
-                    else {
-                        props.navigation.navigate(item.screenName)
-                    }
-                }}>
-                    <View style={styles.firstContainer}>
-                        {item.leftIcon}
-                        <Text style={styles.textStyle}>{item.label}</Text>
-                    </View>
-                    {item.rightIcon}
-                </TouchableOpacity>
-                <View style={{ borderBottomWidth: 0.8, paddingVertical: 4, borderColor: '#eef1f4' }}></View>
-            </View>
-        );
-    }
     return (
         <View style={styles.container}>
             <LinearGradient
@@ -105,12 +37,64 @@ const MyAccount = props => {
 
             <View style={styles.body}>
                 {
-                    ACCOUNT.map(renderAccountItem)
+                    ACCOUNT.map((item, index) => (
+                        <View key={index}>
+                            <TouchableOpacity style={styles.itemContainer} onPress={() => {
+                                if (item.label === 'Logout') {
+                                    sheetRef.current.open();
+                                } else {
+                                    props.navigation.navigate(item.screenName);
+                                }
+                            }}>
+                                <View style={styles.firstContainer}>
+                                    {item.leftIcon}
+                                    <Text style={styles.textStyle}>{item.label}</Text>
+                                </View>
+                                {item.rightIcon}
+                            </TouchableOpacity>
+                            <View style={{ borderBottomWidth: 0.8, paddingVertical: 4, borderColor: '#eef1f4' }}></View>
+                        </View>
+                    ))
                 }
             </View>
+
+            {/* Bottom Sheet for Logout */}
+            <RBSheet
+                ref={sheetRef}
+                customStyles={{ container: styles.sheet }}
+                height={320}
+            >
+                <View style={styles.sheetContent}>
+                    <MaterialIcons
+                        name="logout"
+                        size={70}
+                        color="#8e8e93"
+                        style={{
+                            alignSelf: 'center',
+                            marginTop: 25
+                        }} />
+
+                    <Text style={styles.title}>Are you sure you want to logout?</Text>
+
+                    <TouchableOpacity onPress={handleLogout}>
+                        <View style={styles.btn}>
+                            <Text style={styles.btnText}>LOGOUT</Text>
+                        </View>
+                    </TouchableOpacity>
+
+                    <View style={styles.spacer} />
+
+                    <TouchableOpacity onPress={() => sheetRef.current.close()}>
+                        <View style={styles.btnSecondary}>
+                            <Text style={styles.btnSecondaryText}>Cancel</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            </RBSheet>
         </View>
     );
 };
+
 
 export default MyAccount;
 
@@ -129,12 +113,12 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 40,
         borderTopRightRadius: 40,
         backgroundColor: 'white',
-        paddingTop: 8
+        paddingTop: 8,
     },
     itemContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingHorizontal: 30,
+        paddingHorizontal: 40,
         paddingVertical: 11
         // paddingTop: 28
     },
@@ -147,22 +131,13 @@ const styles = StyleSheet.create({
     },
 
 
-
-
-
-
-
-
-
-
-
-
     title: {
         fontSize: 18,
         fontWeight: '600',
         color: '#181818',
-        marginTop: 16,
+        marginVertical: 25,
         textAlign: 'center',
+        paddingHorizontal: 50
     },
     message: {
         fontSize: 14,
@@ -196,8 +171,8 @@ const styles = StyleSheet.create({
     },
     /** Sheet */
     sheet: {
-        borderTopLeftRadius: 14,
-        borderTopRightRadius: 14,
+        borderTopLeftRadius: 40,
+        borderTopRightRadius: 40,
     },
     sheetContent: {
         padding: 24,
@@ -212,8 +187,8 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderWidth: 1,
-        backgroundColor: '#2b64e3',
-        borderColor: '#2b64e3',
+        backgroundColor: '#2c843e',
+        borderColor: '#2c843e',
     },
     btnText: {
         fontSize: 18,
@@ -226,7 +201,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 8,
-        paddingVertical: 10,
+        // paddingVertical: 5,
         paddingHorizontal: 20,
         borderWidth: 1,
         backgroundColor: '#fff',
@@ -236,7 +211,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         lineHeight: 26,
         fontWeight: '600',
-        color: '#2b64e3',
+        color: '#2c843e',
     },
 
 

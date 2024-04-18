@@ -88,7 +88,7 @@ const VerificationCode = props => {
                 <View style={styles.header}>
                     <AntDesign name="arrowleft" size={28} color='white' />
                     <Text style={styles.heading}>Phone Verification</Text>
-                    <Text style={styles.subHeading}>Enter your otp code here</Text>
+                    <Text style={styles.subHeading}>Enter your OTP code here</Text>
                 </View>
             </LinearGradient>
             
@@ -130,22 +130,23 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         height: Dimensions.get('window').height*0.20
     },
-    heading: {
-        fontWeight: 'bold',
-        fontSize: 25,
-        paddingTop: 8,
-        color: 'white',
-    },
-    subHeading: {
-        paddingTop: 4,
-        color: 'white',
-        fontWeight: 'bold',
-    },
+        heading: {
+            fontWeight: '500',
+            fontSize: 30,
+            paddingTop: 8,
+            color: 'white',
+        },
+        subHeading: {
+            paddingTop: 4,
+            color: 'white',
+            fontWeight: 'bold',
+            fontWeight: '400'
+        },
     body: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 60,
+        paddingHorizontal: 30,
     },
     
     verify: {
