@@ -6,8 +6,8 @@ import { FontAwesome, MaterialIcons, MaterialCommunityIcons, Fontisto } from '@e
 
 import SignIn from '../Components/Form/SignIn'
 import SignUp from '../screens/SignUp';
-import Home from '../screens/Shop/Home';
-import MyAccount from '../screens/Shop/MyAccount';
+import Home from '../screens/HomePage/Home';
+import MyAccount from '../screens/HomePage/MyAccount';
 import VerificationCode from '../screens/VerificationCode';
 import ForgetPassword from '../screens/ForgetPassword';
 import Colors from '../Constant/Colors';
@@ -20,9 +20,11 @@ import ReferAFriendScreen from '../screens/MyAccount/ReferAFriendScreen';
 import FAQScreen from '../screens/MyAccount/FAQScreen';
 import ChangePasswordScreen from '../screens/MyAccount/ChangePasswordScreen';
 import LogoutScreen from '../screens/MyAccount/LogoutScreen'
-import ContactUsScreen from '../screens/Shop/ContactUsScreen';
-import ShopCategoryScreen from '../screens/Shop/ShopCategoryScreen';
+import ContactUsScreen from '../screens/HomePage/ContactUsScreen';
+import ShopCategoryScreen from '../screens/HomePage/ShopCategoryScreen';
 import AddNewCardDetailsScreen from '../screens/Payment/AddNewCardDetailsScreen';
+import CategoryList from '../screens/Shop/CategoryList';
+import CheckOutScreen from '../screens/HomePage/CheckOutScreen';
 
 const FormStack = createStackNavigator();
 const FormNavigator = () => {
@@ -67,7 +69,14 @@ const PaymentDetailScreen = () => {
     </PaymentStack.Navigator>
   )
 }
-
+const ShopCategory = createStackNavigator();
+const ShopScreens = () => {
+  return (
+  <ShopCategory.Navigator>
+    <ShopCategory.Screen name='ShopCategory' component={ShopCategoryScreen} options={{ headerShown: false }} />
+    <ShopCategory.Screen name='CategoryList' component={CategoryList} options={{ headerShown: false }} />
+  </ShopCategory.Navigator>
+)}
 const MyAccountStack = createStackNavigator();
 const MyAccountScreen = () => {
   return (
@@ -109,7 +118,7 @@ const TabsNavigator = () => {
 
       <BottomTab.Screen
         name="Shop"
-        component={ShopCategoryScreen}
+        component={ShopScreens}
         options={{
           tabBarLabel: 'Shop',
           tabBarIcon: ({ color }) => (
@@ -120,7 +129,7 @@ const TabsNavigator = () => {
 
       <BottomTab.Screen
         name="CheckOut"
-        component={HomeScreen}
+        component={CheckOutScreen}
         options={{
           tabBarLabel: 'CheckOut',
           tabBarIcon: ({ color }) => (

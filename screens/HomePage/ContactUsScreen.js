@@ -109,24 +109,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     // paddingHorizontal: 30,
   },
-  logoContainer: {
-    alignItems: 'center',
-    marginVertical: 30
-  },
-  logo: {
-    width: 280,
-    height: 280
-  },
-  bodyText: {
-    textAlign: 'center',
-    fontSize: 17,
-    color: '#b4b4b4',
-    paddingVertical: 20
-  },
+
   itemContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    // justifyContent: 'space-between',
+    paddingHorizontal: 10,
     paddingVertical: 11
     // paddingTop: 28
   },
@@ -154,36 +141,5 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     fontWeight:'500',
   },
-  email: {
-    color: '#b4b4b4',
-    fontSize: 16,
-  },
-  textInput: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#b4b4b4',
-    fontSize: 16,
-    paddingVertical: 6
-  },
-  verify: {
-    marginTop: 40,
-    marginBottom: 60,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: '#2c843e',
-    borderRadius: 10,
-    width: '100%',
-  },
-  verifyButton: {
-    color: 'white',
-    fontSize: 20,
-    alignSelf: 'center',
-    fontWeight: '500'
 
-  },
-  submit: {
-    marginVertical: 20
-  },
-  submitButton: {
-    borderRadius: 10
-  }
 });

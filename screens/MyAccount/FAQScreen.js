@@ -38,11 +38,7 @@ const FAQScreen = props => {
     <View style={styles.container} >
       <CustomHeader label='FAQ' press={() => { props.navigation.goBack() }} />
       <View>
-      <Faq
-                data={data}
-                styles={styles}
-                // config={config}
-            />
+      <Text>Hello, I'm here to Solve your quieries</Text>
       </View>
       </View>
 

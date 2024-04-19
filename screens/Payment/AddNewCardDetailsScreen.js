@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Switch, ScrollView } from 'react-native';
 import CustomHeader from '../../Components/UI/CustomHeader';
 import * as CardValidator from 'card-validator';
 
@@ -8,6 +8,7 @@ const AddNewCardDetailsScreen = props => {
   const [expirationDate, setExpirationDate] = useState('');
   const [cvv, setCVV] = useState('');
   const [cardHolder, setCardHolder] = useState('');
+  const [value, setValue] = useState(false)
 
   const handleAddCard = () => {
     // Perform validation
@@ -23,7 +24,7 @@ const AddNewCardDetailsScreen = props => {
       return;
     }
 
-    const cvvValidation = CardValidator.cvv(cvv,3);
+    const cvvValidation = CardValidator.cvv(cvv, 3);
     if (!cvvValidation.isValid) {
       Alert.alert('Error', 'Please enter a valid CVV.');
       return;
@@ -43,39 +44,50 @@ const AddNewCardDetailsScreen = props => {
       <CustomHeader label="Add New Card" press={() => props.navigation.goBack()} />
 
       <View style={styles.body}>
-        <Text style={styles.label}>Card Number</Text>
-        <TextInput
-          keyboardType="numeric"
-          style={styles.textInput}
-          value={cardNumber}
-          onChangeText={text => setCardNumber(text)}
-          placeholder='1234 1234 1234 1234'
-        />
+        <View>
+          <Text style={styles.label}>Card Number</Text>
+          <TextInput
+            keyboardType="numeric"
+            style={styles.textInput}
+            value={cardNumber}
+            onChangeText={text => setCardNumber(text)}
+            placeholder='1234 1234 1234 1234'
+          />
 
-        <Text style={styles.label}>Expiration Date (MM/YYYY)</Text>
-        <TextInput
-          keyboardType="numbers-and-punctuation"
-          style={styles.textInput}
-          value={expirationDate}
-          onChangeText={text => setExpirationDate(text)}
-          placeholder='MM/YYYY'
-        />
+          <Text style={styles.label}>Valid Until (MM/YYYY)</Text>
+          <TextInput
+            keyboardType="numbers-and-punctuation"
+            style={styles.textInput}
+            value={expirationDate}
+            onChangeText={text => setExpirationDate(text)}
+            placeholder='MM/YYYY'
+          />
 
-        <Text style={styles.label}>CVV</Text>
-        <TextInput
-          keyboardType="numeric"
-          style={styles.textInput}
-          value={cvv}
-          onChangeText={text => setCVV(text)}
-          place
-        />
+          <Text style={styles.label}>CVV</Text>
+          <TextInput
+            keyboardType="numeric"
+            style={styles.textInput}
+            value={cvv}
+            onChangeText={text => setCVV(text)}
+            place
+          />
 
-        <Text style={styles.label}>Card Holder</Text>
-        <TextInput
-          style={styles.textInput}
-          value={cardHolder}
-          onChangeText={text => setCardHolder(text)}
-        />
+          <Text style={styles.label}>Card Holder</Text>
+          <TextInput
+            style={styles.textInput}
+            value={cardHolder}
+            onChangeText={text => setCardHolder(text)}
+          />
+          <View style={styles.switchContainer}>
+            <Text style={styles.switchLabel}>Make this my default payment method</Text>
+            <Switch
+              trackColor={{ true: '#2c843e' }}
+              thumbColor='white'
+              value={value}
+              onValueChange={(value) => setValue(value)}
+            />
+          </View>
+        </View>
 
         <TouchableOpacity style={styles.verify} onPress={handleAddCard}>
           <Text style={styles.verifyButton}>ADD CARD</Text>
@@ -92,8 +104,9 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 30,
+    paddingBottom: 30
   },
   label: {
     color: '#b4b4b4',
@@ -103,7 +116,7 @@ const styles = StyleSheet.create({
   textInput: {
     borderBottomWidth: 1,
     borderBottomColor: '#b4b4b4',
-    fontSize: 20,
+    fontSize: 18,
     padding: 3,
   },
   verify: {
@@ -119,6 +132,16 @@ const styles = StyleSheet.create({
     fontSize: 20,
     alignSelf: 'center',
     fontWeight: '500',
+  },
+  switchLabel: {
+    // color: '#b4b4b4',
+    fontSize: 16,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 10
   },
 });
 

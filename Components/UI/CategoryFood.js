@@ -1,60 +1,69 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons'
-import React from 'react'
-import { View,StyleSheet, Image, Text } from 'react-native'
-const CategoryFood = ({text,imagepath,bordercolor}) => {
-  return (
-    <View style={styles.screen}>
-      <View style={styles.mainscreen}>
-        <View style={{...styles.imagecontainer,...{bordercolor:bordercolor?bordercolor:'black'}}}>
-        <Image style={styles.image} source={imagepath}/>
-        </View>
-        <View style={styles.textcontainer}>
-        <Text>
-            {text}
-        </Text>
-        <MaterialCommunityIcons style={styles.sideicon} size={22} name='arrow-right' color='#CCCCCC' />
-        </View>
-    </View>
-    <View style={styles.line}></View>
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import React from 'react';
+import { View, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
+const CategoryFood = ({ text, imagepath, bordercolor, onPress }) => {
+    return (
+        <TouchableOpacity onPress={onPress}>
+        <View style={styles.mainscreen}>
+            <View style={{...styles.imagePreview,...{ borderWidth: 2, marginHorizontal: 10, borderRadius: 7, borderColor: bordercolor ? bordercolor : 'black' }}}>
+                <Image style={styles.image} source={imagepath} />
             </View>
-  )
+            <View style={styles.textcontainer}>
+                <Text style={{ fontSize: 19, fontWeight: '500' }}>
+                    {text}
+                </Text>
+                <MaterialCommunityIcons style={styles.sideicon} size={26} name='arrow-right' color='#CCCCCC' />
+            </View>
+        </View>
+        </TouchableOpacity>
+    )
 }
-const styles=StyleSheet.create({
-    mainscreen:{
-        flexDirection:'row',
-        justifyContent:'center',
-        alignItems:'center',
+const styles = StyleSheet.create({
+
+    mainscreen: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 10,
+        backgroundColor: 'white',
+        paddingHorizontal: 10
     },
-    sideicon:{
-        justifyContent:'flex-end',
-        alignItems:'flex-end'
+    imagePreview:{
+        width : 80,
+        height: 80,
+        marginVertical: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+        overflow:'hidden',
+        borderWidth: 1,
+        borderColor: 'white'
     },
-    imagecontainer:{
-        // height:20,
-        // width:20,
-        borderWidth:2,
-        marginHorizontal:5,
+    image: {
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#1e4c5e',
+        
     },
-    image:{
-        width:100,
-        height:100,
-        resizeMode:'contain',
-        tintColor:'red'
+    // imageContainer: {
+        
+    // }
+    // image: {
+    //     width: 80,
+    //     height: 80,
+    //     resizeMode: 'contain',
+    //     tintColor: 'red'
+    // },
+    textcontainer: {
+        flex: 1,
+        justifyContent: 'space-between',
+        flexDirection: 'row',
+        paddingLeft: 5
+        // marginHorizontal:10
     },
-    textcontainer:{
-        flex:1,
-        justifyContent:'space-between',
-        flexDirection:'row',
-        marginHorizontal:10
-    },
-    line:{
-        borderWidth:1,
-        borderColor:'#CCCCCC'
-    },
-    screen:{
-        flex:1,
-        justifyContent:'center',
-        alignItems:'center'
-    }
+    // line:{
+    //     borderWidth:10,
+    //     // borderColor:'#CCCCCC'
+    // },
+
 })
 export default CategoryFood

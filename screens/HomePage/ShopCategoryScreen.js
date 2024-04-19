@@ -32,7 +32,7 @@ const ShopCategoryScreen = props => {
       <CustomHeader label='Shop' press={() => { props.navigation.goBack() }} />
 
 
-     <View style={styles.body}>
+      <View style={styles.body}>
         <SearchBar
           searchPhrase={searchPhrase}
           setSearchPhrase={setSearchPhrase}
@@ -46,7 +46,17 @@ const ShopCategoryScreen = props => {
             setClicked={setClicked}
           />
         )} */}
-        <CategoryFood text='hello' bordercolor='pink' />
+        <View style={{flex:1}}>
+        <ScrollView style={{ height: Dimensions.get('screen').height, width: Dimensions.get('window').width }} contentContainerStyle={styles.categoryScreen}>
+            <CategoryFood text='Fruits & Vegetables' bordercolor='#4b6b88' onPress={() => {props.navigation.navigate('CategoryList')}} />
+          <CategoryFood text='Eggs, Meat and Fish' bordercolor='#5cb986' />
+          <CategoryFood text='Beverages' bordercolor='#f2ae3a' />
+          <CategoryFood text='Baker, Cakes & Dairy' bordercolor='#c0e15c' />
+          <CategoryFood text='Foodgrains & Spices' bordercolor='#4b6b88' />
+          <CategoryFood text='Snacks' bordercolor='#4b6b88' imagepath= 'https://res.cloudinary.com/djuz5lkbf/image/upload/v1712557897/ThankGreen/vqzfbuarl0hzvrm5efzl.jpg' />
+        </ScrollView>
+
+        </View>
       </View>
     </View>
   );
@@ -55,6 +65,13 @@ const ShopCategoryScreen = props => {
 export default ShopCategoryScreen;
 
 const styles = StyleSheet.create({
+  categoryScreen: {
+    // flex: 1,
+    // justifyContent: 'flex-start',
+    // alignItems: 'center',
+    backgroundColor: '#f1f0f5',
+    gap: 5,
+  },
   container: {
     flex: 1,
     backgroundColor: 'white',
@@ -73,7 +90,7 @@ const styles = StyleSheet.create({
 
   body: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingTop: 10
