@@ -50,7 +50,7 @@ function MyTabs() {
     </Tab.Navigator>
   );
 }
-export default function MyOrderScreen() {
+export default function MyOrderScreen(props) {
   return (
     <NavigationContainer independent={true}>
       <CustomHeader label='My Order' press={() => { props.navigation.goBack() }} />

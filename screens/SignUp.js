@@ -109,7 +109,10 @@ const SignUp = props => {
     
 
     return (
-        <LinearGradient colors={['#2c843e', '#1e4c5e']} style={styles.gradient} >
+        <LinearGradient
+        colors={['#2c843e', '#205065']}
+        style={styles.gradient}
+        >
             <View style={styles.screen}>
                 <KeyboardAvoidingView>
                 <Formik
@@ -170,7 +173,7 @@ const SignUp = props => {
                                             width: '100%', 
                                             borderRadius:10,
                                             borderWidth: 1,
-                                            borderColor: 'white',
+                                            borderColor: '#1e4c5e',
                                             backgroundColor: '#1e4c5e',
                                         }}
                                         textContainerStyle={[contact.countryCodeInput, contact.phoneNumberInput]}
@@ -284,7 +287,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 10,
         backgroundColor: '#1e4c5e',
-        borderColor: 'white',
+        borderColor: '#1e4c5e',
         color: 'white',
         paddingHorizontal: 10,
         paddingVertical: 8

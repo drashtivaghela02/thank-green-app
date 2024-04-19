@@ -54,7 +54,7 @@ const HomeStack = createStackNavigator();
 const HomeScreen = () => {
   return (
     <HomeStack.Navigator>
-      <HomeStack.Screen name='Home' component={Home} />
+      <HomeStack.Screen name='Home' component={Home} options = {{headerShown: false}} />
     </HomeStack.Navigator>
   )
 }

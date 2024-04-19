@@ -14,6 +14,7 @@ const MyAccount = props => {
 
     const handleLogout = () => {
         // Add logout logic here
+        props.navigation.navigate('FormNavigator'); 
         console.log('logout');
         // Close the bottom sheet
         sheetRef.current.close();
