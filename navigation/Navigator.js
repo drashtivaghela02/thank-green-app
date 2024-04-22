@@ -25,6 +25,7 @@ import ShopCategoryScreen from '../screens/HomePage/ShopCategoryScreen';
 import AddNewCardDetailsScreen from '../screens/Payment/AddNewCardDetailsScreen';
 import CategoryList from '../screens/Shop/CategoryList';
 import CheckOutScreen from '../screens/HomePage/CheckOutScreen';
+import FilterScreen from '../screens/Shop/FilterScreen';
 
 const FormStack = createStackNavigator();
 const FormNavigator = () => {
@@ -74,7 +75,8 @@ const ShopScreens = () => {
   return (
   <ShopCategory.Navigator>
     <ShopCategory.Screen name='ShopCategory' component={ShopCategoryScreen} options={{ headerShown: false }} />
-    <ShopCategory.Screen name='CategoryList' component={CategoryList} options={{ headerShown: false }} />
+      <ShopCategory.Screen name='CategoryList' component={CategoryList} options={{ headerShown: false }} />
+      <ShopCategory.Screen name='Filters' component={FilterScreen} options={{ headerShown: false }} />
   </ShopCategory.Navigator>
 )}
 const MyAccountStack = createStackNavigator();
@@ -102,7 +104,7 @@ const TabsNavigator = () => {
       // shifting={true}
       activeColor={Colors.green}
       inactiveColor='#AFAFAF'
-      // barStyle={{ backgroundColor: 'white' }}
+      barStyle={{ backgroundColor: 'white' }}
       
     >
       <BottomTab.Screen
