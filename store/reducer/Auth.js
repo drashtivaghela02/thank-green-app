@@ -1,4 +1,12 @@
-import { LOGIN, LOGINCONTACT, LOGINEMAIL, RESENDOTP, SIGNUP, VERIFYOTP } from '../actions/Auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  LOGINCONTACT,
+  LOGINEMAIL,
+  RESENDOTP,
+  SIGNUP,
+  VERIFYOTP,
+  CHANGE_PASSWORD
+} from '../actions/Auth';
 
 const initialState = {
   signUpData: null, // Initial state for signed up data
@@ -7,52 +15,87 @@ const initialState = {
   status:null,
   msg: null,
   statusCode: null,
-  token: null,
+  accessToken: null,
+  refreshToken: null,
   userId: null
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
     case LOGINEMAIL:
+      console.log("heya",action)
       return {
         ...state,
-        token: action.token,
-        status: action.resData,
-        msg: action.msg,
-        statusCode: action.statusCode,
+        accessToken: action.accessToken,
+        refreshToken: action.refreshToken,
+        status: action.status,
       };
     case LOGINCONTACT:
       return {
         ...state,
-        token: action.token,
-        userId: action.userId,
-        status:action.status,
-        msg: action.msg,
-        statusCode: action.statusCode,
+        accessToken: action.accessToken,
+        refreshToken: action.refreshToken,
+        status: action.status,
       };
     case SIGNUP:
       return {
         ...state,
         source: action.source,
-        signUpData: action.values,
-        otpID: action.resData
+        signUpData: action.signup,
+        otpID: action.otpId
       };
     case VERIFYOTP:
       return {
         ...state,
-        status:action.status,
-        msg: action.msg,
-        statusCode: action.statusCode,
-        otpVerificationStatus: action.otpVerificationStatus
+        otpVerificationStatus: action.resData.status
       }
     case RESENDOTP:
       return {
         ...state,
-        status:action.status,
-        msg: action.msg,
-        statusCode:action.statusCode
+        otpVerificationStatus: action.resData.status
+      }
+    case CHANGE_PASSWORD:
+      // state.signUpData[password] = action.newPassword
+      return {
+        ...state
       }
     default:
       return state;
   }
+};
+
+
+// AsyncStorage
+
+
+export const loadInitialState = () => {
+  return async (dispatch) => {
+    try {
+      const serializedState = await AsyncStorage.getItem('reduxState');
+      if (serializedState !== null) {
+        const state = JSON.parse(serializedState);
+        console.log('Data in async storage: ',state);
+        dispatch({ type: 'LOAD_STATE', state });
+      }
+      else {
+        console.log('Data not found in async storage')
+      }
+    } catch (error) {
+      console.error('Error loading state from AsyncStorage:', error);
+    }
+  };
+};
+
+// Middleware to save state to AsyncStorage whenever it changes
+export const saveStateMiddleware = store => next => action => {
+  const result = next(action);
+  const state = store.getState();
+  try {
+    const serializedState = JSON.stringify(state);
+    console.log(serializedState);
+    AsyncStorage.setItem('reduxState', serializedState);
+  } catch (error) {
+    console.error('Error saving state to AsyncStorage:', error);
+  }
+  return result;
 };

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -6,20 +6,21 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import * as authActions from '../../store/actions/Auth';
-import { Button } from 'react-native';
 
 const SignIn = (props) => {
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setError] = useState();
+    const [selected, setSelected] = useState(true);
     const dispatch = useDispatch();
     
     
-    const state = useSelector(state => state.auth.status);
-    console.log(state)
+    const state = useSelector(state => state.auth);
+    // console.log("signin reducer state",state)
     
 
     const Validation = Yup.object({
         emailOrContact: Yup.string()
+            .min(10, 'Must be at least 10 digits')
             .required('Email or Contact number is Required'),
         password: Yup.string()
             .min(6, 'Must be at least 6 characters')
@@ -32,7 +33,6 @@ const SignIn = (props) => {
     // console.log(validationSchema)
     
     const SubmitHandler = async (values) => {
-        // console.log(values);
         let value = {}
         setError(null);
         setIsLoading(true);
@@ -44,7 +44,7 @@ const SignIn = (props) => {
             
             try {
                 await dispatch(authActions.loginEmail(value.email, value.password)).then((state) => {
-                    console.log("state.statusstate.statusstate.statusstate.status", state)
+                    console.log("Login state response", state)
                     if (state.status == 'success') {
                         setIsLoading(false)
                         props.navigation.navigate('Home');
@@ -69,9 +69,9 @@ const SignIn = (props) => {
             value['contact'] = values['emailOrContact']
             value['password'] = values['password']
             // delete values['emailOrContact']
-            console.log("data to be sent",value)
-            try {
+            // try {
                 dispatch(authActions.loginContact(value.contact, value.password)).then((state) => {
+                    console.log("contact response",state);
                     if (state.status == 'success') {
                         setIsLoading(false)
                         props.navigation.navigate('Home');
@@ -83,22 +83,19 @@ const SignIn = (props) => {
                             onPress: () => console.log('Cancel Pressed'),
                             style: 'cancel',
                             },
-                            {text: 'OK', onPress: () => console.log('OK Pressed')},
+                            {text: 'OK', color:'blue', onPress: () => console.log('OK Pressed')},
                         ])
                         setIsLoading(false)
                     }
                 })                  
-            } catch (err) {
-                setError(err.message);
-                setIsLoading(false);
-            }
+            // } catch (err) {
+            //     console.log("console login contact",err);
+            //     setError(err.message);
+            //     setIsLoading(false);
+            // }
         }
         console.log("data to be sent",value)
-        
-        // if (dispatch(authActions.loginContact(value.contact, value.password))) {
-        //     props.navigation.navigate('Home')
-        // }
-        
+
     }
 
 
@@ -157,8 +154,9 @@ const SignIn = (props) => {
                                     <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
                                 </TouchableOpacity>
 
-                                <View style={styles.checkbox}>
-                                    <MaterialCommunityIcons name="checkbox-blank-outline" size={24} color="white" />
+                                    <View style={styles.checkbox}>
+                                        <MaterialCommunityIcons name={selected ? "checkbox-outline" : "checkbox-blank-outline"} size={24} color="white" />
+                                        {/* <MaterialCommunityIcons name="checkbox-outline" size={24} color="white" /> */}
                                     <Text style={styles.checkboxText}> Remember me</Text>
                                     </View>
                                     
@@ -177,7 +175,7 @@ const SignIn = (props) => {
                             <View><Text style={{ color: 'white', marginHorizontal: 15 }}> OR CONNECT WITH </Text></View>
                             <View style={styles.lines}></View>
                         </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'center', padding: 15, gap: 15 }}>
                             <Image source={require('../../assets/google_logo.png')} style={styles.GoogleLogo} />
                             <Image source={require('../../assets/facebook_logo.png')} style={styles.FacebookLogo} />
                         </View>
@@ -224,13 +222,13 @@ const styles = StyleSheet.create({
         height: 200
     },
     GoogleLogo: {
-        marginTop:15,
+        // marginTop:15,
         width: 40,
         height: 40
     },
     FacebookLogo: {
-        width: 70,
-        height: 70
+        width: 40,
+        height: 40
     },
     inputContainer: {
         marginBottom: 10,
@@ -279,7 +277,7 @@ const styles = StyleSheet.create({
     },
     checkbox: {
         // marginVertical: 10,
-        flexDirection: 'row'
+        flexDirection: 'row', alignItems: 'center'
     },
     checkboxText: {
         fontSize: 14,

@@ -42,26 +42,32 @@ const SortByScreen = () => {
         ref={sheetRef}
         customStyles={{ container: styles.sheet }}
         height={320}
+        draggable={true}
+        dragOnContent={true}
+        closeDuration={350}
       >
         <View style={styles.sheetContent}>
-          <Text>Delivery Time</Text>
-          <RadioButton.Group onValueChange={newValue => setDelivery(newValue)} value={delivery} >
+          <Text style ={styles.sheetHeader}>Delivery Time</Text>
+          <RadioButton.Group onValueChange={newValue => {
+            setDelivery(newValue)
+            sheetRef.current.close();
+          }} value={delivery} >
             <View style={styles.radio_button}>
               <RadioButton value="07:00 AM to 09:30 AM" color='#2c843e' />
-              <Text>07:00 AM to 09:30 AM</Text>
+              <Text style={styles.sheetItems}>07:00 AM to 09:30 AM</Text>
             </View>
 
             <View style={styles.radio_button}>
               <RadioButton value="09:30 AM to 11:00 AM" color='#2c843e' />
-              <Text>09:30 AM to 11:00 AM</Text>
+              <Text style={styles.sheetItems}>09:30 AM to 11:00 AM</Text>
             </View>
             <View style={styles.radio_button}>
               <RadioButton value="11:00 AM to 07:30 AM" color='#2c843e' />
-              <Text>11:00 AM to 07:30 AM</Text>
+              <Text style={styles.sheetItems}>11:00 AM to 07:30 AM</Text>
             </View>
             <View style={styles.radio_button}>
               <RadioButton value="07:30 AM to 10:00 AM" color='#2c843e' />
-              <Text>07:30 AM to 10:00 AM</Text>
+              <Text style={styles.sheetItems}>07:30 AM to 10:00 AM</Text>
             </View>
           </RadioButton.Group>
         </View>
@@ -80,9 +86,10 @@ const styles = StyleSheet.create({
   },
   deliveryText: {
     margin: 10,
+    marginLeft: 40,
     marginHorizontal: 20,
     paddingVertical: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
     borderWidth: 1,
     borderColor: '#2c843e',
     borderRadius: 5,
@@ -91,5 +98,25 @@ const styles = StyleSheet.create({
   selectedDeliveryText: {
     color: '#2c843e',
     backgroundColor: 'white',
+    fontSize: 15
   },
+  sheet: {
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
+    // padding: 10
+},
+sheetContent: {
+    padding: 10,
+    // alignItems: 'stretch',
+  },
+  sheetHeader: {
+    fontSize: 19,
+    fontWeight: '500',
+    paddingHorizontal: 20,
+    paddingTop: 10
+  },
+  sheetItems: {
+    fontSize: 15,
+    fontWeight: '500'
+  }
 });

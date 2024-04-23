@@ -43,7 +43,8 @@ const AuthNavigator = () => {
       <AuthStack.Navigator>
         <AuthStack.Screen name="FormNavigator" component={FormNavigator}  options = {{headerShown: false}}/>
         <AuthStack.Screen name="VerificationCode" component={VerificationCode} options = {{headerShown: false}} />
-        <AuthStack.Screen name="Home" component={TabsNavigator}  options = {{headerShown: false}}/>
+        <AuthStack.Screen name="Home" component={TabsNavigator} options={{ headerShown: false }} />
+        <AuthStack.Screen name='ReferAFriends' component={ReferAFriendScreen} options={{ headerShown: false , }} />
         <AuthStack.Screen name="SignUp" component={SignUp}  options = {{headerShown: false}}/>
         <AuthStack.Screen name="ForgetPassword" component={ForgetPassword} options = {{headerShown: false}} />
       </AuthStack.Navigator>
@@ -90,7 +91,7 @@ const MyAccountScreen = () => {
       <MyAccountStack.Screen name='MyOrders' component={MyOrderScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='Favorites' component={FavoritesScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='ChangePassword' component={ChangePasswordScreen} options={{ headerShown: false }} />
-      <MyAccountStack.Screen name='ReferAFriends' component={ReferAFriendScreen} options={{ headerShown: false , }} />
+      
       <MyAccountStack.Screen name='FAQ' component={FAQScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='Logout' component={LogoutScreen} options={{ headerShown: false }} />
     </MyAccountStack.Navigator>

@@ -29,7 +29,7 @@ const MyAccount = props => {
                 style={{ flex: 0.5 }}
             >
                 <View style={styles.header}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                         <AntDesign name="arrowleft" size={28} color='white' />
                         <FontAwesome6 name="edit" size={24} color="white" />
                     </View>
@@ -125,6 +125,7 @@ const styles = StyleSheet.create({
     },
     firstContainer: {
         flexDirection: 'row',
+        alignItems: 'center'
     },
     textStyle: {
         fontSize: 16,

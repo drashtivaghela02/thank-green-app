@@ -11,7 +11,7 @@ const ReferAFriendScreen = props => {
         end={{ x: 0.7, y: 1 }}
       >
         <View style={styles.header}>
-          <AntDesign name="arrowleft" size={28} color='white' />
+          <AntDesign name="arrowleft" size={28} color='white' onPress={() => { props.navigation.goBack() }}/>
           <Text style={styles.heading}>Refer a Friend</Text>
           <Text style={styles.subHeading}>Refer a friend and earn.</Text>
         </View>
@@ -19,7 +19,7 @@ const ReferAFriendScreen = props => {
 
       <View style={styles.body} >
           <View style={styles.logoContainer} >
-            <Image source={require('../../assets/Secure_login-pana.png')} style={styles.logo} />
+            <Image source={require('../../assets/ReferAFriend.png')} style={styles.logo} />
             <Text style={styles.bodyMainText}>Invite A Friend</Text>
             <Text style={styles.bodyText}>Invite a friend and earn $2</Text>
           </View>
@@ -29,7 +29,7 @@ const ReferAFriendScreen = props => {
           </TouchableOpacity>
 
           <View>
-            <Text style={styles.bodyMainText} >1 2 3 4</Text>
+            <Text style={styles.bodyMainText} >1  2  3  4</Text>
           </View>
 
           <View style={styles.orData}>
@@ -38,9 +38,14 @@ const ReferAFriendScreen = props => {
             <View style={styles.lines}></View>
           </View>
 
-          <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-            <Image source={require('../../assets/google_logo.png')} style={styles.GoogleLogo} />
-            <Image source={require('../../assets/facebook_logo.png')} style={styles.FacebookLogo} />
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap:15}}>
+          <Image source={require('../../assets/facebook_logo.png')} style={styles.FacebookLogo} />
+          <Image source={require('../../assets/google_logo.png')} style={styles.GoogleLogo} />
+          <Image source={require('../../assets/whatsapp.png')} style={styles.WhatsappLogo} />
+          <Image source={require('../../assets/instagram.png')} style={styles.InstagramLogo} />
+          <Image source={require('../../assets/telegram.png')} style={styles.TelegramLogo} />
+          
+ 
           </View>
 
       </View>
@@ -74,31 +79,33 @@ const styles = StyleSheet.create({
     },
   body: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     paddingHorizontal: 30,
-    backgroundColor: '#ffffff'
+    paddingVertical: 10,
+    backgroundColor: '#f2f2f2'
   },
   bodyMainText: {
     textAlign: 'center',
     fontSize: 20,
     color: 'black',
-    paddingVertical: 5
+    paddingVertical: 5, 
+    fontWeight: '700'
   },
   logoContainer: {
     alignItems: 'center',
     // marginVertical: 30
   },
   logo: {
-    width: 280,
-    height: 280
+    width: 300,
+    height: 320
   },
   bodyText: {
     textAlign: 'center',
     fontSize: 17,
     color: '#b4b4b4',
-    paddingBottom: 10
-
+    paddingBottom: 10,
+    fontWeight: '500'
 
   },
   email: {
@@ -112,7 +119,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6
   },
   verify: {
-    // marginTop: 40,
+    marginTop: 30,
+    marginBottom: 13,
     // marginBottom: 60,
     paddingVertical: 10,
     paddingHorizontal: 20,
@@ -137,7 +145,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    // marginTop: 20
+    marginTop: 13,marginBottom: 10,
+    width: '75%'
   },
   lines: {
     backgroundColor: '#333333',
@@ -145,12 +154,40 @@ const styles = StyleSheet.create({
     flex: 1
   },
   GoogleLogo: {
-    marginTop: 15,
+    // marginTop: 15,
     width: 40,
-    height: 40
+    height: 40,
+    //  shadowColor: '#000',
+    // shadowOffset: {
+    //   width: 4,
+    //   height: 4,
+    // },
+    // shadowOpacity: 0.5,
+    // shadowRadius: 6,
+    // elevation: 10
   },
   FacebookLogo: {
-    width: 70,
-    height: 70
+    width: 36,
+    height: 36,
+    // shadowColor: '#000',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 4,
+    // },
+    // shadowOpacity: 0.5,
+    // shadowRadius: 6,
+    // elevation: 50,
   },
+  WhatsappLogo: {
+    width: 39,
+    height: 39
+  },
+  InstagramLogo: {
+    width: 37,
+    height: 37
+  },
+  TelegramLogo: {
+    width: 36,
+    height: 36
+  }
 });

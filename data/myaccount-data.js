@@ -1,4 +1,4 @@
-import { EvilIcons, FontAwesome, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { EvilIcons, FontAwesome, MaterialCommunityIcons, MaterialIcons, SimpleLineIcons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 
 
@@ -12,7 +12,7 @@ export const ACCOUNT = [
   },
   {
     id: 2,
-    leftIcon: <EvilIcons name="location" size={22} color="black" />,
+    leftIcon: <SimpleLineIcons name="location-pin" size={22} color="black" />,
     label: 'Saved Address',
     rightIcon: <AntDesign name="right" size={22} color="black" />,
     screenName: 'SavedAddress'

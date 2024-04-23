@@ -2,8 +2,19 @@ import { AntDesign } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Button, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity } from "react-native";
 import CustomHeader from '../../Components/UI/CustomHeader';
+import { useDispatch, useSelector } from 'react-redux';
+import * as authActions from '../../store/actions/Auth';
 
 const ChangePasswordScreen = props => {
+    
+    const dispatch = useDispatch();
+    const accessToken = useSelector(state => state.auth.accessToken);
+
+    console.log("change password state",accessToken)
+    const submitHandler = () => {
+        const value = {"oldPassword": "Test123", "newPassword": "Test123", "cnewPassword": "Test123"}
+        dispatch(authActions.changePassword(value, accessToken))
+    }
     return (
         <View style={styles.container} >
             <CustomHeader label='Change Password' press={() => { props.navigation.goBack() }} />
@@ -13,21 +24,24 @@ const ChangePasswordScreen = props => {
                 <View>
                     <Text style={[styles.label]} >Old Password</Text>
                     <TextInput
+                        value='oldPassword'
                         secureTextEntry={true}
                         style={styles.textInput}
                     />
                     <Text style={styles.label} >New Password</Text>
                     <TextInput
+                        value='newPassword'
                         secureTextEntry={true}
                         style={styles.textInput}
                     />
                     <Text style={styles.label} >Re-enter New Password</Text>
                     <TextInput
+                        value='newCPassword'
                         secureTextEntry={true}
                         style={styles.textInput}
                     />
                 </View>
-                <TouchableOpacity style={styles.verify} onPress={() => { console.log('Pressed'); }}>
+                <TouchableOpacity style={styles.verify} onPress={submitHandler}>
                     <Text style={styles.verifyButton}>SAVE</Text>
                 </TouchableOpacity>
                 {/* </ScrollView> */}

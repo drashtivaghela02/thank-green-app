@@ -4,14 +4,19 @@ import AuthNavigator from './navigation/Navigator'
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { thunk } from 'redux-thunk';
-import authReducer from './store/reducer/Auth';
+import authReducer, { loadInitialState, saveStateMiddleware } from './store/reducer/Auth';
+import { useEffect } from 'react';
 
 const rootReducer = combineReducers({
   auth : authReducer
 });
 
-const store = createStore(rootReducer, applyMiddleware(thunk));
+const store = createStore(rootReducer, applyMiddleware(thunk,saveStateMiddleware));
 export default function App() {
+
+  useEffect(() => {
+    store.dispatch(loadInitialState());
+  }, []);
   return (
     // <View style={styles.container}>
     //   <Text>Open up App.js to start working on your app!</Text>
