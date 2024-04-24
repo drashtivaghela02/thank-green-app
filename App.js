@@ -6,9 +6,12 @@ import { Provider } from 'react-redux';
 import { thunk } from 'redux-thunk';
 import authReducer, { loadInitialState, saveStateMiddleware } from './store/reducer/Auth';
 import { useEffect } from 'react';
+import FlashMessage from 'react-native-flash-message';
+import userReducer from './store/reducer/User';
 
 const rootReducer = combineReducers({
-  auth : authReducer
+  auth: authReducer,
+  user: userReducer
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk,saveStateMiddleware));
@@ -24,6 +27,7 @@ export default function App() {
     // </View>
     <Provider store={store} >
       <AuthNavigator />
+      <FlashMessage position="bottom" />
     </Provider>
   );
 }

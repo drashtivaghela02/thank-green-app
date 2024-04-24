@@ -12,15 +12,29 @@ const SignIn = (props) => {
     const [errors, setError] = useState();
     const [selected, setSelected] = useState(true);
     const dispatch = useDispatch();
-    
-    
+
+
     const state = useSelector(state => state.auth);
     // console.log("signin reducer state",state)
-    
+
 
     const Validation = Yup.object({
         emailOrContact: Yup.string()
-            .min(10, 'Must be at least 10 digits')
+            .test(
+                'is-email-or-phone',
+                'Invalid email or phone number',
+                value => {
+                    // Check if it's an email
+                    if (/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/.test(value)) {
+                        return true;
+                    }
+                    // Check if it's a phone number (assuming it's a US phone number)
+                    else if (/^\d{10}$/.test(value)) {
+                        return true;
+                    }
+                    return false;
+                }
+            )
             .required('Email or Contact number is Required'),
         password: Yup.string()
             .min(6, 'Must be at least 6 characters')
@@ -31,17 +45,17 @@ const SignIn = (props) => {
             .required('Password is Required'),
     });
     // console.log(validationSchema)
-    
+
     const SubmitHandler = async (values) => {
         let value = {}
         setError(null);
         setIsLoading(true);
 
-        if(isNaN(values.emailOrContact)){
+        if (isNaN(values.emailOrContact)) {
             value['email'] = values['emailOrContact']
             value['password'] = values['password']
             // delete values['emailOrContact']
-            
+
             try {
                 await dispatch(authActions.loginEmail(value.email, value.password)).then((state) => {
                     console.log("Login state response", state)
@@ -56,10 +70,10 @@ const SignIn = (props) => {
                             style: 'cancel',
                         },
                         { text: 'OK', onPress: () => console.log('OK Pressed') },
-                    ])
-                    setIsLoading(false)
+                        ])
+                        setIsLoading(false)
                     }
-                }) 
+                })
             } catch (err) {
                 setError(err.message);
                 setIsLoading(false);
@@ -70,31 +84,31 @@ const SignIn = (props) => {
             value['password'] = values['password']
             // delete values['emailOrContact']
             // try {
-                dispatch(authActions.loginContact(value.contact, value.password)).then((state) => {
-                    console.log("contact response",state);
-                    if (state.status == 'success') {
-                        setIsLoading(false)
-                        props.navigation.navigate('Home');
-                    }
-                    else {
-                        Alert.alert('Alert', state.msg || state.error, [
-                            {
+            dispatch(authActions.loginContact(value.contact, value.password)).then((state) => {
+                console.log("contact response", state);
+                if (state.status == 'success') {
+                    setIsLoading(false)
+                    props.navigation.navigate('Home');
+                }
+                else {
+                    Alert.alert('Alert', state.msg || state.error, [
+                        {
                             text: 'Cancel',
                             onPress: () => console.log('Cancel Pressed'),
                             style: 'cancel',
-                            },
-                            {text: 'OK', color:'blue', onPress: () => console.log('OK Pressed')},
-                        ])
-                        setIsLoading(false)
-                    }
-                })                  
+                        },
+                        { text: 'OK', color: 'pink', onPress: () => console.log('OK Pressed') },
+                    ])
+                    setIsLoading(false)
+                }
+            })
             // } catch (err) {
             //     console.log("console login contact",err);
             //     setError(err.message);
             //     setIsLoading(false);
             // }
         }
-        console.log("data to be sent",value)
+        console.log("data to be sent", value)
 
     }
 
@@ -103,72 +117,72 @@ const SignIn = (props) => {
         <LinearGradient
             colors={['#2c843e', '#205065']}
             style={styles.gradient}
-            // end={{x: 0.5, y: 0.7}} 
+        // end={{x: 0.5, y: 0.7}} 
         >
             <View style={styles.screen} >
-            <KeyboardAvoidingView>
-                <ScrollView>
-                    <TouchableOpacity onPress={() => props.navigation.navigate('Home')}>
-                        <Text style={styles.skipText}>SKIP</Text>
-                    </TouchableOpacity>
-                    <View style={styles.logoContainer}>
-                        <Image source={require('../../assets/Thanks_Green-removebg-preview.png')} style={styles.logo} />
-                    </View>
+                <KeyboardAvoidingView>
+                    <ScrollView>
+                        <TouchableOpacity onPress={() => props.navigation.navigate('Home')}>
+                            <Text style={styles.skipText}>SKIP</Text>
+                        </TouchableOpacity>
+                        <View style={styles.logoContainer}>
+                            <Image source={require('../../assets/Thanks_Green-removebg-preview.png')} style={styles.logo} />
+                        </View>
 
-                    <Formik
-                        initialValues={{ emailOrContact: '', password: '' }}
-                        validationSchema={Validation}
-                        onSubmit={SubmitHandler}
-                    >
-                        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-                            <View>
-                                <View style={styles.inputContainer}>
-                                    <Text style={styles.label}>Email ID or Mobile Number</Text>
-                                    <TextInput
-                                        style={styles.input}
-                                        value={values.emailOrContact}
-                                        onBlur={handleBlur('emailOrContact')}
-                                        onChangeText={handleChange('emailOrContact')}
-                                        keyboardType='email-address'
-                                    />
-                                    {touched.emailOrContact && errors.emailOrContact ? (
-                                    <Text style={styles.errorText}>{errors.emailOrContact}</Text>
-                                ) : null}
-                                </View>
+                        <Formik
+                            initialValues={{ emailOrContact: '', password: '' }}
+                            validationSchema={Validation}
+                            onSubmit={SubmitHandler}
+                        >
+                            {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+                                <View>
+                                    <View style={styles.inputContainer}>
+                                        <Text style={styles.label}>Email ID or Mobile Number</Text>
+                                        <TextInput
+                                            style={styles.input}
+                                            value={values.emailOrContact}
+                                            onBlur={handleBlur('emailOrContact')}
+                                            onChangeText={handleChange('emailOrContact')}
+                                            keyboardType='email-address'
+                                        />
+                                        {touched.emailOrContact && errors.emailOrContact ? (
+                                            <Text style={styles.errorText}>{errors.emailOrContact}</Text>
+                                        ) : null}
+                                    </View>
 
-                                <View style={styles.inputContainer}>
-                                    <Text style={styles.label}>Password</Text>
-                                    <TextInput
-                                        style={styles.input}
-                                        value={values.password}
-                                        onChangeText={handleChange('password')}
-                                        onBlur={handleBlur('password')}
-                                        secureTextEntry={true}
-                                    />
-                                    {touched.password && errors.password ? (
-                                    <Text style={styles.errorText}>{errors.password}</Text>
-                                ) : null}
-                                </View>
+                                    <View style={styles.inputContainer}>
+                                        <Text style={styles.label}>Password</Text>
+                                        <TextInput
+                                            style={styles.input}
+                                            value={values.password}
+                                            onChangeText={handleChange('password')}
+                                            onBlur={handleBlur('password')}
+                                            secureTextEntry={true}
+                                        />
+                                        {touched.password && errors.password ? (
+                                            <Text style={styles.errorText}>{errors.password}</Text>
+                                        ) : null}
+                                    </View>
 
-                                <TouchableOpacity onPress={() => props.navigation.navigate('ForgetPassword')} style={styles.forgotPasswordContainer}>
-                                    <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-                                </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => props.navigation.navigate('ForgetPassword')} style={styles.forgotPasswordContainer}>
+                                        <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+                                    </TouchableOpacity>
 
                                     <View style={styles.checkbox}>
                                         <MaterialCommunityIcons name={selected ? "checkbox-outline" : "checkbox-blank-outline"} size={24} color="white" />
                                         {/* <MaterialCommunityIcons name="checkbox-outline" size={24} color="white" /> */}
-                                    <Text style={styles.checkboxText}> Remember me</Text>
+                                        <Text style={styles.checkboxText}> Remember me</Text>
                                     </View>
-                                    
-                                    <TouchableOpacity disabled={isLoading} style={styles.verify} onPress={handleSubmit}> 
+
+                                    <TouchableOpacity disabled={isLoading} style={styles.verify} onPress={handleSubmit}>
                                         {isLoading ?
-                                            <ActivityIndicator size={25}/> :
+                                            <ActivityIndicator size={25} /> :
                                             <Text style={styles.verifyButton}>SIGN IN</Text>}
                                     </TouchableOpacity>
-                                    
-                            </View>
-                    )}
-                    </Formik>
+
+                                </View>
+                            )}
+                        </Formik>
 
                         <View style={styles.orData}>
                             <View style={styles.lines}></View>
@@ -186,9 +200,9 @@ const SignIn = (props) => {
                                 <Text style={[styles.signUpText, styles.signUpLink]}>SignUp</Text>
                             </TouchableOpacity>
                         </View>
-                    
-                </ScrollView>
-            </KeyboardAvoidingView>
+
+                    </ScrollView>
+                </KeyboardAvoidingView>
             </View>
         </LinearGradient>
     );

@@ -1,15 +1,44 @@
-import { AntDesign } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import { useEffect, useState } from "react";
 import { Button, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity } from "react-native";
 import CustomHeader from '../../Components/UI/CustomHeader';
+import { useDispatch, useSelector } from "react-redux";
+import * as userAction from '../../store/actions/User';
+import { ActivityIndicator } from "react-native-paper";
 
 const PersonalInformationScreen = props => {
+  const [isLoading, setIsLoading] = useState(false);
+  const accessToken = useSelector(state => state.auth.accessToken)
+  const data = useSelector(state => state.user.data)
+  
+  useEffect(() => {
+    setIsLoading(true)
+    dispatch(userAction.getInfo(accessToken))
+    setIsLoading(false)
+
+  }, [isLoading]);
+  
+  if (!isLoading) {
+    console.log("user'd data",data)
+    
+  }
+  const dispatch = useDispatch();
+
+  const submitHandler = () => {
+    setIsLoading(true)
+    console.log("sfehkfhal");
+    if (data) {
+      setIsLoading(fasle);
+}
+  //   dispatch(userAction.getInfo( accessToken)).then(response => {
+  //   console.log("get information of user: ", response)
+  //   setIsLoading(false);
+  // })
+}
   return (
     <View style={styles.container} >
       <CustomHeader label='Personal Information' press={() => { props.navigation.goBack() }} />
 
       <View style={styles.body} >
-        {/* <ScrollView> */}
           <View>
             <Text style={styles.label} >Full Name</Text>
             <TextInput
@@ -26,11 +55,12 @@ const PersonalInformationScreen = props => {
               style={styles.textInput}
             />
           </View>
-          <TouchableOpacity style={styles.verify} onPress={() => { console.log('Pressed'); }}>
-
-            <Text style={styles.verifyButton}>SAVE</Text>
+        <TouchableOpacity style={styles.verify} onPress={submitHandler}>
+          {isLoading ?
+            <ActivityIndicator size={25} /> :
+            <Text style={styles.verifyButton}>SAVE</Text> 
+          }
           </TouchableOpacity>
-        {/* </ScrollView> */}
       </View>
     </View>
   );

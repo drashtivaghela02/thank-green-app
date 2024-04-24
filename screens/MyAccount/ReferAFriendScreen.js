@@ -1,6 +1,6 @@
 import { AntDesign } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Button, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity } from "react-native";
+import { Button, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, ToastAndroid } from "react-native";
 
 const ReferAFriendScreen = props => {
   return (
@@ -24,7 +24,7 @@ const ReferAFriendScreen = props => {
             <Text style={styles.bodyText}>Invite a friend and earn $2</Text>
           </View>
 
-          <TouchableOpacity style={styles.verify} onPress={() => { console.log('Pressed'); }}>
+          <TouchableOpacity style={styles.verify} onPress={() => {ToastAndroid.show('A pikachu appeared nearby !', ToastAndroid.SHORT); }}>
             <Text style={styles.verifyButton}>GET INVITE CODE</Text>
           </TouchableOpacity>
 

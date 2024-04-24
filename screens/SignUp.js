@@ -44,8 +44,8 @@ const SignUp = props => {
             .required('Password is Required'),
         cpassword: Yup.string()
             .min(6, 'Must be at least 8 characters')
+            .oneOf([Yup.ref('password'), null], 'Passwords must match')
             .required('Password is Required')
-            // .matches(values.password, 'Confirm Password must be match with Password')
     });
     // console.log(validationSchema)
     const SubmitHandler = (values) => {

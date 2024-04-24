@@ -77,7 +77,7 @@ const ContactUsScreen = props => {
 
               <View style={{ borderBottomWidth: 0.8, paddingVertical: 4, borderColor: '#eef1f4' }}></View>
 
-              <TouchableOpacity style={styles.itemContainer} onPress={() => { console.log('FAQ') }}>
+              <TouchableOpacity style={styles.itemContainer} onPress={() => { props.navigation.navigate('FAQ') }}>
                 <View style={styles.firstContainer}>
                 <MaterialCommunityIcons name="chat-question-outline" size={22} color="black" />
                   <Text style={styles.textStyle}>FAQ</Text>

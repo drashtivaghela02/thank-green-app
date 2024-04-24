@@ -10,7 +10,6 @@ import {
 
 const initialState = {
   signUpData: null, // Initial state for signed up data
-  source: null,
   otpVerificationStatus: null, // Initial state for OTP verification status
   status:null,
   msg: null,
@@ -28,6 +27,7 @@ export default (state = initialState, action) => {
         ...state,
         accessToken: action.accessToken,
         refreshToken: action.refreshToken,
+        password: action.password,
         status: action.status,
       };
     case LOGINCONTACT:
@@ -35,12 +35,12 @@ export default (state = initialState, action) => {
         ...state,
         accessToken: action.accessToken,
         refreshToken: action.refreshToken,
+        password: action.password,
         status: action.status,
       };
     case SIGNUP:
       return {
         ...state,
-        source: action.source,
         signUpData: action.signup,
         otpID: action.otpId
       };
@@ -55,9 +55,9 @@ export default (state = initialState, action) => {
         otpVerificationStatus: action.resData.status
       }
     case CHANGE_PASSWORD:
-      // state.signUpData[password] = action.newPassword
       return {
-        ...state
+        ...state,
+        password: action.password,
       }
     default:
       return state;
@@ -92,7 +92,7 @@ export const saveStateMiddleware = store => next => action => {
   const state = store.getState();
   try {
     const serializedState = JSON.stringify(state);
-    console.log(serializedState);
+    console.log("reducer state of async",serializedState);
     AsyncStorage.setItem('reduxState', serializedState);
   } catch (error) {
     console.error('Error saving state to AsyncStorage:', error);

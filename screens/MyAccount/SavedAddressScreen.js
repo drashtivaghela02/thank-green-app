@@ -1,10 +1,13 @@
 import { Text } from "react-native";
-import { StyleSheet, View } from "react-native"
+import { StyleSheet, View } from "react-native";
+import CustomHeader from "../../Components/UI/CustomHeader";
+import LocationPicker from "../../Components/Location/LocationPicker";
 
-const PersonalInformationScreen = props => {
+const SavedAddressScreen = props => {
   return (
     <View style={styles.container}>
-      <Text>Saved Address Screen</Text>
+      <CustomHeader label='Saved Address' />
+      <LocationPicker />
     </View>
   )
 }
@@ -12,9 +15,9 @@ const PersonalInformationScreen = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+    // justifyContent: 'center',
+    // alignItems: 'center'
   }
 });
 
-export default PersonalInformationScreen;
+export default SavedAddressScreen;

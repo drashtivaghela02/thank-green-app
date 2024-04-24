@@ -29,7 +29,7 @@ export const signup = (values) => {
         }
       );
       const resData = await response.json();
-      console.log("resData", resData);
+      console.log("Signup resData", resData);
       dispatch({ type: SIGNUP, signup: values, otpId: resData.data.otpId });
       return resData;
     } catch (error) {
@@ -51,9 +51,9 @@ export const verifyOTP = (values) => {
         'Content-Type': 'multipart/form-data',
       },
     });
-    console.log("response ", response);
+    
     const resData = await response.json();
-    console.log('otpVerify', resData);
+    console.log('otpVerify resData', resData);
     dispatch({ type: VERIFYOTP, resData: resData })
     return resData;
   };
@@ -70,7 +70,7 @@ export const resendOTP = (otpId) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ otpId: otpId }), // Send only the otpId
+        body: JSON.stringify({ otpId: otpId }),
       });
 
       console.log("resend response : ", response);
@@ -98,26 +98,29 @@ export const resendOTP = (otpId) => {
 
 export const loginEmail = (email, password) => {
   return async dispatch => {
-    try{
-    console.log("action values", email, password)
-    const response = await fetch('https://thankgreen.onrender.com/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email: email,
-        password: password
-      })
-    }
-    );
-    console.log("login response", response)
-    const resData = await response.json();
-    console.log("response data", resData);
-    dispatch({ type: LOGINEMAIL, status: resData.status, accessToken: resData.data.accessToken, refreshToken: resData.data.refreshToken });
+    try {
+      const response = await fetch('https://thankgreen.onrender.com/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
+      });
+
+      const resData = await response.json();
+      console.log("Login email response data", resData);
+
+      if (resData.status === 'error' || resData.error) {
+        return resData;
+      }
+
+      dispatch({ type: LOGINEMAIL, status: resData.status, accessToken: resData.data.accessToken, refreshToken: resData.data.refreshToken, password: password });
       return resData;
-    }
-    catch (error) {
+
+    } catch (error) {
       console.error("login error", error)
     }
   };
@@ -126,7 +129,6 @@ export const loginEmail = (email, password) => {
 
 export const loginContact = (contact, password) => {
   return async dispatch => {
-    console.log("action contact values", contact, password)
     const response = await fetch('https://thankgreen.onrender.com/api/auth/login',
       {
         method: 'POST',
@@ -139,13 +141,15 @@ export const loginContact = (contact, password) => {
         })
       }
     );
-    console.log("login response", response)
+
     const resData = await response.json();
-    console.log("response data", resData);
+    console.log("Login Contact response data", resData);
+
     if (resData.status === 'error' || resData.error) {
       return resData;
     }
-    dispatch({ type: LOGINCONTACT, status: resData.status, accessToken: resData.data.accessToken, refreshToken: resData.data.refreshToken });
+
+    dispatch({ type: LOGINCONTACT, status: resData.status, accessToken: resData.data.accessToken, refreshToken: resData.data.refreshToken, password: password });
     return resData;
   };
 };
@@ -153,7 +157,6 @@ export const loginContact = (contact, password) => {
 export const changePassword = (value, accessToken) => {
   return async dispatch => {
     try {
-      // console.log("action contact values", contact, password)
       const response = await fetch('https://thankgreen.onrender.com/api/auth/change-password',
         {
           method: 'PUT',
@@ -164,17 +167,21 @@ export const changePassword = (value, accessToken) => {
           body: JSON.stringify({
             oldPassword: value.oldPassword,
             newPassword: value.newPassword,
-            confirmNewPassword: value.cnewPassword
+            confirmNewPassword: value.newCPassword
           })
         }
       );
-      console.log("change password", response)
       const resData = await response.json();
       console.log("response change data", resData);
-      dispatch({ type: CHANGE_PASSWORD, newPassword: resData });
+      if (resData.status === 'error' || resData.error) {
+        return resData;
+      }
+
+      dispatch({ type: CHANGE_PASSWORD, password: value.newPassword });
       return resData;
+
     } catch (error) {
-      console.error("change password error",error)
+      console.error("change password error", error)
     }
   };
 };

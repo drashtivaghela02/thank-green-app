@@ -26,6 +26,8 @@ import AddNewCardDetailsScreen from '../screens/Payment/AddNewCardDetailsScreen'
 import CategoryList from '../screens/Shop/CategoryList';
 import CheckOutScreen from '../screens/HomePage/CheckOutScreen';
 import FilterScreen from '../screens/Shop/FilterScreen';
+import LocationPicker from '../Components/Location/LocationPicker';
+import Map from '../Components/Location/Map';
 
 const FormStack = createStackNavigator();
 const FormNavigator = () => {
@@ -46,11 +48,24 @@ const AuthNavigator = () => {
         <AuthStack.Screen name="Home" component={TabsNavigator} options={{ headerShown: false }} />
         <AuthStack.Screen name='ReferAFriends' component={ReferAFriendScreen} options={{ headerShown: false , }} />
         <AuthStack.Screen name="SignUp" component={SignUp}  options = {{headerShown: false}}/>
-        <AuthStack.Screen name="ForgetPassword" component={ForgetPassword} options = {{headerShown: false}} />
+        <AuthStack.Screen name="ForgetPassword" component={ForgetPassword} options={{ headerShown: false }} />
+        <AuthStack.Screen name="Map" component={Map } />
       </AuthStack.Navigator>
     </NavigationContainer>
   ); 
 };
+
+const LocationStack = createStackNavigator();
+const LocationScreen = () => {
+  return (
+    <LocationStack.Navigator>
+      <LocationStack.Screen name='SavedAddresses' component={SavedAddressScreen} options = {{headerShown: false}} />
+      {/* <LocationStack.Screen name='Map' component={Map} options = {{headerShown: false}} /> */}
+      
+    </LocationStack.Navigator>
+  )
+}
+
 
 const HomeStack = createStackNavigator();
 const HomeScreen = () => {
@@ -79,19 +94,30 @@ const ShopScreens = () => {
       <ShopCategory.Screen name='CategoryList' component={CategoryList} options={{ headerShown: false }} />
       <ShopCategory.Screen name='Filters' component={FilterScreen} options={{ headerShown: false }} />
   </ShopCategory.Navigator>
-)}
+  )
+}
+
+const ContactUs = createStackNavigator();
+const ContactUsScreens = () => {
+  return (
+  <ContactUs.Navigator>
+    <ContactUs.Screen name='Contact' component={ContactUsScreen} options={{ headerShown: false }} />
+    <ContactUs.Screen name='FAQ' component={FAQScreen} options={{ headerShown: false }} />
+  </ContactUs.Navigator>
+  )
+}
+
 const MyAccountStack = createStackNavigator();
 const MyAccountScreen = () => {
   return (
     <MyAccountStack.Navigator>
       <MyAccountStack.Screen name='MyAccountScreen' component={MyAccount} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='Personal Information' component={PersonalInformationScreen} options={{ headerShown: false }} />
-      <MyAccountStack.Screen name='SavedAddress' component={SavedAddressScreen} options={{ headerShown: false }} />
+      <MyAccountStack.Screen name='SavedAddress' component={LocationScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='Payment' component={PaymentDetailScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='MyOrders' component={MyOrderScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='Favorites' component={FavoritesScreen} options={{ headerShown: false }} />
-      <MyAccountStack.Screen name='ChangePassword' component={ChangePasswordScreen} options={{ headerShown: false }} />
-      
+      <MyAccountStack.Screen name='ChangePassword' component={ChangePasswordScreen} options={{ headerShown: false }} />    
       <MyAccountStack.Screen name='FAQ' component={FAQScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='Logout' component={LogoutScreen} options={{ headerShown: false }} />
     </MyAccountStack.Navigator>
@@ -142,8 +168,8 @@ const TabsNavigator = () => {
       />
 
       <BottomTab.Screen
-        name="Contact"
-        component={ContactUsScreen}
+        name="ContactUS"
+        component={ContactUsScreens}
         options={{
           tabBarLabel: 'Contact',
           tabBarIcon: ({ color }) => (
