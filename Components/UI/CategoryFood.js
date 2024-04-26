@@ -6,7 +6,7 @@ const CategoryFood = ({ text, imagepath, bordercolor, onPress }) => {
         <TouchableOpacity onPress={onPress}>
         <View style={styles.mainscreen}>
             <View style={{...styles.imagePreview,...{ borderWidth: 2, marginHorizontal: 10, borderRadius: 7, borderColor: bordercolor ? bordercolor : 'black' }}}>
-                <Image style={styles.image} source={imagepath} />
+                <Image style={styles.image} source={{uri : imagepath}} />
             </View>
             <View style={styles.textcontainer}>
                 <Text style={{ fontSize: 19, fontWeight: '500' }}>

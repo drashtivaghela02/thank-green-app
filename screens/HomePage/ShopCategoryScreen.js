@@ -47,7 +47,8 @@ const ShopCategoryScreen = props => {
           />
         )} */}
         <View style={{flex:1}}>
-        <ScrollView style={{ height: Dimensions.get('screen').height, width: Dimensions.get('window').width }} contentContainerStyle={styles.categoryScreen}>
+          <ScrollView style={{ height: Dimensions.get('screen').height, width: Dimensions.get('window').width }} contentContainerStyle={styles.categoryScreen}>
+            
             <CategoryFood text='Fruits & Vegetables' bordercolor='#4b6b88' onPress={() => {props.navigation.navigate('CategoryList')}} />
           <CategoryFood text='Eggs, Meat and Fish' bordercolor='#5cb986' />
           <CategoryFood text='Beverages' bordercolor='#f2ae3a' />

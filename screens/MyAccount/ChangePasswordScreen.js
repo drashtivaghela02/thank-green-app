@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Dimensions, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
+import { ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { showMessage } from "react-native-flash-message";
@@ -144,28 +144,11 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: 'white',
     },
-    header: {
-        paddingTop: 40,
-        paddingHorizontal: 20,
-        height: Dimensions.get('window').height * 0.20
-    },
-    heading: {
-        fontWeight: 'bold',
-        fontSize: 25,
-        paddingTop: 8,
-        color: 'white',
-    },
     body: {
         flex: 1,
         justifyContent: 'space-between',
         paddingHorizontal: 30,
         paddingBottom: 30,
-    },
-    bodyText: {
-        textAlign: 'center',
-        fontSize: 17,
-        color: '#b4b4b4',
-        paddingVertical: 20
     },
     label: {
         color: '#b4b4b4',

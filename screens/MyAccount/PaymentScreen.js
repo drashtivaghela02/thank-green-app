@@ -9,9 +9,8 @@ const PaymentScreen = props => {
       <CustomHeader label='Payment' press={() => { props.navigation.goBack() }} />
 
       <View style={styles.body} >
-        {/* <ScrollView> */}
           <View style={styles.logoContainer} >
-            <Image source={require('../../assets/Secure_login-pana.png')} style={styles.logo} />
+            <Image source={require('../../assets/Credit_Card_Payment-cuate.png')} style={styles.logo} />
             <Text style={styles.bodyMainText}>No Saved Cards</Text>
             <Text style={styles.bodyText}>All cards added will be saveed here.</Text>
             <Text style={styles.bodyText}>In case you want to edit them later.</Text>
@@ -20,7 +19,6 @@ const PaymentScreen = props => {
           <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('AddNewCard') }}>
             <Text style={styles.verifyButton}>ADD NEW CARD</Text>
           </TouchableOpacity>
-        {/* </ScrollView> */}
       </View>
     </View>
   );
@@ -33,47 +31,33 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-  header: {
-    paddingTop: 40,
-    paddingHorizontal: 20,
-    height: Dimensions.get('window').height * 0.20
-  },
-  heading: {
-    fontWeight: 'bold',
-    fontSize: 25,
-    paddingTop: 8,
-    color: 'white',
-  },
-  subHeading: {
-    paddingTop: 4,
-    color: 'white',
-    fontWeight: 'bold',
-  },
   body: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 30,
+      justifyContent: 'space-between',
+      paddingHorizontal: 30,
+      paddingBottom: 30,
   },
   bodyMainText: {
     textAlign: 'center',
     fontSize: 20,
+    fontWeight: '600',
     color: 'black',
-    paddingVertical: 20
+    paddingVertical: 10
   },
   logoContainer: {
+    justifyContent:'center',
     alignItems: 'center',
-    marginVertical: 30
   },
   logo: {
-    width: 280,
-    height: 280
+    width: 350,
+    height: 350
   },
   bodyText: {
     textAlign: 'center',
-    fontSize: 17,
+    fontSize: 15,
+    fontWeight: '600',
     color: '#b4b4b4',
-    paddingVertical: 20
+    // paddingVertical: 20
 
 
   },
@@ -89,7 +73,7 @@ const styles = StyleSheet.create({
   },
   verify: {
     marginTop: 40,
-    marginBottom: 60,
+    // marginBottom: 60,
     paddingVertical: 10,
     paddingHorizontal: 20,
     backgroundColor: '#2c843e',
@@ -100,7 +84,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 20,
     alignSelf: 'center',
-    fontWeight: '500'
+    fontWeight: '400'
 
   },
   submit: {

@@ -4,7 +4,7 @@ import { TouchableOpacity } from "react-native";
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import CustomHeader from "../../Components/UI/CustomHeader";
 
-const CheckOutScreen = props => {
+const OrderDetails = props => {
   return (
     <View style={styles.container}>
       <CustomHeader label='Cart' />
@@ -14,17 +14,17 @@ const CheckOutScreen = props => {
         <View style={{borderColor: 'white', borderRadius: 20, padding: 20, gap: 10, }}>
           
         <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-          <Text>Sub Total</Text>
+          <Text>Order Dtae : </Text>
           <Text>$00.00</Text>
         </View>
 
         <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-          <Text>Deliver Charges</Text>
+          <Text>Order Number : </Text>
           <Text>$00.00</Text>
         </View>
 
         <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-          <Text style={{fontWeight:'bold'}}>Total Amount</Text>
+          <Text style={{fontWeight:'bold'}}>Order Status</Text>
           <Text style={{fontWeight:'bold'}}>$00.00</Text>
         </View>
         </View>
@@ -32,11 +32,11 @@ const CheckOutScreen = props => {
       
         <View>
           <TouchableOpacity style={styles.verify} onPress={() => { console.log('Pressed'); }}>
-            <Text style={styles.verifyButton}>CHECKOUT</Text>
+            <Text style={styles.verifyButton}>TRACK ORDER</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.verify1} onPress={() => { console.log('Pressed'); }}>
-            <Text style={styles.verifyButton1}>Continue Shopping</Text>
+            <Text style={styles.verifyButton1}>Cancel Order</Text>
           </TouchableOpacity>
 
         </View>
@@ -113,4 +113,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CheckOutScreen;
+export default OrderDetails;
