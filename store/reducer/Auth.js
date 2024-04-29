@@ -16,7 +16,7 @@ const initialState = {
   statusCode: null,
   accessToken: null,
   refreshToken: null,
-  userId: null
+  userId: null,
 };
 
 export default (state = initialState, action) => {

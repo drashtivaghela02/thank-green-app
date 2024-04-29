@@ -87,6 +87,9 @@ export const resendOTP = (otpId) => {
           { text: 'OK', onPress: () => console.log('OK Pressed') },
         ])
       }
+      else if (resData.status === 'success') {
+        Alert.alert('Success!', resData.msg)
+      }
       return resData;
     } catch (error) {
       console.error('Resend OTP error:', error);
@@ -121,7 +124,15 @@ export const loginEmail = (email, password) => {
       return resData;
 
     } catch (error) {
-      console.error("login error", error)
+      Alert.alert('Alert', error, [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ])
+      // console.error("login error", error)
     }
   };
 };

@@ -11,10 +11,37 @@ import * as orderAction from '../../store/actions/Orders';
 
 
 function CurrentOrderScreen() {
+  const [isLoading, setIsLoading] = React.useState(false); // Set an initial value
+  const [currentOrders, setCurrentOrders] = React.useState([]); // State to hold past orders
+  const accessToken = useSelector(state => state.auth.accessToken);
+  const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    setIsLoading(true); // Set loading state to true before fetching data
+    dispatch(orderAction.getOrderInfo(accessToken))
+      .then((response) => {
+        setIsLoading(false); // Set loading state to false after fetching data
+        setCurrentOrders(response.data.currentOrders); // Set fetched data to state
+        console.log(response.data.currentOrders);
+      })
+      .catch(error => {
+        setIsLoading(false); // Set loading state to false in case of error
+        console.error("Error fetching user information:", error);
+      });
+  }, [accessToken]);
+
+  console.log("currentOrders ==>", currentOrders); // Logging pastOrders instead of isLoading
+
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Current Order!</Text>
-    </View>
+    <FlatList 
+    data={currentOrders} // Passing curent order as data
+    keyExtractor={item => item.order_number} // Adjust keyExtractor as per your data structure
+    renderItem={itemData => 
+      <PastOrderScreen
+        param={itemData.item}
+      />
+    }
+  />
   );
 }
 
@@ -46,10 +73,7 @@ const PastOrderScreens = () => {
       keyExtractor={item => item.order_number} // Adjust keyExtractor as per your data structure
       renderItem={itemData => 
         <PastOrderScreen
-          amount={itemData.item.total_amount}
-          order_status={itemData.item.order_status}
-          total_quantity={itemData.item.total_quantity}
-          delivery_on={itemData.item.delivery_on}
+          param={itemData.item}
         />
       }
     />

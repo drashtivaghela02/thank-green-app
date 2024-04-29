@@ -60,7 +60,7 @@ const LocationScreen = () => {
   return (
     <LocationStack.Navigator>
       <LocationStack.Screen name='SavedAddresses' component={SavedAddressScreen} options = {{headerShown: false}} />
-      {/* <LocationStack.Screen name='Map' component={Map} options = {{headerShown: false}} /> */}
+      <LocationStack.Screen name='LocationPicker' component={LocationPicker} options = {{headerShown: false}} />
       
     </LocationStack.Navigator>
   )

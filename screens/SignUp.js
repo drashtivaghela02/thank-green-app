@@ -82,10 +82,13 @@ const SignUp = props => {
                 console.log("Staet sign up =====> ", state)
                 if (state.status == 'success') {
                     setIsLoading(false)
+                    Alert.alert('Success!!', state.msg, [
+                        {text: 'OK', onPress: () =>  props.navigation.navigate('VerificationCode')},
+                    ])
                     props.navigation.navigate('VerificationCode');
                 }
                 else {
-                    Alert.alert('Alert', state.msg || state.error , [
+                    Alert.alert('Alert', state.msg || state.error || error , [
                         {
                           text: 'Cancel',
                           onPress: () => console.log('Cancel Pressed'),
@@ -178,7 +181,7 @@ const SignUp = props => {
                                         textContainerStyle={[contact.countryCodeInput, contact.phoneNumberInput]}
                                         textInputStyle={{color: 'white'}}
                                         codeTextStyle={{color: 'white'}}
-                                        flagButtonStyle ={{olor: 'white'}}
+                                        flagButtonStyle ={{color: 'white'}}
                                     />
                                 </View>
                                 {touched.phoneNumber && errors.phoneNumber ? (

@@ -1,44 +1,50 @@
-import React from 'react';
-import { Image, StyleSheet, Text, View, Alert, Button } from 'react-native';
-import { getCurrentPositionAsync, useForegroundPermissions, PermissionStatus } from 'expo-location';
+import React, { useEffect, useState } from 'react';
+import { Alert, Button, StyleSheet, Text, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { getCurrentPositionAsync, useForegroundPermissions, PermissionStatus } from 'expo-location';
+import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
+import CustomHeader from '../UI/CustomHeader';
 
 function LocationPicker() {
-    const [pickedLocation, setPickedLocation] = useState();
-
+    const [pickedLocation, setPickedLocation] = useState(null);
     const navigation = useNavigation();
+    const route = useRoute();
+    const isFocused = useIsFocused();
     const [locationPermissionInformation, requestPermission] = useForegroundPermissions();
 
-    async function verifyPermissions() {
-        if (locationPermissionInformation.status === PermissionStatus.UNDETERMINED) {
-            const permissionResponse = await requestPermission();
-            return permissionResponse.granted;
+    useEffect(() => {
+        console.log(route)
+        if (isFocused && route.params && route.params.pickedLat !== undefined && route.params.pickedLng !== undefined) {
+            const mapPickedLocation = {
+                latitude: route.params.pickedLat,
+                longitude: route.params.pickedLng
+            };
+            setPickedLocation(mapPickedLocation);
         }
-        if (locationPermissionInformation.status === PermissionStatus.DENIED) {
-            Alert.alert(
-                'Insufficient Permissions!',
-                'You need to grant location permissions to use this app.'
-            );
-            return false;
-        }
-        return true;
-    }
+    }, [isFocused, route]);
 
-    async function getLocationHandler() {
-        const hasPermission = await verifyPermissions();
-        if (!hasPermission) {
-            return;
+    const getLocationHandler = async () => {
+        const { status } = locationPermissionInformation;
+        if (status !== PermissionStatus.GRANTED) {
+            const permissionResponse = await requestPermission();
+            if (permissionResponse.status !== PermissionStatus.GRANTED) {
+                Alert.alert(
+                    'Insufficient Permissions!',
+                    'You need to grant location permissions to use this app.'
+                );
+                return;
+            }
         }
         const location = await getCurrentPositionAsync({});
-        console.log(location);
-        setPickedLocation({ latitude: location.coords.latitude, longitude: location.coords.longitude });
-    }
+        setPickedLocation({
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude
+        });
+    };
 
-    function pickOnMapHandler() {
+    const pickOnMapHandler = () => {
         navigation.navigate('Map');
-    }
+    };
 
     let mapPreview = <Text>No Location Picked Yet</Text>;
 
@@ -50,7 +56,7 @@ function LocationPicker() {
                     latitude: pickedLocation.latitude,
                     longitude: pickedLocation.longitude,
                     latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
+                    longitudeDelta: 0.0421
                 }}
             >
                 <Marker coordinate={pickedLocation} />
@@ -60,6 +66,7 @@ function LocationPicker() {
 
     return (
         <View>
+            <CustomHeader label='Saved Address' press={() => navigation.goBack()} />
             <View style={styles.mapPreview}>{mapPreview}</View>
             <View style={styles.actions}>
                 <Button onPress={getLocationHandler} title='Locate User' />

@@ -4,7 +4,7 @@ import { TouchableOpacity } from "react-native";
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import CustomHeader from "../../Components/UI/CustomHeader";
 
-const OrderDetails = props => {
+const OrderDetails = () => {
   return (
     <View style={styles.container}>
       <CustomHeader label='Cart' />

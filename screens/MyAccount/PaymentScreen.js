@@ -1,5 +1,3 @@
-import { AntDesign } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Button, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity } from "react-native";
 import CustomHeader from '../../Components/UI/CustomHeader';
 
@@ -58,18 +56,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#b4b4b4',
     // paddingVertical: 20
-
-
-  },
-  email: {
-    color: '#b4b4b4',
-    fontSize: 16,
-  },
-  textInput: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#b4b4b4',
-    fontSize: 16,
-    paddingVertical: 6
   },
   verify: {
     marginTop: 40,
@@ -87,30 +73,6 @@ const styles = StyleSheet.create({
     fontWeight: '400'
 
   },
-  submit: {
-    marginVertical: 20
-  },
-  submitButton: {
-    borderRadius: 10
-  },
-  orData: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20
-  },
-  lines: {
-    backgroundColor: 'white',
-    height: 2,
-    flex: 1
-  },
-  GoogleLogo: {
-    marginTop: 15,
-    width: 40,
-    height: 40
-  },
-  FacebookLogo: {
-    width: 70,
-    height: 70
-  },
+
+
 });

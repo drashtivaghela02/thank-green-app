@@ -24,8 +24,7 @@ const VerificationCode = props => {
     const statusOfOtp = useSelector(state => state.auth.signUpData);
 
     const state = useSelector(state => state.auth.otpID);
-    // console.log("state reducer", statusOfOtp.profileImage)
-    console.log("state reducer", state.data.otpId)
+    console.log("state reducer", state)
 
     const handleOTPText = () => {
         setError(null);
@@ -42,7 +41,7 @@ const VerificationCode = props => {
         formData.append('countryCode', statusOfOtp.countryCode);
         formData.append('phoneNumber', statusOfOtp.phoneNumber);
         formData.append('password', statusOfOtp.password);
-        formData.append('otpId', state.data.otpId);
+        formData.append('otpId', state);
         formData.append('otp', otp);
 
         try {
@@ -52,7 +51,7 @@ const VerificationCode = props => {
                     props.navigation.navigate('FormNavigator');
                 }
                 else {
-                    Alert.alert('Alert', state.msg || state.error, [
+                    Alert.alert('Alert', state.msg || state.error , [
                         {
                             text: 'Cancel',
                             onPress: () => console.log('Cancel Pressed'),
@@ -65,6 +64,14 @@ const VerificationCode = props => {
             })
         } catch (err) {
             setError(err.message);
+            Alert.alert('Alert', err, [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ])
             setIsLoading(false);
         }
 
@@ -101,7 +108,7 @@ const VerificationCode = props => {
 
                 <View style={styles.resendContainer}>
                     <Text>Didn't Receive code?</Text>
-                    <TouchableOpacity onPress={() => dispatch(authActions.resendOTP(state.data.otpId))}>
+                    <TouchableOpacity onPress={() => dispatch(authActions.resendOTP(state))}>
                     {/* <TouchableOpacity onPress={resendOTPHandler}> */}
 
                         <Text style={styles.resendText}>Resend</Text>
