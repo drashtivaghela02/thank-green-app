@@ -49,7 +49,9 @@ const AuthNavigator = () => {
         <AuthStack.Screen name='ReferAFriends' component={ReferAFriendScreen} options={{ headerShown: false , }} />
         <AuthStack.Screen name="SignUp" component={SignUp}  options = {{headerShown: false}}/>
         <AuthStack.Screen name="ForgetPassword" component={ForgetPassword} options={{ headerShown: false }} />
-        <AuthStack.Screen name="Map" component={Map } />
+        <AuthStack.Screen name="Map" component={Map} options={{ headerShown: false }} />
+      <AuthStack.Screen name='LocationPicker' component={LocationPicker} options = {{headerShown: false}} />
+        
       </AuthStack.Navigator>
     </NavigationContainer>
   ); 
@@ -60,7 +62,6 @@ const LocationScreen = () => {
   return (
     <LocationStack.Navigator>
       <LocationStack.Screen name='SavedAddresses' component={SavedAddressScreen} options = {{headerShown: false}} />
-      <LocationStack.Screen name='LocationPicker' component={LocationPicker} options = {{headerShown: false}} />
       
     </LocationStack.Navigator>
   )

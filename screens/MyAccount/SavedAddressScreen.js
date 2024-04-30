@@ -1,27 +1,68 @@
 import { Button, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity } from "react-native";
 import CustomHeader from '../../Components/UI/CustomHeader';
+import { FlatList } from "react-native-gesture-handler";
+import AddressCard from "../../Components/UI/AddressCard";
+import { useDispatch, useSelector } from 'react-redux';
+import * as userAction from '../../store/actions/User';
+import React, { useEffect } from "react";
 
 const SavedAddressScreen = props => {
 
+  const [isLoading, setIsLoading] = React.useState(false); // Set an initial value
+  const [address, setAddress] = React.useState([]); // State to hold past orders
+  const accessToken = useSelector(state => state.auth.accessToken);
+  const dispatch = useDispatch();
 
+  useEffect(() => {
+        setIsLoading(true); // Set loading state to true before fetching data
+        dispatch(userAction.getAddress(accessToken))
+          .then((response) => {
+            setIsLoading(false); // Set loading state to false after fetching data
+            setAddress(response.data); // Set fetched data to state
+            console.log(response.data);
+          })
+          .catch(error => {
+            setIsLoading(false); // Set loading state to false in case of error
+            console.error("Error fetching user information:", error);
+          });
+  }, [accessToken]);
+
+  console.log("address ==>", address); 
+
+
+
+
+  let productPreview = (<View style={styles.logoContainer} >
+    <Image source={require('../../assets/Navigation-pana.png')} style={styles.logo} />
+    <Text style={styles.bodyMainText}>No Saved Addresses</Text>
+    <Text style={styles.bodyText}>All addresses added will be saveed here.</Text>
+    <Text style={styles.bodyText}>In case you want to edit them later.</Text>
+  </View>)
+
+  productPreview = (
+      <FlatList
+        data={address} // Passing curent order as data
+        keyExtractor={item => item.id} // Adjust keyExtractor as per your data structure
+        renderItem={itemData =>
+          <AddressCard
+            param={itemData.item}
+          />}
+      />
+  )
 
   return (
     <View style={styles.container} >
       <CustomHeader label='Saved Address' press={() => { props.navigation.goBack() }} />
 
       <View style={styles.body} >
+        <View style={{flex:1, paddingTop: 20}}>
 
-          <View style={styles.logoContainer} >
-            <Image source={require('../../assets/Navigation-pana.png')} style={styles.logo} />
-            <Text style={styles.bodyMainText}>No Saved Addresses</Text>
-            <Text style={styles.bodyText}>All addresses added will be saveed here.</Text>
-            <Text style={styles.bodyText}>In case you want to edit them later.</Text>
-          </View>
+        {productPreview}
+        </View>
 
-          <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('LocationPicker') }}>
-            <Text style={styles.verifyButton}>ADD NEW ADDRESS</Text>
+        <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('LocationPicker') }}>
+          <Text style={styles.verifyButton}>ADD NEW ADDRESS</Text>
         </TouchableOpacity>
-        {/* <LocationPicker /> */}
       </View>
     </View>
   );
@@ -36,9 +77,9 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
-      justifyContent: 'space-between',
-      paddingHorizontal: 30,
-      paddingBottom: 30,
+    justifyContent: 'center',
+    paddingHorizontal: 30,
+    paddingBottom: 20,
   },
   bodyMainText: {
     textAlign: 'center',
@@ -48,7 +89,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10
   },
   logoContainer: {
-    justifyContent:'center',
+    justifyContent: 'center',
     alignItems: 'center'
   },
   logo: {
@@ -63,8 +104,7 @@ const styles = StyleSheet.create({
     // paddingVertical: 20
   },
   verify: {
-    marginTop: 40,
-    // marginBottom: 60,
+    marginTop: 10,
     paddingVertical: 10,
     paddingHorizontal: 20,
     backgroundColor: '#2c843e',

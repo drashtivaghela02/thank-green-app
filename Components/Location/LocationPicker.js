@@ -1,50 +1,36 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, StyleSheet, Text, View } from 'react-native';
+import { Alert, Button, StyleSheet, Text, Touchable, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { getCurrentPositionAsync, useForegroundPermissions, PermissionStatus } from 'expo-location';
-import { useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import CustomHeader from '../UI/CustomHeader';
+import { Dimensions } from 'react-native';
+import { AntDesign, Feather } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import AddressForm from '../Form/AddressForm';
 
-function LocationPicker() {
+function LocationPicker({ navigation }) {
     const [pickedLocation, setPickedLocation] = useState(null);
-    const navigation = useNavigation();
-    const route = useRoute();
-    const isFocused = useIsFocused();
     const [locationPermissionInformation, requestPermission] = useForegroundPermissions();
 
     useEffect(() => {
-        console.log(route)
-        if (isFocused && route.params && route.params.pickedLat !== undefined && route.params.pickedLng !== undefined) {
-            const mapPickedLocation = {
-                latitude: route.params.pickedLat,
-                longitude: route.params.pickedLng
-            };
-            setPickedLocation(mapPickedLocation);
-        }
-    }, [isFocused, route]);
+        console.log("Picked Location Updated:", pickedLocation);
+    }, [pickedLocation]);
 
-    const getLocationHandler = async () => {
-        const { status } = locationPermissionInformation;
-        if (status !== PermissionStatus.GRANTED) {
-            const permissionResponse = await requestPermission();
-            if (permissionResponse.status !== PermissionStatus.GRANTED) {
-                Alert.alert(
-                    'Insufficient Permissions!',
-                    'You need to grant location permissions to use this app.'
-                );
-                return;
-            }
-        }
-        const location = await getCurrentPositionAsync({});
-        setPickedLocation({
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude
-        });
-    };
+
 
     const pickOnMapHandler = () => {
-        navigation.navigate('Map');
-    };
+        navigation.navigate('Map', {
+            onGoBack: (data) => {
+                // Callback function to handle data from ScreenB
+                setPickedLocation({
+                    latitude: data.latitude,
+                    longitude: data.longitude
+                });
+                console.log("Location picker screen back data", data)
+                console.log(pickedLocation);
+            },
+        });
+    }
 
     let mapPreview = <Text>No Location Picked Yet</Text>;
 
@@ -63,14 +49,35 @@ function LocationPicker() {
             </MapView>
         );
     }
+    else {
+        mapPreview = <Text>No Location Picked Yet</Text>;
+    }
+
 
     return (
-        <View>
-            <CustomHeader label='Saved Address' press={() => navigation.goBack()} />
+        <View style={styles.container}>
+            <LinearGradient
+                colors={['#2c843e', '#1e4c5e']}
+                start={{ x: 0.5, y: 0 }}
+                end={{ x: 0.6, y: 1 }}
+            >
+                <View style={styles.header}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <AntDesign name="arrowleft" size={28} color='white' onPress={() => { navigation.goBack() }} />
+                        <Feather name="search" size={24} color="white" onPress={pickOnMapHandler} />
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, }}>
+                        <Text style={styles.heading}>Add New Address</Text>
+                    </View>
+                </View>
+            </LinearGradient>
+
             <View style={styles.mapPreview}>{mapPreview}</View>
-            <View style={styles.actions}>
-                <Button onPress={getLocationHandler} title='Locate User' />
-                <Button onPress={pickOnMapHandler} title='Pick on Map' />
+            <View style={styles.body}>
+                    <AddressForm /> 
+                <View style={styles.actions}>
+                </View>
+
             </View>
         </View>
     );
@@ -79,15 +86,41 @@ function LocationPicker() {
 export default LocationPicker;
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#1e4c5e',
+    },
+    header: {
+        paddingTop: 40,
+        paddingHorizontal: 20,
+        height: Dimensions.get('window').height * 0.17
+    },
+    heading: {
+        fontWeight: '500',
+        fontSize: 30,
+        color: 'white',
+    },
+    body: {
+        flex: 0.6,
+        top: Dimensions.get('window').height * 0.34,
+        borderTopLeftRadius: 40,
+        borderTopRightRadius: 40,
+        backgroundColor: 'white',
+        paddingHorizontal: 20,
+        position: 'relative',
+
+    },
     mapPreview: {
+        top: Dimensions.get('window').height * 0.17,
+        bottom: Dimensions.get('window').height * 0.37,
         width: '100%',
-        height: 200,
-        marginVertical: 8,
+        height: 300,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'white',
+        backgroundColor: '#f2f2f2',
         borderRadius: 4,
         overflow: 'hidden',
+        position: 'absolute'
     },
     actions: {
         flexDirection: 'row',
