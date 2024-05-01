@@ -1,4 +1,5 @@
 const GET_ORDER_INFO = 'GET_ORDER_INFO';
+const RATE_ORDER = 'RATE_ORDER';
 
 export const getOrderInfo = (accessToken) => {
 
@@ -48,3 +49,37 @@ export const getOrderInfo = (accessToken) => {
 //     }
 //   }
 // }
+
+
+export const rateOrder = (value, accessToken) => {
+
+  return async dispatch => {
+    try {
+      const response = await fetch('https://thankgreen.onrender.com/api/rate-order',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + accessToken,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            order_id: value.order_id,
+            rating: value.rating,
+            feedback: value.feedback
+        })
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Failed to rate order');
+      }
+      const resData = await response.json();
+      console.log("Rate orders resData", resData);
+      dispatch({ type: RATE_ORDER, data: resData });
+      return resData;
+    } catch (error) {
+      console.error("Rate orders error", error);
+      // Optionally dispatch an action to update the state with the error
+      dispatch({ type: RATE_ORDER, error: error.message });
+    }
+  };
+};

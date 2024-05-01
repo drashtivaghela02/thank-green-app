@@ -6,7 +6,6 @@ import * as userAction from '../../store/actions/User';
 import { ActivityIndicator } from "react-native-paper";
 import { Formik } from "formik";
 import * as Yup from 'yup';
-import { showMessage } from "react-native-flash-message";
 import { RadioButton } from 'react-native-paper';
 
 
@@ -14,27 +13,8 @@ const AddressForm = props => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
   const [tag, setTag] = useState(null)
-  const [resData, setResdata] = useState();
   const accessToken = useSelector(state => state.auth.accessToken)
   const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   dispatch(userAction.getInfo(accessToken))
-  //     .then((response) => {
-  //       setIsLoading(false);
-  //       setResdata(response?.data[0]);
-  //       setName(response?.data[0]?.name);
-  //       setEmail(response?.data[0]?.email);
-  //       setContact((response?.data[0].phone_number)?.toString());
-  //     })
-  //     .catch(error => {
-  //       setIsLoading(false);
-  //       console.error("Error fetching user information:", error);
-  //     });
-  // }, [accessToken]);
-
-
 
   const Validation = Yup.object({
     address: Yup.string()
@@ -43,11 +23,10 @@ const AddressForm = props => {
       .matches(/^\d{6}$/, 'Invalid Indian ZIP code')
       .required('*Zip Code is Required'),
     address_type: Yup.string()
-      // .required('*Select Address type')
+      .required('*Select Address type')
   });
 
   const SubmitHandler = (values) => {
-
     setError(null);
     setIsLoading(true);
 
@@ -58,7 +37,7 @@ const AddressForm = props => {
       "zip_code": "395009",
       "latitude": "10.2",
       "longitude": "10.2"
-  }
+    }
     try {
       dispatch(userAction.addNewAddress(val, accessToken)).then((state) => {
         console.log("Staet sign up =====> ", state)
@@ -79,8 +58,6 @@ const AddressForm = props => {
         }
       }
       )
-
-
     } catch (err) {
       setError(err.message);
       setIsLoading(false);
@@ -90,13 +67,12 @@ const AddressForm = props => {
 
     <View style={{ flex: 1 }}>
       <Formik
-        enableReinitialize={true}
         initialValues={{ address: '', zip_code: '', address_type: '', landmark: '' }}
         validationSchema={Validation}
         onSubmit={SubmitHandler}
       >
         {({ handleChange, handleBlur, handleSubmit, values, errors, touched, dirty }) => (
-          <ScrollView contentContainerStyle={styles.body}>
+          <ScrollView contentContainerStyle={styles.body1}>
             <View>
               <Text style={[styles.label]} >Street Name, Flat no.,Society/Office Name</Text>
               <TextInput
@@ -134,20 +110,20 @@ const AddressForm = props => {
               <Text style={styles.sheetHeader}>Tag this address as:</Text>
               <RadioButton.Group onValueChange={newValue => {
                 setTag(newValue)
-              }} value={values.address_type}
+              }} value={values.address_type = tag}
               >
                 <View style={{ flexDirection: 'row', left: -10, gap: 20 }}>
                   <View style={styles.radio_button}>
-                    <RadioButton value="home" color='#2c843e' />
+                    <RadioButton value="Home" color='#2c843e' />
                     <Text style={styles.sheetItems}>Home</Text>
                   </View>
 
                   <View style={styles.radio_button}>
-                    <RadioButton value="work" color='#2c843e' />
+                    <RadioButton value="Work" color='#2c843e' />
                     <Text style={styles.sheetItems}>Work</Text>
                   </View>
                   <View style={styles.radio_button}>
-                    <RadioButton value="other" color='#2c843e' />
+                    <RadioButton value="Other" color='#2c843e' />
                     <Text style={styles.sheetItems}>Other</Text>
                   </View>
 
@@ -173,10 +149,6 @@ const AddressForm = props => {
 export default AddressForm;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
   sheetHeader: {
     fontWeight: '600',
     fontSize: 16,
@@ -187,7 +159,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 5
   },
-  body: {
+  body1: {
     flex: 1,
     justifyContent: 'space-between',
     paddingHorizontal: 10,

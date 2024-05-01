@@ -1,10 +1,11 @@
-import { Button, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity } from "react-native";
+import { Button, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Alert } from "react-native";
 import CustomHeader from '../../Components/UI/CustomHeader';
 import { FlatList } from "react-native-gesture-handler";
 import AddressCard from "../../Components/UI/AddressCard";
 import { useDispatch, useSelector } from 'react-redux';
 import * as userAction from '../../store/actions/User';
 import React, { useEffect } from "react";
+import { ActivityIndicator } from "react-native-paper";
 
 const SavedAddressScreen = props => {
 
@@ -14,51 +15,65 @@ const SavedAddressScreen = props => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-        setIsLoading(true); // Set loading state to true before fetching data
-        dispatch(userAction.getAddress(accessToken))
-          .then((response) => {
-            setIsLoading(false); // Set loading state to false after fetching data
-            setAddress(response.data); // Set fetched data to state
-            console.log(response.data);
-          })
-          .catch(error => {
-            setIsLoading(false); // Set loading state to false in case of error
-            console.error("Error fetching user information:", error);
-          });
+    setIsLoading(true); // Set loading state to true before fetching data
+    dispatch(userAction.getAddress(accessToken))
+      .then((response) => {
+        setIsLoading(false); // Set loading state to false after fetching data
+        setAddress(response.data); // Set fetched data to state
+        console.log(response.data);
+      })
+      .catch(error => {
+        setIsLoading(false); // Set loading state to false in case of error
+        Alert.alert("Error fetching user information:", error);
+      });
   }, [accessToken]);
 
-  console.log("address ==>", address); 
+  console.log("address ==>", address);
+
+  const editAddressHandler = (data) => {
+    console.log("id in main screen", data)
+    props.navigation.navigate('LocationPicker', {addressData: data})
+  }
 
 
 
 
-  let productPreview = (<View style={styles.logoContainer} >
-    <Image source={require('../../assets/Navigation-pana.png')} style={styles.logo} />
-    <Text style={styles.bodyMainText}>No Saved Addresses</Text>
-    <Text style={styles.bodyText}>All addresses added will be saveed here.</Text>
-    <Text style={styles.bodyText}>In case you want to edit them later.</Text>
-  </View>)
+  let productPreview;
 
-  productPreview = (
+  if (address.length === 0) {
+
+    productPreview = (<View style={styles.logoContainer} >
+      <Image source={require('../../assets/Navigation-pana.png')} style={styles.logo} />
+      <Text style={styles.bodyMainText}>No Saved Addresses</Text>
+      <Text style={styles.bodyText}>All addresses added will be saveed here.</Text>
+      <Text style={styles.bodyText}>In case you want to edit them later.</Text>
+    </View>)
+  }
+  else {
+    productPreview = (
       <FlatList
         data={address} // Passing curent order as data
         keyExtractor={item => item.id} // Adjust keyExtractor as per your data structure
         renderItem={itemData =>
           <AddressCard
             param={itemData.item}
+            onEdit={editAddressHandler}
           />}
       />
-  )
+    )
+  }
 
   return (
     <View style={styles.container} >
       <CustomHeader label='Saved Address' press={() => { props.navigation.goBack() }} />
 
       <View style={styles.body} >
-        <View style={{flex:1, paddingTop: 20}}>
-
-        {productPreview}
-        </View>
+        {isLoading
+          ?
+          <ActivityIndicator style={styles.body} color="#2c843e" size={"large"} />
+          :
+          (<View style={{ flex: 1, paddingTop: 20 }}>{productPreview}</View>)
+        }
 
         <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('LocationPicker') }}>
           <Text style={styles.verifyButton}>ADD NEW ADDRESS</Text>
@@ -104,6 +119,7 @@ const styles = StyleSheet.create({
     // paddingVertical: 20
   },
   verify: {
+    justifyContent: 'flex-end',
     marginTop: 10,
     paddingVertical: 10,
     paddingHorizontal: 20,

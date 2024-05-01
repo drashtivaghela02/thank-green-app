@@ -108,11 +108,11 @@ export const addNewAddress = (values, accessToken) => {
         }
       );
       const resData = await response.json();
-      console.log("Signup resData", resData);
+      console.log("add new address resData", resData);
       dispatch({ type: ADD_NEW_ADDRESS });
       return resData;
     } catch (error) {
-      console.error("Sign up error", error);
+      console.error("add new address error", error);
     }
   };
 };
@@ -121,7 +121,7 @@ export const addNewAddress = (values, accessToken) => {
 
 
 export const deleteAddress = (addressId, accessToken) => {
-console.log("action a data:  >>>>>>",addressId, accessToken)
+console.log("action a data:  >>>>>>", addressId, accessToken)
   return async dispatch => {
     try {
       console.log('sdfugy', addressId);

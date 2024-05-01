@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import CustomHeader from "../../Components/UI/CustomHeader";
@@ -31,7 +31,9 @@ function CurrentOrderScreen() {
   }, [accessToken]);
 
   console.log("currentOrders ==>", currentOrders); // Logging pastOrders instead of isLoading
-
+  if (currentOrders.length === 0) {
+  <ActivityIndicator size='large' color />
+}
   return (
     <FlatList 
     data={currentOrders} // Passing curent order as data
@@ -68,6 +70,7 @@ const PastOrderScreens = () => {
   console.log("pastOrders ==>", pastOrders); // Logging pastOrders instead of isLoading
 
   return (
+    // <PastOrderScreen />
     <FlatList 
       data={pastOrders} // Passing pastOrders as data
       keyExtractor={item => item.order_number} // Adjust keyExtractor as per your data structure

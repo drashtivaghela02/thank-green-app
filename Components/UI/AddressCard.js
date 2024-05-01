@@ -1,12 +1,14 @@
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useRef, useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Divider } from "react-native-paper";
 import RBSheet from "react-native-raw-bottom-sheet";
+import * as userAction from '../../store/actions/User';
+
 import { useDispatch, useSelector } from "react-redux";
 
 
-const PastOrderScreen = (param) => {
+const AddressCard = (param) => {
   data = param.param
   const accessToken = useSelector(state => state.auth.accessToken)
   const dispatch = useDispatch();
@@ -14,11 +16,15 @@ const PastOrderScreen = (param) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
   console.log("ARE you sure? ", data.id)
+  const Id = data.id
+
 
   const deleteHandler = () => { 
-    console.log(data.id)
+    console.log(Id, accessToken)
+    setIsLoading(true)
     try {
-      dispatch(userAction.deleteAddress(data.id, accessToken)).then((state) => {
+      dispatch(userAction.deleteAddress(Id, accessToken))
+        .then((state) => {
         console.log("Staet sign up =====> ", state)
         if (state.status == 'success') {
           setIsLoading(false)
@@ -26,19 +32,13 @@ const PastOrderScreen = (param) => {
         }
         else {
           Alert.alert('Alert', state.msg || state.error || error, [
-            {
-              text: 'Cancel',
-              onPress: () => console.log('Cancel Pressed'),
-              style: 'cancel',
-            },
+            {text: 'Cancel',style: 'cancel'},
             { text: 'OK', onPress: () => console.log('OK Pressed') },
           ])
           setIsLoading(false)
         }
       }
       )
-
-
     } catch (err) {
       setError(err.message);
       setIsLoading(false);
@@ -61,13 +61,16 @@ const PastOrderScreen = (param) => {
           </View>
 
           <View style={{ flexDirection: 'row', gap: 20, paddingHorizontal: 10 }}>
-            <TouchableOpacity  >
+            <TouchableOpacity onPress={()=>param.onEdit(data)}  >
               <Text>EDIT</Text>
             </TouchableOpacity>
 
             <Text>|</Text>
-            <TouchableOpacity onPress={deleteHandler} >
-              <Text>DELETE</Text>
+            <TouchableOpacity onPress={() => {
+              Alert.alert("Are you sure?","You want to delete address...",[{text:'cancel', style : 'cancel'}, {text: 'Ok', onPress: deleteHandler}])
+
+            }} >
+              {isLoading ? <ActivityIndicator size={22} color="#2c843e" />  :<Text>DELETE</Text>}
             </TouchableOpacity>
           </View>
 
@@ -80,7 +83,7 @@ const PastOrderScreen = (param) => {
   );
 }
 
-export default PastOrderScreen;
+export default AddressCard;
 
 const styles = StyleSheet.create({
 

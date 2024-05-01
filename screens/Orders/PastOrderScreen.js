@@ -1,14 +1,79 @@
-import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
+import { AntDesign, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { useRef } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Divider } from "react-native-paper";
+import { useState } from "react";
+import { Image, StyleSheet, Text, TouchableOpacity, View, TextInput, Alert } from "react-native";
+import { ActivityIndicator, Divider } from "react-native-paper";
 import RBSheet from "react-native-raw-bottom-sheet";
+import { useDispatch, useSelector } from "react-redux";
+import * as orderAction from '../../store/actions/Orders';
 
 
 const PastOrderScreen = (param) => {
   data = param.param
   console.log("ARE you sure? ", data)
+  const dispatch = useDispatch();
+  const accessToken = useSelector(state => state.auth.accessToken);
+
+  // data = {
+  //   "order_number": 1,
+  //   "order_status": 'delivery',
+  //   "total_quantity": 2,
+  //   "total_amount": 8,
+  //   "delivery_on": "2024-04-29 09:30:00",
+  //   "payment_method": "online",
+  //   "rating": null
+  // }
+
   const sheetRef = useRef(null);
+  const [rating, setRating] = useState(0);
+  const [feedback, setFeedback] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+
+  const handleRating = (value) => {
+    setRating(value);
+  };
+
+  const handleFeedbackChange = (text) => {
+    setFeedback(text);
+  };
+
+  const handleRateOrder = () => {
+
+    let value = {};
+    value.order_id = data.order_number
+    value.rating = rating
+    value.feedback = feedback
+
+    setError(null);
+    setIsLoading(true);
+    try {
+
+      dispatch(orderAction.rateOrder(value, accessToken))
+        .then(response => {
+          if (response.status === 'error') {
+            setIsLoading(false)
+            Alert.alert("Alert!", response.msg || error)
+
+          }
+
+          if (response.status === "success") {
+            setIsLoading(false)
+            Alert.alert("Success!", response.msg)
+          }
+        })
+    }
+    catch (error) {
+      console.error('rste order error!! : ', error)
+      setError(error.message);
+      setIsLoading(false);
+    };
+
+    sheetRef.current.close();
+  };
+
+
 
   return (
     <View style={{ flex: 1, margin: 20 }}>
@@ -46,12 +111,25 @@ const PastOrderScreen = (param) => {
               <Text style={styles.statusTitle}>{data.order_status}</Text>
             </View>
             <View style={styles.orderStatus}>
-              {data.order_status === 'delivery'
-                &&
-                (<TouchableOpacity onPress={() => { sheetRef.current.open() }}>
-                  <Text style={styles.RateOrderText}>Rate Order</Text>
-                </TouchableOpacity>)}
-
+              {data.order_status === 'delivery' && (
+                data.rating === null ? (
+                  <TouchableOpacity onPress={() => { sheetRef.current.open() }}>
+                    <Text style={styles.RateOrderText}>Rate Order</Text>
+                  </TouchableOpacity>
+                ) : (
+                  <View style={styles.starContainer}>
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <View key={value}>
+                        {value <= data.rating ? (
+                          <AntDesign name="star" size={24} color="#FFD700" />
+                        ) : (
+                          <AntDesign name="star" size={24} color="#C0C0C0" />
+                        )}
+                      </View>
+                    ))}
+                  </View>
+                )
+              )}
 
             </View>
           </View>
@@ -68,14 +146,38 @@ const PastOrderScreen = (param) => {
       >
         <View style={styles.sheetContent}>
 
-          <Text style={styles.title}>Rate Your Order</Text>
-
-          <TouchableOpacity onPress={() => sheetRef.current.close()}>
+          <View style={styles.ratingContainer}>
+            <Image source={require('../../assets/RateOrder.png')} style={styles.logo} />
+            <Text style={styles.ratingText}>Rate Your Order</Text>
+            <View style={styles.starContainer}>
+              {[1, 2, 3, 4, 5].map((value) => (
+                <TouchableOpacity key={value} onPress={() => handleRating(value)}>
+                  {value <= rating ? (
+                    <AntDesign name="star" size={35} color="#FFD700" />
+                  ) : (
+                    <AntDesign name="star" size={35} color="#C0C0C0" />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+          <View style={styles.feedbackContainer}>
+            <TextInput
+              style={styles.feedbackInput}
+              multiline
+              placeholder="Write Comment..."
+              value={feedback}
+              onChangeText={handleFeedbackChange}
+            />
+          </View>
+          <TouchableOpacity onPress={handleRateOrder}>
             <View style={styles.btn}>
-              <Text style={styles.btnText}>RATE ORDER</Text>
+              {isLoading
+                ? <ActivityIndicator size="large" color="white" />
+                :
+              <Text style={styles.btnText}>RATE ORDER</Text>}
             </View>
           </TouchableOpacity>
-
         </View>
       </RBSheet>
     </View>
@@ -156,12 +258,44 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     backgroundColor: '#2c843e',
     borderColor: '#2c843e',
-},
-btnText: {
+  },
+  btnText: {
     fontSize: 18,
     lineHeight: 26,
     fontWeight: '600',
     color: '#fff',
-},
+  },
+  sheetContent: {
+    padding: 24,
+    alignItems: 'stretch',
+  },
+  ratingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  ratingText: {
+    fontSize: 24,
+    marginBottom: 10,
+    fontWeight: 'bold',
+    alignSelf: 'center'
+  },
+  starContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  feedbackContainer: {
+    marginVertical: 40,
+  },
+  feedbackInput: {
+    height: 100,
+    borderColor: '#CCCCCC',
+    borderRadius: 10,
+    borderWidth: 1,
+    padding: 10,
+    fontSize: 16,
+    textAlignVertical: 'top'
+  },
+
 
 })
