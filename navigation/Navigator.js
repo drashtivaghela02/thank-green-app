@@ -28,6 +28,7 @@ import CheckOutScreen from '../screens/HomePage/CheckOutScreen';
 import FilterScreen from '../screens/Shop/FilterScreen';
 import LocationPicker from '../Components/Location/LocationPicker';
 import Map from '../Components/Location/Map';
+import OrderDetails from '../screens/Orders/OrderDetails';
 
 const FormStack = createStackNavigator();
 const FormNavigator = () => {
@@ -61,12 +62,11 @@ const LocationStack = createStackNavigator();
 const LocationScreen = () => {
   return (
     <LocationStack.Navigator>
-      <LocationStack.Screen name='SavedAddresses' component={SavedAddressScreen} options = {{headerShown: false}} />
-      
+      <LocationStack.Screen name='SavedAddresses' component={SavedAddressScreen} options={{ headerShown: false }} />      
+      {/* (location picker + Map) screen in auth navigator */}
     </LocationStack.Navigator>
   )
 }
-
 
 const HomeStack = createStackNavigator();
 const HomeScreen = () => {
@@ -83,7 +83,6 @@ const PaymentDetailScreen = () => {
     <PaymentStack.Navigator>
       <PaymentStack.Screen name='PaymentScreen' component={PaymentScreen} options={{ headerShown: false }} />
       <PaymentStack.Screen name='AddNewCard' component={AddNewCardDetailsScreen} options={{ headerShown: false }} />
-
     </PaymentStack.Navigator>
   )
 }
@@ -108,6 +107,43 @@ const ContactUsScreens = () => {
   )
 }
 
+// const OrderTopTabBar = createMaterialTopTabNavigator();
+// const Tabs = () => {
+//   return (
+//     <Tab.Navigator
+//       initialRouteName="CurrentOrder"
+//       screenOptions={{
+//         tabBarActiveTintColor: '#2c843e',
+//         tabBarInactiveTintColor: '#8b8b8b',
+//         tabBarLabelStyle: { fontSize: 16 , fontWeight: '500'},
+//         tabBarStyle: { backgroundColor: 'white' },
+//         tabBarIndicatorStyle: {backgroundColor: '#2c843e'},
+//       }}
+//     >
+//       <Tab.Screen
+//         name="CurrentOrder"
+//         component={CurrentOrderScreen}
+//         options={{ tabBarLabel: 'Current Order' }}
+//       />
+//       <Tab.Screen
+//         name="PastOrder"
+//         component={PastOrderScreens}
+//         options={{ tabBarLabel: 'Past Order' }}
+//       />
+
+//     </Tab.Navigator>
+//   );
+// }
+const OrderStack = createStackNavigator();
+const OrdersScreens = () => {
+  return (
+  <OrderStack.Navigator>
+    <OrderStack.Screen name='MyOrder' component={MyOrderScreen} options={{ headerShown: false }} />
+    {/* <OrderStack.Screen name='OrderDetail' component={OrderDetails} options={{ headerShown: false }} /> */}
+  </OrderStack.Navigator>
+  )
+}
+
 const MyAccountStack = createStackNavigator();
 const MyAccountScreen = () => {
   return (
@@ -116,7 +152,8 @@ const MyAccountScreen = () => {
       <MyAccountStack.Screen name='Personal Information' component={PersonalInformationScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='SavedAddress' component={LocationScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='Payment' component={PaymentDetailScreen} options={{ headerShown: false }} />
-      <MyAccountStack.Screen name='MyOrders' component={MyOrderScreen} options={{ headerShown: false }} />
+      <MyAccountStack.Screen name='MyOrders' component={OrdersScreens} options={{ headerShown: false }} />
+    <MyAccountStack.Screen name='OrderDetail' component={OrderDetails} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='Favorites' component={FavoritesScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='ChangePassword' component={ChangePasswordScreen} options={{ headerShown: false }} />    
       <MyAccountStack.Screen name='FAQ' component={FAQScreen} options={{ headerShown: false }} />

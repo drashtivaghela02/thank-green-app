@@ -30,9 +30,9 @@ const SavedAddressScreen = props => {
 
   console.log("address ==>", address);
 
-  const editAddressHandler = (data) => {
-    console.log("id in main screen", data)
-    props.navigation.navigate('LocationPicker', {addressData: data})
+  const editAddressHandler = (id, data) => {
+    console.log("id in main screen", id, data)
+    props.navigation.navigate('LocationPicker', {id: id, addressData: data})
   }
 
 
@@ -53,6 +53,7 @@ const SavedAddressScreen = props => {
     productPreview = (
       <FlatList
         data={address} // Passing curent order as data
+        showsVerticalScrollIndicator={false}
         keyExtractor={item => item.id} // Adjust keyExtractor as per your data structure
         renderItem={itemData =>
           <AddressCard

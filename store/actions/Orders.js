@@ -1,4 +1,5 @@
 const GET_ORDER_INFO = 'GET_ORDER_INFO';
+const GET_ORDER_DETAILS_INFO = 'GET_ORDER_DETAILS_INFO';
 const RATE_ORDER = 'RATE_ORDER';
 
 export const getOrderInfo = (accessToken) => {
@@ -28,27 +29,30 @@ export const getOrderInfo = (accessToken) => {
   };
 };
 
-// export const updateInfo = (formData, accessToken) => {
-//   return async dispatch => {
-//     try {
-//       const response = await fetch('https://thankgreen.onrender.com/api/userprofile/info',
-//         {
-//           method: 'PUT',
-//           body: formData,
-//           headers: {
-//             'Authorization': 'Bearer ' + accessToken,
-//             'Content-Type': 'multipart/form-data',
-//           }
-//         });
-//         const resData = await response.json();
-//         console.log('update info resdata: ', resData);
-//         dispatch({ type: UPDATE_INFO, data: resData })
-//         return resData;
-//     } catch (error) {
-//       console.error('Error UPdate Information : ', error);
-//     }
-//   }
-// }
+export const getOrderDetailsInfo = (orderId, accessToken) => {
+
+  return async dispatch => {
+    try {
+      const response = await fetch(`https://thankgreen.onrender.com/api/orders/:${orderId}`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + accessToken,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Failed to fetch DATA');
+      }
+      const resData = await response.json();
+      console.log("get orders details resData", resData);
+      dispatch({ type: GET_ORDER_DETAILS_INFO, data: resData });
+      return resData;
+    } catch (error) {
+      console.error("Get orders details error", error);
+    }
+  };
+};
 
 
 export const rateOrder = (value, accessToken) => {
@@ -63,7 +67,7 @@ export const rateOrder = (value, accessToken) => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            order_id: value.order_id,
+            orderId: value.order_id,
             rating: value.rating,
             feedback: value.feedback
         })

@@ -81,6 +81,7 @@ function Map({ route, navigation }) {
                             latitude: selectedLocation.latitude,
                             longitude: selectedLocation.longitude
                         }}
+                        pinColor="#2c843e"
                     />
                 )}
             </MapView>

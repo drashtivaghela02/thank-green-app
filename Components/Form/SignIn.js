@@ -176,7 +176,7 @@ const SignIn = (props) => {
 
                                     <TouchableOpacity disabled={isLoading} style={styles.verify} onPress={handleSubmit}>
                                         {isLoading ?
-                                            <ActivityIndicator size={25} /> :
+                                            <ActivityIndicator size={25} color="white" /> :
                                             <Text style={styles.verifyButton}>SIGN IN</Text>}
                                     </TouchableOpacity>
 

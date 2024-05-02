@@ -33,7 +33,10 @@ function CurrentOrderScreen() {
   console.log("currentOrders ==>", currentOrders); // Logging pastOrders instead of isLoading
   if (currentOrders.length === 0) {
   <ActivityIndicator size='large' color />
-}
+  }
+  const onProductSelectHandler = (id) => {
+    console.log("You have touched product",id)
+  }
   return (
     <FlatList 
     data={currentOrders} // Passing curent order as data
@@ -41,13 +44,14 @@ function CurrentOrderScreen() {
     renderItem={itemData => 
       <PastOrderScreen
         param={itemData.item}
+        onSelect = {onProductSelectHandler}
       />
     }
   />
   );
 }
 
-const PastOrderScreens = () => {
+const PastOrderScreens = (props) => {
   const [isLoading, setIsLoading] = React.useState(false); // Set an initial value
   const [pastOrders, setPastOrders] = React.useState([]); // State to hold past orders
   const accessToken = useSelector(state => state.auth.accessToken);
@@ -69,6 +73,10 @@ const PastOrderScreens = () => {
 
   console.log("pastOrders ==>", pastOrders); // Logging pastOrders instead of isLoading
 
+  const onProductSelectHandler = (id) => {
+    console.log("You have touched product", id)
+    props.navigation.navigate('OrderDetail')
+  }
   return (
     // <PastOrderScreen />
     <FlatList 
@@ -77,6 +85,8 @@ const PastOrderScreens = () => {
       renderItem={itemData => 
         <PastOrderScreen
           param={itemData.item}
+          onSelect = {onProductSelectHandler}
+
         />
       }
     />

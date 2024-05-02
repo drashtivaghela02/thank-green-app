@@ -12,22 +12,34 @@ import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import * as userAction from '../../store/actions/User';
 
-function LocationPicker({ navigation , route}) {
+function LocationPicker({ navigation, route }) {
+    const data = route.params ? route.params.addressData : null;
+    const editedAddress = route.params ? route.params.addressData.id : null
+    
     const [pickedLocation, setPickedLocation] = useState(null);
     const [locationPermissionInformation, requestPermission] = useForegroundPermissions();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
-    const [tag, setTag] = useState(null)
+    const [tag, setTag] = useState(editedAddress ? data.address_type : null)
     const accessToken = useSelector(state => state.auth.accessToken)
     const dispatch = useDispatch();
 
 
 
-    const data = route.params.addressData;
-    console.log("locationpicker data =>>",data)
+
+    // console.log("locationpicker data =>>",(typeof data.zip_code))
+    useEffect(() => {
+        if (editedAddress) {
+            setPickedLocation({
+                latitude: data.latitude,
+                longitude: data.longitude
+            });
+        }
+    }, [editedAddress]); 
 
     useEffect(() => {
         console.log("Picked Location Updated:", pickedLocation);
+       
     }, [pickedLocation]);
 
     const pickOnMapHandler = () => {
@@ -70,8 +82,8 @@ function LocationPicker({ navigation , route}) {
     const Validation = Yup.object({
         address: Yup.string()
             .required('*Address is Required'),
-        zip_code: Yup.string()
-            .matches(/^\d{6}$/, 'Invalid Indian ZIP code')
+        zip_code: Yup.number()
+            .min(6, 'Invalid Indian ZIP code')
             .required('*Zip Code is Required'),
         address_type: Yup.string()
             .required('*Select Address type')
@@ -90,32 +102,52 @@ function LocationPicker({ navigation , route}) {
             values.latitude = pickedLocation.latitude;
             values.longitude = pickedLocation.longitude;
         }
-        console.log(values)
+        // console.log(values)
 
+        if (editedAddress) {
 
-        try {
-            dispatch(userAction.addNewAddress(values, accessToken)).then((state) => {
-                console.log("Staet sign up =====> ", state)
-                if (state.status == 'success') {
-                    setIsLoading(false)
-                    Alert.alert('Success!!', state.msg)
-                    navigation.navigate('SavedAddresses')
-                }
-                else {
-                    Alert.alert('Alert', state.msg || state.error || error, [
-                        {
-                            text: 'Cancel',
-                            onPress: () => console.log('Cancel Pressed'),
-                            style: 'cancel',
-                        },
-                        { text: 'OK', onPress: () => console.log('OK Pressed') },
-                    ])
-                    setIsLoading(false)
-                }
-            })
-        } catch (err) {
-            setError(err.message);
-            setIsLoading(false);
+            try {
+                dispatch(userAction.editAddress(editedAddress, values, accessToken)).then((state) => {
+                    console.log("Staet edit address =====> ", state)
+                    if (state.status == 'success') {
+                        setIsLoading(false)
+                        Alert.alert('Success!!', state.msg)
+                        navigation.navigate('SavedAddresses')
+                    }
+                    else {
+                        Alert.alert('Alert', state.msg || state.error || error, [
+                            { text: 'Cancel', style: 'cancel' },
+                            { text: 'OK' },
+                        ])
+                        setIsLoading(false)
+                    }
+                })
+            } catch (err) {
+                setError(err.message);
+                setIsLoading(false);
+            }
+        } else {
+            try {
+                dispatch(userAction.addNewAddress(values, accessToken)).then((state) => {
+                    console.log("Staet sign up =====> ", state)
+                    if (state.status == 'success') {
+                        setIsLoading(false)
+                        Alert.alert('Success!!', state.msg)
+                        navigation.navigate('SavedAddresses')
+                    }
+                    else {
+                        Alert.alert('Alert', state.msg || state.error || error, [
+                            { text: 'Cancel', style: 'cancel' },
+                            { text: 'OK' },
+                        ])
+                        setIsLoading(false)
+                    }
+                })
+            } catch (err) {
+                setError(err.message);
+                setIsLoading(false);
+            }
+
         }
     }
 
@@ -132,7 +164,7 @@ function LocationPicker({ navigation , route}) {
                         <Feather name="search" size={24} color="white" onPress={pickOnMapHandler} />
                     </View>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, }}>
-                        <Text style={styles.heading}>Add New Address</Text>
+                        <Text style={styles.heading}>{editedAddress ? 'Edit Address' : 'Add New Address'}</Text>
                     </View>
                 </View>
             </LinearGradient>
@@ -141,7 +173,12 @@ function LocationPicker({ navigation , route}) {
             <View style={styles.body}>
                 <View style={{ flex: 1 }}>
                     <Formik
-                        initialValues={{ address: '', zip_code: '', address_type: '', landmark: '' }}
+                        initialValues={{
+                            address: editedAddress ? data.address : '',
+                            zip_code: editedAddress ? data.zip_code : '',
+                            address_type: editedAddress ? data.address_type : '',
+                            landmark: editedAddress ? data.landmark : ''
+                        }}
                         validationSchema={Validation}
                         onSubmit={SubmitHandler}
                     >
@@ -161,10 +198,10 @@ function LocationPicker({ navigation , route}) {
 
                                     <Text style={styles.label} >Zip Code</Text>
                                     <TextInput
-                                        keyboardType="numeric"
+                                        keyboardType="number-pad"
                                         onChangeText={handleChange('zip_code')}
                                         onBlur={handleBlur('zip_code')}
-                                        value={values.zip_code}
+                                        value={values.zip_code.toString()}
                                         style={styles.textInput}
                                     />
                                     {touched.zip_code && errors.zip_code ? (
@@ -183,13 +220,19 @@ function LocationPicker({ navigation , route}) {
                                     ) : null}
 
                                     <Text style={styles.sheetHeader}>Tag this address as:</Text>
-                                    <RadioButton.Group onValueChange={newValue => {
-                                        setTag(newValue)
-                                    }} value={values.address_type = tag}
+                                    <RadioButton.Group
+                                        onValueChange={newValue => {
+                                            setTag(newValue)
+                                        }}
+                                        // value={editedAddress
+                                        //     ? values.address_type = data.address_type
+                                        //     : values.address_type = tag
+                                        // }
+                                        value={values.address_type = tag}
                                     >
                                         <View style={{ flexDirection: 'row', left: -10, gap: 20 }}>
                                             <View style={styles.radio_button}>
-                                                <RadioButton value="Home" color='#2c843e' />
+                                                <RadioButton value="Home" color='#2c843e' label='Home' />
                                                 <Text style={styles.sheetItems}>Home</Text>
                                             </View>
 
@@ -211,7 +254,7 @@ function LocationPicker({ navigation , route}) {
                                 <TouchableOpacity style={styles.verify} onPress={handleSubmit}>
                                     {isLoading ?
                                         <ActivityIndicator size={25} /> :
-                                        <Text style={styles.verifyButton}>ADD ADDRESS</Text>
+                                        <Text style={styles.verifyButton}>{editedAddress ? 'EDIT ADDRESS' : 'ADD ADDRESS'}</Text>
                                     }
                                 </TouchableOpacity>
                             </ScrollView>
@@ -241,14 +284,14 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     body: {
-        flex: 0.6,
-        top: Dimensions.get('window').height * 0.34,
+        height: (Dimensions.get('window').height / 100) * 53,
+        width: "100%",
+        position: 'absolute',
+        bottom: 0,
         borderTopLeftRadius: 40,
         borderTopRightRadius: 40,
         backgroundColor: 'white',
         paddingHorizontal: 20,
-        position: 'relative',
-
     },
     mapPreview: {
         top: Dimensions.get('window').height * 0.17,
@@ -274,7 +317,7 @@ const styles = StyleSheet.create({
     sheetHeader: {
         fontWeight: '600',
         fontSize: 16,
-        paddingTop: 10
+        paddingTop: 16
     },
     radio_button: {
         flexDirection: 'row',
@@ -292,7 +335,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         paddingTop: 15,
         fontWeight: '400',
-
     },
     textInput: {
         borderBottomWidth: 1,

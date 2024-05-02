@@ -7,29 +7,32 @@ import CustomHeader from "../../Components/UI/CustomHeader";
 const OrderDetails = () => {
   return (
     <View style={styles.container}>
-      <CustomHeader label='Cart' />
+      <CustomHeader label='Order Details' />
 
       <View style={styles.body}>
-        <View style = {{elevation: 2, overflow: 'hidden' }}>
-        <View style={{borderColor: 'white', borderRadius: 20, padding: 20, gap: 10, }}>
-          
-        <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-          <Text>Order Dtae : </Text>
-          <Text>$00.00</Text>
+
+
+        <View style={styles.card}>
+          <View style={styles.detail}>
+            <View style={{ gap: 8 }}>
+              <Text style={styles.title}>Order Date : </Text>
+              <Text style={styles.title}>Order Number : </Text>
+              <Text style={styles.title}>Order Status</Text>
+            </View>
+
+            <View style={{gap: 8}}>
+              <Text style={styles.subTitle}>18th March 2020</Text>
+              <Text style={styles.subTitle}>406-7288</Text>
+              <Text style={styles.subTitle}>Order Delivered</Text>
+
+            </View>
+          </View>
         </View>
 
-        <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-          <Text>Order Number : </Text>
-          <Text>$00.00</Text>
-        </View>
 
-        <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-          <Text style={{fontWeight:'bold'}}>Order Status</Text>
-          <Text style={{fontWeight:'bold'}}>$00.00</Text>
-        </View>
-        </View>
-        </View>
-      
+
+       
+
         <View>
           <TouchableOpacity style={styles.verify} onPress={() => { console.log('Pressed'); }}>
             <Text style={styles.verifyButton}>TRACK ORDER</Text>
@@ -51,33 +54,45 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-  header: {
-    paddingTop: 40,
-    paddingHorizontal: 20,
-    height: Dimensions.get('window').height * 0.17
-  },
-  heading: {
-    fontWeight: '500',
-    fontSize: 30,
 
-    color: 'white',
-  },
   body: {
     flex: 1,
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     // alignItems: 'center',
     paddingHorizontal: 30,
-    paddingVertical: 10,
+    paddingVertical: 20,
     backgroundColor: '#f1f0f5',
-    // marginTop: 20,
     // marginBottom: 30
   },
-  bodyText: {
-    textAlign: 'center',
-    fontSize: 17,
-    color: '#b4b4b4',
-    paddingVertical: 20
+
+  card: {
+    elevation: 8,
+    borderRadius: 15,
+    backgroundColor: 'white',
+    height: 110,
+    width: '100%',
+    padding: 5,
+    overflow: 'hidden',
+    alignSelf: 'center'
+    
   },
+  title: {
+    fontWeight: '500',
+    fontSize: 15
+  },
+  subTitle: {
+    fontWeight: '500',
+    fontSize: 15,
+    color: '#888'
+  },
+  detail: {
+    alignItems: 'center',
+    padding: 10,
+    flexDirection: 'row',
+    gap: 10
+  },
+
+
 
   verify: {
     marginTop: 10,

@@ -13,7 +13,7 @@ const PastOrderScreen = (param) => {
   console.log("ARE you sure? ", data)
   const dispatch = useDispatch();
   const accessToken = useSelector(state => state.auth.accessToken);
-
+  const Id = data.order_number
   // data = {
   //   "order_number": 1,
   //   "order_status": 'delivery',
@@ -78,7 +78,7 @@ const PastOrderScreen = (param) => {
   return (
     <View style={{ flex: 1, margin: 20 }}>
       <Text style={styles.statusTitle}>{data.delivery_on}</Text>
-      <TouchableOpacity useForeground style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
+      <TouchableOpacity useForeground style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }} onPress = {() => param.onSelect(Id)}>
         {data.order_status === 'delivery'
           ? <AntDesign name="checkcircle" size={24} color="#2c843e" style={{ padding: 6 }} />
           :
@@ -88,7 +88,7 @@ const PastOrderScreen = (param) => {
           <View style={styles.detail}>
             <View>
               <Text style={styles.title}>Order Number : </Text>
-              <Text style={styles.title}>Order Itens : </Text>
+              <Text style={styles.title}>Order Items : </Text>
               <Text style={styles.title}>Total Amount : </Text>
             </View>
             <View>
@@ -108,7 +108,7 @@ const PastOrderScreen = (param) => {
                 data.order_status == 'packed' && { backgroundColor: '#1e486c' },
               ]}>
               </View>
-              <Text style={styles.statusTitle}>{data.order_status}</Text>
+              <Text style={styles.statusTitle}>Order {data.order_status}</Text>
             </View>
             <View style={styles.orderStatus}>
               {data.order_status === 'delivery' && (

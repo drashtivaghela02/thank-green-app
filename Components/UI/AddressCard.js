@@ -1,4 +1,4 @@
-import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
+import { AntDesign, Entypo, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import React, { useRef, useState } from "react";
 import { ActivityIndicator, Alert, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Divider } from "react-native-paper";
@@ -17,28 +17,29 @@ const AddressCard = (param) => {
   const [error, setError] = useState();
   console.log("ARE you sure? ", data.id)
   const Id = data.id
+  const editData = data
 
 
-  const deleteHandler = () => { 
+  const deleteHandler = () => {
     console.log(Id, accessToken)
     setIsLoading(true)
     try {
       dispatch(userAction.deleteAddress(Id, accessToken))
         .then((state) => {
-        console.log("Staet sign up =====> ", state)
-        if (state.status == 'success') {
-          setIsLoading(false)
-          Alert.alert('Success!!', state.msg)
+          console.log("Staet sign up =====> ", state)
+          if (state.status == 'success') {
+            setIsLoading(false)
+            Alert.alert('Success!!', state.msg)
+          }
+          else {
+            Alert.alert('Alert', state.msg || state.error || error, [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ])
+            setIsLoading(false)
+          }
         }
-        else {
-          Alert.alert('Alert', state.msg || state.error || error, [
-            {text: 'Cancel',style: 'cancel'},
-            { text: 'OK', onPress: () => console.log('OK Pressed') },
-          ])
-          setIsLoading(false)
-        }
-      }
-      )
+        )
     } catch (err) {
       setError(err.message);
       setIsLoading(false);
@@ -47,36 +48,47 @@ const AddressCard = (param) => {
 
   return (
     <View style={{ padding: 5 }}>
-      <TouchableOpacity useForeground style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
 
 
         <View style={styles.product}>
           <View>
             <View style={styles.detail}>
-              < MaterialCommunityIcons name="timer-settings-outline" size={29} color="#888" style={{ padding: 5 }} />
-              <Text style={styles.title}>{data.address_type}</Text>
+              {/* <MaterialCommunityIcons name="home-outline" size={24} color="black" /> */}
+              {data.address_type == 'Home' && <MaterialCommunityIcons name="home-outline" size={29} color="#888" style={{ paddingLeft: 5 }} />}
+              {data.address_type == 'Work' && <Ionicons name="bag-handle" size={24} color="#888" style={{ paddingLeft: 9, paddingRight: 2 }} />}
+              {data.address_type == 'Other' && <Entypo name="location" size={24} color="#888" style={{ paddingLeft: 9, paddingRight: 2 }} />}
+              <Text style={styles.title}>{data.address_type} {data.landmark ? '- ' + data.landmark : ''}</Text>
 
             </View>
             <Text style={styles.price}>{data.address}, {data.zip_code}</Text>
           </View>
 
-          <View style={{ flexDirection: 'row', gap: 20, paddingHorizontal: 10 }}>
-            <TouchableOpacity onPress={()=>param.onEdit(data)}  >
-              <Text>EDIT</Text>
+          <View style={{ flexDirection: 'row', gap: 30, paddingHorizontal: 10 }}>
+            <TouchableOpacity style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }} onPress={() => param.onEdit(Id, editData)}  >
+              <MaterialIcons name="mode-edit-outline" size={20} color="#888" />
+              <Text style={{fontSize: 16, fontWeight: '500'}}>EDIT</Text>
             </TouchableOpacity>
 
             <Text>|</Text>
             <TouchableOpacity onPress={() => {
-              Alert.alert("Are you sure?","You want to delete address...",[{text:'cancel', style : 'cancel'}, {text: 'Ok', onPress: deleteHandler}])
+              Alert.alert("Are you sure?", "You want to delete address...", [{ text: 'cancel', style: 'cancel' }, { text: 'Ok', onPress: deleteHandler }])
 
             }} >
-              {isLoading ? <ActivityIndicator size={22} color="#2c843e" />  :<Text>DELETE</Text>}
+              {isLoading
+                ? <ActivityIndicator size={22} color="#2c843e" />
+                : (<View style={{ flexDirection: 'row', gap: 3, alignItems: 'center' }}>
+<AntDesign name="delete" size={20} color="#888" />
+                  <Text style={{fontSize: 16, fontWeight: '500'}}> DELETE</Text>
+                </View>
+                  )
+              }
             </TouchableOpacity>
           </View>
 
 
         </View>
-      </TouchableOpacity>
+      </View>
 
     </View>
 
@@ -103,7 +115,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
-
     gap: 10
   },
   orderStatus: {
