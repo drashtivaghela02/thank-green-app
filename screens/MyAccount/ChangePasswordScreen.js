@@ -20,7 +20,7 @@ const ChangePasswordScreen = props => {
             .min(6, '*Must be at least 6 characters')
             .matches(/(?=.*[0-9])/, '*Password must contain a number.')
             .matches(/(?=.*[a-z])/, '*Password must contain a lowercase letter.')
-            // .matches(/(?=.*[A-Z])/, '*Password must contain an uppercase letter.')
+            .matches(/(?=.*[A-Z])/, '*Password must contain an uppercase letter.')
             // .matches(/(?=.*[!@#$%^&*])/, 'Password must contain a Symbol')
             .required('*Password is Required'),
         newPassword: Yup.string()

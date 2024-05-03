@@ -77,7 +77,7 @@ export const rateOrder = (value, accessToken) => {
         throw new Error('Failed to rate order');
       }
       const resData = await response.json();
-      console.log("Rate orders resData", resData);
+      // console.log("Rate orders resData", resData);
       dispatch({ type: RATE_ORDER, data: resData });
       return resData;
     } catch (error) {

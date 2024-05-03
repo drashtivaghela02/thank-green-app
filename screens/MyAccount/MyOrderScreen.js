@@ -8,96 +8,110 @@ import { Image } from 'react-native';
 import PastOrderScreen from '../Orders/PastOrderScreen';
 import { useDispatch, useSelector } from 'react-redux';
 import * as orderAction from '../../store/actions/Orders';
+import { createStackNavigator } from '@react-navigation/stack';
+import OrderDetails from '../Orders/OrderDetails';
+import CurrentOrder from '../Orders/CurrentOrder';
+import PastOrder from '../Orders/PastOrder';
+import { Orders } from '../../navigation/OrderNavigator';
+// import { MyTabs } from '../../navigation/OrderNavigator';
 
 
-function CurrentOrderScreen() {
-  const [isLoading, setIsLoading] = React.useState(false); // Set an initial value
-  const [currentOrders, setCurrentOrders] = React.useState([]); // State to hold past orders
-  const accessToken = useSelector(state => state.auth.accessToken);
-  const dispatch = useDispatch();
+// function CurrentOrderScreen() {
+//   const [isLoading, setIsLoading] = React.useState(false); // Set an initial value
+//   const [currentOrders, setCurrentOrders] = React.useState([]); // State to hold past orders
+//   const accessToken = useSelector(state => state.auth.accessToken);
+//   const dispatch = useDispatch();
 
-  React.useEffect(() => {
-    setIsLoading(true); // Set loading state to true before fetching data
-    dispatch(orderAction.getOrderInfo(accessToken))
-      .then((response) => {
-        setIsLoading(false); // Set loading state to false after fetching data
-        setCurrentOrders(response.data.currentOrders); // Set fetched data to state
-        console.log(response.data.currentOrders);
-      })
-      .catch(error => {
-        setIsLoading(false); // Set loading state to false in case of error
-        console.error("Error fetching user information:", error);
-      });
-  }, [accessToken]);
+//   React.useEffect(() => {
+//     setIsLoading(true); // Set loading state to true before fetching data
+//     dispatch(orderAction.getOrderInfo(accessToken))
+//       .then((response) => {
+//         setIsLoading(false); // Set loading state to false after fetching data
+//         setCurrentOrders(response.data.currentOrders); // Set fetched data to state
+//         console.log(response.data.currentOrders);
+//       })
+//       .catch(error => {
+//         setIsLoading(false); // Set loading state to false in case of error
+//         console.error("Error fetching user information:", error);
+//       });
+//   }, [accessToken]);
 
-  console.log("currentOrders ==>", currentOrders); // Logging pastOrders instead of isLoading
-  if (currentOrders.length === 0) {
-  <ActivityIndicator size='large' color />
-  }
-  const onProductSelectHandler = (id) => {
-    console.log("You have touched product",id)
-  }
-  return (
-    <FlatList 
-    data={currentOrders} // Passing curent order as data
-    keyExtractor={item => item.order_number} // Adjust keyExtractor as per your data structure
-    renderItem={itemData => 
-      <PastOrderScreen
-        param={itemData.item}
-        onSelect = {onProductSelectHandler}
-      />
-    }
-  />
-  );
-}
+//   console.log("currentOrders ==>", currentOrders); // Logging pastOrders instead of isLoading
+//   if (currentOrders.length === 0) {
+//   <ActivityIndicator size='large' color />
+//   }
+//   const onProductSelectHandler = (id) => {
+//     console.log("You have touched product",id)
+//   }
+//   return (
+//     <FlatList 
+//     data={currentOrders} // Passing curent order as data
+//     keyExtractor={item => item.order_number} // Adjust keyExtractor as per your data structure
+//     renderItem={itemData => 
+//       <PastOrderScreen
+//         param={itemData.item}
+//         onSelect = {onProductSelectHandler}
+//       />
+//     }
+//   />
+//   );
+// }
 
-const PastOrderScreens = (props) => {
-  const [isLoading, setIsLoading] = React.useState(false); // Set an initial value
-  const [pastOrders, setPastOrders] = React.useState([]); // State to hold past orders
-  const accessToken = useSelector(state => state.auth.accessToken);
-  const dispatch = useDispatch();
+// const PastOrderScreens = ({navigation}) => {
+//   const [isLoading, setIsLoading] = React.useState(false); // Set an initial value
+//   const [pastOrders, setPastOrders] = React.useState([]); // State to hold past orders
+//   const accessToken = useSelector(state => state.auth.accessToken);
+//   const dispatch = useDispatch();
 
-  React.useEffect(() => {
-    setIsLoading(true); // Set loading state to true before fetching data
-    dispatch(orderAction.getOrderInfo(accessToken))
-      .then((response) => {
-        setIsLoading(false); // Set loading state to false after fetching data
-        setPastOrders(response.data.pastOrders); // Set fetched data to state
-        console.log(response.data.pastOrders);
-      })
-      .catch(error => {
-        setIsLoading(false); // Set loading state to false in case of error
-        console.error("Error fetching user information:", error);
-      });
-  }, [accessToken]);
+//   React.useEffect(() => {
+//     setIsLoading(true); // Set loading state to true before fetching data
+//     dispatch(orderAction.getOrderInfo(accessToken))
+//       .then((response) => {
+//         setIsLoading(false); // Set loading state to false after fetching data
+//         setPastOrders(response.data.pastOrders); // Set fetched data to state
+//         console.log(response.data.pastOrders);
+//       })
+//       .catch(error => {
+//         setIsLoading(false); // Set loading state to false in case of error
+//         console.error("Error fetching user information:", error);
+//       });
+//   }, [accessToken]);
 
-  console.log("pastOrders ==>", pastOrders); // Logging pastOrders instead of isLoading
+//   console.log("pastOrders ==>", pastOrders); // Logging pastOrders instead of isLoading
 
-  const onProductSelectHandler = (id) => {
-    console.log("You have touched product", id)
-    props.navigation.navigate('OrderDetail')
-  }
-  return (
-    // <PastOrderScreen />
-    <FlatList 
-      data={pastOrders} // Passing pastOrders as data
-      keyExtractor={item => item.order_number} // Adjust keyExtractor as per your data structure
-      renderItem={itemData => 
-        <PastOrderScreen
-          param={itemData.item}
-          onSelect = {onProductSelectHandler}
+//   const onProductSelectHandler = (id) => {
+//     console.log("You have touched product", id)
+//     navigation.navigate('OrderDetails')
+//   }
+//   return (
+//     // <PastOrderScreen />
+//     <FlatList 
+//       data={pastOrders} // Passing pastOrders as data
+//       keyExtractor={item => item.order_number} // Adjust keyExtractor as per your data structure
+//       renderItem={itemData => 
+//         <PastOrderScreen
+//           param={itemData.item}
+//           onSelect = {onProductSelectHandler}
 
-        />
-      }
-    />
-  );
-}
+//         />
+//       }
+//     />
+//   );
+// }
 
-
+// const Stack = createStackNavigator();
+// const Orders = () => {
+//   return (
+//     <Stack.Navigator>
+//       <Stack.Screen name='MyOrderScreen' component={MyTabs} options={{ headerShown: false }} />
+//       <Stack.Screen name='OrderDetails' component={OrderDetails} options={{ headerShown: false }} />
+//     </Stack.Navigator>
+//   )
+// }
 
 const Tab = createMaterialTopTabNavigator();
 
-function MyTabs() {
+const MyTabs = () => {
   return (
     <Tab.Navigator
       initialRouteName="CurrentOrder"
@@ -111,12 +125,12 @@ function MyTabs() {
     >
       <Tab.Screen
         name="CurrentOrder"
-        component={CurrentOrderScreen}
+        component={CurrentOrder}
         options={{ tabBarLabel: 'Current Order' }}
       />
       <Tab.Screen
         name="PastOrder"
-        component={PastOrderScreens}
+        component={PastOrder}
         options={{ tabBarLabel: 'Past Order' }}
       />
 
@@ -142,10 +156,13 @@ const MyOrderScreen = (props) => {
   }, [accessToken]);
 
   return (
-    <NavigationContainer independent={true}>
-      <CustomHeader label='My Order' press={() => { props.navigation.goBack() }} />
-      <MyTabs />
-    </NavigationContainer>
+    <View>
+
+      <Orders />
+
+      
+</View>
+
   );
 }
 

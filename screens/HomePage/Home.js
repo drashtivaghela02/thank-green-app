@@ -15,7 +15,7 @@ const Home = props => {
         <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('FormNavigator')}}>
             <Text style={styles.verifyButton}>Sign Out</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('OrderDetail')}}>
+          <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('OrderDetails')}}>
             <Text style={styles.verifyButton}>Order Details</Text>
         </TouchableOpacity>
       </View>

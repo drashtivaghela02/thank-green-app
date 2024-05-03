@@ -29,6 +29,7 @@ import FilterScreen from '../screens/Shop/FilterScreen';
 import LocationPicker from '../Components/Location/LocationPicker';
 import Map from '../Components/Location/Map';
 import OrderDetails from '../screens/Orders/OrderDetails';
+import { Orders } from './OrderNavigator';
 
 const FormStack = createStackNavigator();
 const FormNavigator = () => {
@@ -138,7 +139,7 @@ const OrderStack = createStackNavigator();
 const OrdersScreens = () => {
   return (
   <OrderStack.Navigator>
-    <OrderStack.Screen name='MyOrder' component={MyOrderScreen} options={{ headerShown: false }} />
+    <OrderStack.Screen name='MyOrder' component={Orders} options={{ headerShown: false }} />
     {/* <OrderStack.Screen name='OrderDetail' component={OrderDetails} options={{ headerShown: false }} /> */}
   </OrderStack.Navigator>
   )
@@ -152,7 +153,7 @@ const MyAccountScreen = () => {
       <MyAccountStack.Screen name='Personal Information' component={PersonalInformationScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='SavedAddress' component={LocationScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='Payment' component={PaymentDetailScreen} options={{ headerShown: false }} />
-      <MyAccountStack.Screen name='MyOrders' component={OrdersScreens} options={{ headerShown: false }} />
+      <MyAccountStack.Screen name='MyOrders' component={Orders} options={{ headerShown: false }} />
     <MyAccountStack.Screen name='OrderDetail' component={OrderDetails} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='Favorites' component={FavoritesScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='ChangePassword' component={ChangePasswordScreen} options={{ headerShown: false }} />    
