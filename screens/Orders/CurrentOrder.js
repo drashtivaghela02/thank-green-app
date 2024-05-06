@@ -6,9 +6,11 @@ import PastOrderScreen from "./PastOrderScreen";
 import * as orderAction from '../../store/actions/Orders';
 
 
-function CurrentOrder() {
+function CurrentOrder({navigation}) {
   const [isLoading, setIsLoading] = useState(false); // Set an initial value
   const [currentOrders, setCurrentOrders] = useState([]); // State to hold past orders
+  const [details, setDetails] = useState();
+
   const accessToken = useSelector(state => state.auth.accessToken);
   const dispatch = useDispatch();
 
@@ -31,7 +33,20 @@ function CurrentOrder() {
   <ActivityIndicator size='large' color='#2c843e' />
   }
   const onProductSelectHandler = (id) => {
-    console.log("You have touched product",id)
+    console.log("You have touched product", id)
+
+    setIsLoading(true); // Set loading state to true before fetching data
+    dispatch(orderAction.getOrderDetailsInfo(id, accessToken))
+    .then((response) => {
+      setDetails(response.data[0]);
+      console.log("order details",response);
+      setIsLoading(false); // Set loading state to false after fetching data
+      navigation.navigate('OrderDetails', {Id: id, Details: response })
+    })
+    .catch(error => {
+      setIsLoading(false); // Set loading state to false in case of error
+      console.error("Error fetching user information:", error);
+    });
   }
   return (
     <FlatList 

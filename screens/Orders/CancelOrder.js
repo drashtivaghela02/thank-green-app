@@ -1,11 +1,23 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import CustomHeader from "../../Components/UI/CustomHeader"
 import { Divider, RadioButton } from "react-native-paper"
 import { useState } from "react"
 import { FontAwesome5, Zocial } from "@expo/vector-icons"
+import * as orderAction from '../../store/actions/Orders';
+import { useDispatch, useSelector } from "react-redux"
+
 
 const CancelOrder = (props) => {
+
+  const id = props.route.params.Id
+  console.log(id)
   const [value, setValue] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [otherValue, setOtherValue] = useState('')
+
+  const accessToken = useSelector(state => state.auth.accessToken);
+  const dispatch = useDispatch();
+
   const cancelOrder = [
     { id: 1, value: 'I want to order a different product' },
     { id: 2, value: 'Not Interested Anymore' },
@@ -16,25 +28,52 @@ const CancelOrder = (props) => {
     { id: 7, value: 'Other' },
 
   ]
+
+  const cancelOrderHandler = () => {
+    const data = (value === "Other") ? (value + ' : ' + otherValue) : value
+    console.log(data)
+    const values = { orderId: id, reason: data }
+    console.log("gu7ygt7yig", values);
+    dispatch(orderAction.cancelOrder(values, accessToken))
+      .then((response) => {
+        setIsLoading(false); // Set loading state to false after fetching data
+        // setPastOrders(response.data.pastOrders); // Set fetched data to state
+        Alert.alert("", response.msg)
+        console.log(response);
+      })
+      .catch(error => {
+        setIsLoading(false); // Set loading state to false in case of error
+        console.error("Error fetching user information:", error);
+      });
+
+  }
+
+
   return (
     <View style={styles.container}>
       <CustomHeader label="Cancel Order" press={() => props.navigation.goBack()} />
       <ScrollView>
         <View style={styles.body}>
 
-          <Text style={{ fontSize: 17, paddingBottom: 30,paddingHorizontal:20, alignSelf: 'center', textAlign: 'center', fontWeight: '500' }}>We are sorry to see you are cancelling your order. Tell us why and we'll improve.</Text>
+          <Text style={{ fontSize: 17, paddingBottom: 30, paddingHorizontal: 20, alignSelf: 'center', textAlign: 'center', fontWeight: '500' }}>We are sorry to see you are cancelling your order. Tell us why and we'll improve.</Text>
 
           <View style={styles.card}>
             <RadioButton.Group onValueChange={newValue => setValue(newValue)} value={value} >
               {cancelOrder.map((item, index) => (
-                <View style={styles.radio_button}>
+                <View style={styles.radio_button} key={index}>
                   <RadioButton value={item.value} color='#2c843e' />
                   <Text style={{ fontWeight: '500', fontSize: 14 }}>{item.value}</Text>
                 </View>
               ))}
               <View style={styles.card1}>
-                <Text style={{ fontWeight: '500', fontSize: 14, color: '#888' }}>Other Reason eg. I placed order by mistake</Text>
+                <TextInput
+                  editable={value === "Other" ? true : false}
+                  style={{ fontWeight: '500', fontSize: 14, color: 'black' }}
+                  placeholder="Other Reason eg. I placed order by mistake"
+                  onChangeText={(value) => setOtherValue(value)}
+                />
               </View>
+
 
 
             </RadioButton.Group>
@@ -52,8 +91,11 @@ const CancelOrder = (props) => {
           </View>
 
 
-          <TouchableOpacity style={styles.verify} onPress={() => { console.log(value); }}>
-            <Text style={styles.verifyButton}>CANCEL ORDER</Text>
+          <TouchableOpacity
+            disabled={value === '' || (value === 'Other' && otherValue === '')}
+            style={styles.verify}
+            onPress={cancelOrderHandler}>
+            {isLoading ? <ActivityIndicator size="large" color="white" /> : <Text style={styles.verifyButton}>CANCEL ORDER</Text>}
           </TouchableOpacity>
         </View>
       </ScrollView>

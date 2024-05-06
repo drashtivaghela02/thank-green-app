@@ -29,7 +29,7 @@ const PastOrderScreen = (param) => {
   const [feedback, setFeedback] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
 
   const handleRating = (value) => {
     setRating(value);
@@ -78,11 +78,13 @@ const PastOrderScreen = (param) => {
   return (
     <View style={{ flex: 1, margin: 20 }}>
       <Text style={styles.statusTitle}>{data.delivery_on}</Text>
-      <TouchableOpacity useForeground style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }} onPress = {() => param.onSelect(Id)}>
-        {data.order_status === 'delivery'
-          ? <AntDesign name="checkcircle" size={24} color="#2c843e" style={{ padding: 6 }} />
-          :
-          < MaterialCommunityIcons name="timer-settings-outline" size={30} color="#888" style={{ padding: 5 }} />
+      <TouchableOpacity useForeground style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }} onPress={() => param.onSelect(Id)}>
+        {data.order_status === 'delivered' || data.order_status === 'cancel'
+          ? (data.order_status === 'delivered'
+            ? <AntDesign name="checkcircle" size={24} color="#2c843e" style={{ padding: 6 }} />
+            : <AntDesign name="checkcircleo" size={24} color="red" style={{ padding: 6 }} />
+          )
+          : < MaterialCommunityIcons name="timer-settings-outline" size={30} color="#888" style={{ padding: 5 }} />
         }
         <View style={styles.product}>
           <View style={styles.detail}>
@@ -98,7 +100,7 @@ const PastOrderScreen = (param) => {
             </View>
           </View>
           <Divider />
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <View style={styles.orderStatus}>
               <View style={[
                 styles.statusIndicator,
@@ -106,12 +108,14 @@ const PastOrderScreen = (param) => {
                 data.order_status == 'shipped' && { backgroundColor: '#fc7634' },
                 data.order_status == 'placed' && { backgroundColor: '#FFF20D' },
                 data.order_status == 'packed' && { backgroundColor: '#1e486c' },
+                data.order_status == 'cancel' && { backgroundColor: 'red' },
+
               ]}>
               </View>
               <Text style={styles.statusTitle}>Order {data.order_status}</Text>
             </View>
             <View style={styles.orderStatus}>
-              {data.order_status === 'delivery' && (
+              {data.order_status === 'delivered' && (
                 data.rating === null ? (
                   <TouchableOpacity onPress={() => { sheetRef.current.open() }}>
                     <Text style={styles.RateOrderText}>Rate Order</Text>
@@ -175,7 +179,7 @@ const PastOrderScreen = (param) => {
               {isLoading
                 ? <ActivityIndicator size="large" color="white" />
                 :
-              <Text style={styles.btnText}>RATE ORDER</Text>}
+                <Text style={styles.btnText}>RATE ORDER</Text>}
             </View>
           </TouchableOpacity>
         </View>
@@ -208,14 +212,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     paddingBottom: 8,
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
     gap: 50
   },
   orderStatus: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingTop: 6,
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
     gap: 15
   },
   title: {
@@ -283,6 +287,7 @@ const styles = StyleSheet.create({
   starContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center'
   },
   feedbackContainer: {
     marginVertical: 40,

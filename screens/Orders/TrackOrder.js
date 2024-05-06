@@ -4,14 +4,15 @@ import CustomHeader from "../../Components/UI/CustomHeader";
 import StepIndicator from "react-native-step-indicator";
 
 const TrackOrder = (props) => {
+  const status = props.route.params ? props.route.params.status : ''
   const [currentPage, setCurrentPage] = useState(0);
-props.status = "delivered"
+
   useEffect(() => {
-    // Update the current step based on the status received from props
-    if (props.status === "packed") setCurrentPage(1);
-    else if (props.status === "shipped") setCurrentPage(2);
-    else if (props.status === "delivered") setCurrentPage(3);
-  }, [props.status]);
+    if (status === "placed") setCurrentPage(1);
+    else if (status === "packed") setCurrentPage(1);
+    else if (status === "shipped") setCurrentPage(2);
+    else if (status === "delivered") setCurrentPage(3);
+  }, [status]);
 
   const data = [
     { title: "Order Placed", date: "12/13/1019" },
@@ -34,10 +35,10 @@ props.status = "delivered"
     stepIndicatorFinishedColor: "#2c843e",
     stepIndicatorUnFinishedColor: "#D4D4D4",
     stepIndicatorCurrentColor: "#2c843e",
-    stepIndicatorLabelFontSize: 13,
-    currentStepIndicatorLabelFontSize: 13,
-    stepIndicatorLabelCurrentColor: "white",
-    stepIndicatorLabelFinishedColor: "white",
+    stepIndicatorLabelFontSize: 1,
+    currentStepIndicatorLabelFontSize: 1,
+    stepIndicatorLabelCurrentColor: "#2c843e",
+    stepIndicatorLabelFinishedColor: "#2c843e",
     stepIndicatorLabelUnFinishedColor: "#2c843e",
     labelColor: "#999999",
     labelSize: 15,

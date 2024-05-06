@@ -20,7 +20,7 @@ export const Orders = () => {
         header: (props) => (
           <CustomHeader
             label="My Order"
-            onPress={() => props.navigation.goBack()}
+            press={() => props.navigation.goBack()}
           />
         ),
         headerStyle: {
