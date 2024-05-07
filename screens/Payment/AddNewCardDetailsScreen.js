@@ -18,6 +18,10 @@ const AddNewCardDetailsScreen = props => {
       return;
     }
 
+    if (cardNumberValidation.card) {
+      console.log(cardNumberValidation); // 'visa'
+    }
+
     const expirationDateValidation = CardValidator.expirationDate(expirationDate);
     if (!expirationDateValidation.isValid) {
       Alert.alert('Error', 'Please enter a valid expiration date.');
@@ -37,6 +41,8 @@ const AddNewCardDetailsScreen = props => {
 
     // If validation passes, proceed to add the card
     console.log('Adding card...');
+
+    console.log(cardNumber,expirationDate,cvv,cardHolder, value,);
   };
 
   return (

@@ -1,19 +1,82 @@
-import { Button, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity } from "react-native";
+import { Button, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, FlatList, ActivityIndicator } from "react-native";
 import CustomHeader from '../../Components/UI/CustomHeader';
+import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
+import { useEffect } from "react";
+import { Alert } from "react-native";
+import * as userAction from '../../store/actions/User';
+import CreditCard from "../../Components/UI/CreditCard";
+
 
 const PaymentScreen = props => {
+  const [isLoading, setIsLoading] = useState(false); // Set an initial value
+  const [card, setCard] = useState([]); // State to hold past orders
+  const accessToken = useSelector(state => state.auth.accessToken);
+  const dispatch = useDispatch();
+
+  // useEffect(() => {
+  //   setIsLoading(true); // Set loading state to true before fetching data
+  //   dispatch(userAction.getCard(accessToken))
+  //     .then((response) => {
+  //       setIsLoading(false); // Set loading state to false after fetching data
+  //       setCard(response.data); // Set fetched data to state
+  //       console.log(response.data);
+  //     })
+  //     .catch(error => {
+  //       setIsLoading(false); // Set loading state to false in case of error
+  //       Alert.alert("Error fetching user information:", error);
+  //     });
+  // }, [accessToken]);
+
+  console.log("card ==>", card);
+
+  const editcardHandler = (id, data) => {
+    console.log("id in main screen", id, data)
+    props.navigation.navigate('AddNewCard', {id: id, cardData: data})
+  }
+
+
+  let cardPreview;
+
+  if (card.length === 0) {
+
+    cardPreview = (<View style={styles.logoContainer} >
+      <Image source={require('../../assets/Credit_Card_Payment-cuate.png')} style={styles.logo} />
+      <Text style={styles.bodyMainText}>No Saved Cards</Text>
+      <Text style={styles.bodyText}>All cards added will be saveed here.</Text>
+      <Text style={styles.bodyText}>In case you want to edit them later.</Text>
+    </View>)
+  }
+  else {
+    cardPreview = (<CreditCard />)
+    //   (
+    //   <FlatList
+    //     data={card} // Passing curent order as data
+    //     showsVerticalScrollIndicator={false}
+    //     keyExtractor={item => item.id} // Adjust keyExtractor as per your data structure
+    //     renderItem={itemData =>
+    //       <cardCard
+    //         param={itemData.item}
+    //         onEdit={editcardHandler}
+    //       />}
+    //   />
+    // )
+  }
+
+
   return (
     <View style={styles.container} >
       <CustomHeader label='Payment' press={() => { props.navigation.goBack() }} />
 
       <View style={styles.body} >
-          <View style={styles.logoContainer} >
-            <Image source={require('../../assets/Credit_Card_Payment-cuate.png')} style={styles.logo} />
-            <Text style={styles.bodyMainText}>No Saved Cards</Text>
-            <Text style={styles.bodyText}>All cards added will be saveed here.</Text>
-            <Text style={styles.bodyText}>In case you want to edit them later.</Text>
-          </View>
+        {isLoading
+          ?
+          <ActivityIndicator style={styles.body} color="#2c843e" size={"large"} />
+          :
+          (<View style={{ flex: 1, paddingTop: 20 }}>{cardPreview}</View>)
+        }
 
+        
           <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('AddNewCard') }}>
             <Text style={styles.verifyButton}>ADD NEW CARD</Text>
           </TouchableOpacity>
@@ -31,7 +94,7 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
-      justifyContent: 'space-between',
+      justifyContent: 'center',
       paddingHorizontal: 30,
       paddingBottom: 30,
   },

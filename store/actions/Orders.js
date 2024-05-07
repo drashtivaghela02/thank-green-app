@@ -2,7 +2,7 @@ const GET_ORDER_INFO = 'GET_ORDER_INFO';
 const GET_ORDER_DETAILS_INFO = 'GET_ORDER_DETAILS_INFO';
 const RATE_ORDER = 'RATE_ORDER';
 const CANCEL_ORDER = 'CANCEL_ORDER';
-
+const TRACK_ORDER = 'TRACK_ORDER';
 export const getOrderInfo = (accessToken) => {
 
   return async dispatch => {
@@ -117,6 +117,33 @@ export const cancelOrder = (value, accessToken) => {
     } catch (error) {
       console.error("Cancel orders error", error);
       // Optionally dispatch an action to update the state with the error
+    }
+  };
+};
+
+export const trackInfo = (orderId, accessToken) => {
+
+  return async dispatch => {
+    try {
+      const response = await fetch(`https://thankgreen.onrender.com/api/track-order/${orderId}`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + accessToken,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Failed to fetch track info');
+      }
+      const resData = await response.json();
+      console.log("get track resData", resData);
+      dispatch({ type: TRACK_ORDER, data: resData });
+      return resData;
+    } catch (error) {
+      console.error("Get track error", error);
+      // Optionally dispatch an action to update the state with the error
+      dispatch({ type: TRACK_ORDER, error: error.message });
     }
   };
 };

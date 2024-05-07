@@ -4,7 +4,7 @@ const GET_ADDRESS = 'GET_ADDRESS';
 const ADD_NEW_ADDRESS = 'ADD_NEW_ADDRESS';
 const EDIT_ADDRESS = 'EDIT_ADDRESS';
 const DELETE_ADDRESS = 'DELETE_ADDRESS';
-
+const GET_CARD = 'GET_CARD';
 
 export const getInfo = (accessToken) => {
 
@@ -177,3 +177,32 @@ console.log("action a data:  >>>>>>", addressId, accessToken)
     }
   };
 };
+
+export const getCard = (accessToken) => {
+
+  return async dispatch => {
+    try {
+      const response = await fetch('https://thankgreen.onrender.com/api/userprofile/card',
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + accessToken,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Failed to fetch card info');
+      }
+      const resData = await response.json();
+      console.log("getCard resData", resData);
+      dispatch({ type: GET_CARD, data: resData });
+      return resData;
+    } catch (error) {
+      console.error("Get Info error", error);
+      // Optionally dispatch an action to update the state with the error
+      dispatch({ type: GET_CARD, error: error.message });
+    }
+  };
+  
+};
+
