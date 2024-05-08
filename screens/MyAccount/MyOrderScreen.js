@@ -12,7 +12,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import OrderDetails from '../Orders/OrderDetails';
 import CurrentOrder from '../Orders/CurrentOrder';
 import PastOrder from '../Orders/PastOrder';
-import { Orders } from '../../navigation/OrderNavigator';
+import { OrdersScreens } from '../../navigation/Navigator';
 // import { MyTabs } from '../../navigation/OrderNavigator';
 
 
@@ -158,7 +158,7 @@ const MyOrderScreen = (props) => {
   return (
     <View>
 
-      <Orders />
+      <OrdersScreens />
 
       
 </View>

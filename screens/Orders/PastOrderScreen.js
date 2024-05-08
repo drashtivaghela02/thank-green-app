@@ -100,7 +100,7 @@ const PastOrderScreen = (param) => {
             </View>
           </View>
           <Divider />
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 10 }}>
             <View style={styles.orderStatus}>
               <View style={[
                 styles.statusIndicator,
@@ -201,18 +201,18 @@ const styles = StyleSheet.create({
     elevation: 8,
     borderRadius: 10,
     backgroundColor: 'white',
-    height: 130,
+    // height: 130,
     width: '88%',
     // margin: 20,
     overflow: 'hidden',
-    alignSelf: 'flex-end'
+    alignSelf: 'flex-end',
   },
   detail: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
     paddingBottom: 8,
-    paddingHorizontal: 10,
+    // paddingHorizontal: 10,
     gap: 50
   },
   orderStatus: {

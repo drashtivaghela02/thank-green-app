@@ -1,8 +1,12 @@
- import React from 'react';
+import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native'; // Correct import for NavigationContainer
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { NavigationContainer } from '@react-navigation/native';
 import { FontAwesome, MaterialIcons, MaterialCommunityIcons, Fontisto } from '@expo/vector-icons';
+
+import { Dimensions } from 'react-native';
+import CustomHeader from '../Components/UI/CustomHeader';
 
 import SignIn from '../Components/Form/SignIn'
 import SignUp from '../screens/SignUp';
@@ -14,7 +18,7 @@ import Colors from '../Constant/Colors';
 import PersonalInformationScreen from '../screens/MyAccount/PersonalInformationScreen';
 import SavedAddressScreen from '../screens/MyAccount/SavedAddressScreen';
 import PaymentScreen from '../screens/MyAccount/PaymentScreen';
-import MyOrderScreen from '../screens/MyAccount/MyOrderScreen';
+// import MyOrderScreen from '../screens/MyAccount/MyOrderScreen';
 import FavoritesScreen from '../screens/MyAccount/FavoritesScreen';
 import ReferAFriendScreen from '../screens/MyAccount/ReferAFriendScreen';
 import FAQScreen from '../screens/MyAccount/FAQScreen';
@@ -29,13 +33,18 @@ import FilterScreen from '../screens/Shop/FilterScreen';
 import LocationPicker from '../Components/Location/LocationPicker';
 import Map from '../Components/Location/Map';
 import OrderDetails from '../screens/Orders/OrderDetails';
-import { Orders } from './OrderNavigator';
+import CancelOrder from '../screens/Orders/CancelOrder';
+import TrackOrder from '../screens/Orders/TrackOrder';
+import ReportIssue from '../screens/Orders/ReportIssue';
+import CurrentOrder from '../screens/Orders/CurrentOrder';
+import PastOrder from '../screens/Orders/PastOrder';
+
 
 const FormStack = createStackNavigator();
 const FormNavigator = () => {
   return (
     <FormStack.Navigator>
-      <FormStack.Screen name="SignIn" component={SignIn}  options = {{headerShown: false}}/>
+      <FormStack.Screen name="SignIn" component={SignIn} options={{ headerShown: false }} />
     </FormStack.Navigator>
   );
 }
@@ -45,25 +54,26 @@ const AuthNavigator = () => {
   return (
     <NavigationContainer>
       <AuthStack.Navigator>
-        <AuthStack.Screen name="FormNavigator" component={FormNavigator}  options = {{headerShown: false}}/>
-        <AuthStack.Screen name="VerificationCode" component={VerificationCode} options = {{headerShown: false}} />
+        <AuthStack.Screen name="FormNavigator" component={FormNavigator} options={{ headerShown: false }} />
+        <AuthStack.Screen name="VerificationCode" component={VerificationCode} options={{ headerShown: false }} />
         <AuthStack.Screen name="Home" component={TabsNavigator} options={{ headerShown: false }} />
-        <AuthStack.Screen name='ReferAFriends' component={ReferAFriendScreen} options={{ headerShown: false , }} />
-        <AuthStack.Screen name="SignUp" component={SignUp}  options = {{headerShown: false}}/>
+        <AuthStack.Screen name='ReferAFriends' component={ReferAFriendScreen} options={{ headerShown: false, }} />
+        <AuthStack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
         <AuthStack.Screen name="ForgetPassword" component={ForgetPassword} options={{ headerShown: false }} />
         <AuthStack.Screen name="Map" component={Map} options={{ headerShown: false }} />
-      <AuthStack.Screen name='LocationPicker' component={LocationPicker} options = {{headerShown: false}} />
-        
+        <AuthStack.Screen name='LocationPicker' component={LocationPicker} options={{ headerShown: false }} />
+        <AuthStack.Screen name='TrackOrder' component={TrackOrder} options={{ headerShown: false }} />
+
       </AuthStack.Navigator>
     </NavigationContainer>
-  ); 
+  );
 };
 
 const LocationStack = createStackNavigator();
 const LocationScreen = () => {
   return (
     <LocationStack.Navigator>
-      <LocationStack.Screen name='SavedAddresses' component={SavedAddressScreen} options={{ headerShown: false }} />      
+      <LocationStack.Screen name='SavedAddresses' component={SavedAddressScreen} options={{ headerShown: false }} />
       {/* (location picker + Map) screen in auth navigator */}
     </LocationStack.Navigator>
   )
@@ -73,7 +83,7 @@ const HomeStack = createStackNavigator();
 const HomeScreen = () => {
   return (
     <HomeStack.Navigator>
-      <HomeStack.Screen name='Home' component={Home} options = {{headerShown: false}} />
+      <HomeStack.Screen name='Home' component={Home} options={{ headerShown: false }} />
     </HomeStack.Navigator>
   )
 }
@@ -90,58 +100,69 @@ const PaymentDetailScreen = () => {
 const ShopCategory = createStackNavigator();
 const ShopScreens = () => {
   return (
-  <ShopCategory.Navigator>
-    <ShopCategory.Screen name='ShopCategory' component={ShopCategoryScreen} options={{ headerShown: false }} />
+    <ShopCategory.Navigator>
+      <ShopCategory.Screen name='ShopCategory' component={ShopCategoryScreen} options={{ headerShown: false }} />
       <ShopCategory.Screen name='CategoryList' component={CategoryList} options={{ headerShown: false }} />
       <ShopCategory.Screen name='Filters' component={FilterScreen} options={{ headerShown: false }} />
-  </ShopCategory.Navigator>
+    </ShopCategory.Navigator>
   )
 }
 
 const ContactUs = createStackNavigator();
 const ContactUsScreens = () => {
   return (
-  <ContactUs.Navigator>
-    <ContactUs.Screen name='Contact' component={ContactUsScreen} options={{ headerShown: false }} />
-    <ContactUs.Screen name='FAQ' component={FAQScreen} options={{ headerShown: false }} />
-  </ContactUs.Navigator>
+    <ContactUs.Navigator>
+      <ContactUs.Screen name='Contact' component={ContactUsScreen} options={{ headerShown: false }} />
+      <ContactUs.Screen name='FAQ' component={FAQScreen} options={{ headerShown: false }} />
+    </ContactUs.Navigator>
   )
 }
 
-// const OrderTopTabBar = createMaterialTopTabNavigator();
-// const Tabs = () => {
-//   return (
-//     <Tab.Navigator
-//       initialRouteName="CurrentOrder"
-//       screenOptions={{
-//         tabBarActiveTintColor: '#2c843e',
-//         tabBarInactiveTintColor: '#8b8b8b',
-//         tabBarLabelStyle: { fontSize: 16 , fontWeight: '500'},
-//         tabBarStyle: { backgroundColor: 'white' },
-//         tabBarIndicatorStyle: {backgroundColor: '#2c843e'},
-//       }}
-//     >
-//       <Tab.Screen
-//         name="CurrentOrder"
-//         component={CurrentOrderScreen}
-//         options={{ tabBarLabel: 'Current Order' }}
-//       />
-//       <Tab.Screen
-//         name="PastOrder"
-//         component={PastOrderScreens}
-//         options={{ tabBarLabel: 'Past Order' }}
-//       />
-
-//     </Tab.Navigator>
-//   );
-// }
-const OrderStack = createStackNavigator();
-const OrdersScreens = () => {
+const OrderTopTabBar = createMaterialTopTabNavigator();
+const Tabs = () => {
   return (
-  <OrderStack.Navigator>
-    <OrderStack.Screen name='MyOrder' component={Orders} options={{ headerShown: false }} />
-    {/* <OrderStack.Screen name='OrderDetail' component={OrderDetails} options={{ headerShown: false }} /> */}
-  </OrderStack.Navigator>
+    <OrderTopTabBar.Navigator
+      initialRouteName="CurrentOrder"
+      screenOptions={{
+        tabBarActiveTintColor: '#2c843e',
+        tabBarInactiveTintColor: '#8b8b8b',
+        tabBarLabelStyle: { fontSize: 16, fontWeight: '500' },
+        tabBarStyle: { backgroundColor: 'white' },
+        tabBarIndicatorStyle: { backgroundColor: '#2c843e' },
+      }}
+    >
+      <OrderTopTabBar.Screen
+        name="CurrentOrder"
+        component={CurrentOrder}
+        options={{ tabBarLabel: 'Current Order' }}
+      />
+      <OrderTopTabBar.Screen
+        name="PastOrder"
+        component={PastOrder}
+        options={{ tabBarLabel: 'Past Order' }}
+      />
+
+    </OrderTopTabBar.Navigator>
+  );
+}
+const OrderStack = createStackNavigator();
+export const OrdersScreens = () => {
+  return (
+    <OrderStack.Navigator
+      screenOptions={{
+        header: (props) => (
+          <CustomHeader
+            label="My Order"
+            press={() => props.navigation.goBack()}
+          />
+        )
+      }}
+    >
+      <OrderStack.Screen name='MyOrderScreens' component={Tabs} />
+      <OrderStack.Screen name='OrderDetails' component={OrderDetails} options={{ headerShown: false }} />
+      <OrderStack.Screen name='CancelOrder' component={CancelOrder} options={{ headerShown: false }} />
+      <OrderStack.Screen name='ReportIssue' component={ReportIssue} options={{ headerShown: false }} />
+    </OrderStack.Navigator>
   )
 }
 
@@ -153,10 +174,10 @@ const MyAccountScreen = () => {
       <MyAccountStack.Screen name='Personal Information' component={PersonalInformationScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='SavedAddress' component={LocationScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='Payment' component={PaymentDetailScreen} options={{ headerShown: false }} />
-      <MyAccountStack.Screen name='MyOrders' component={Orders} options={{ headerShown: false }} />
-    <MyAccountStack.Screen name='OrderDetail' component={OrderDetails} options={{ headerShown: false }} />
+      <MyAccountStack.Screen name='MyOrders' component={OrdersScreens} options={{ headerShown: false }} />
+      {/* <MyAccountStack.Screen name='OrderDetail' component={OrderDetails} options={{ headerShown: false }} /> */}
       <MyAccountStack.Screen name='Favorites' component={FavoritesScreen} options={{ headerShown: false }} />
-      <MyAccountStack.Screen name='ChangePassword' component={ChangePasswordScreen} options={{ headerShown: false }} />    
+      <MyAccountStack.Screen name='ChangePassword' component={ChangePasswordScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='FAQ' component={FAQScreen} options={{ headerShown: false }} />
       <MyAccountStack.Screen name='Logout' component={LogoutScreen} options={{ headerShown: false }} />
     </MyAccountStack.Navigator>
@@ -171,7 +192,7 @@ const TabsNavigator = () => {
       activeColor={Colors.green}
       inactiveColor='#AFAFAF'
       barStyle={{ backgroundColor: 'white' }}
-      
+
     >
       <BottomTab.Screen
         name="HomeTab"
@@ -228,7 +249,7 @@ const TabsNavigator = () => {
         }}
       />
     </BottomTab.Navigator>
- 
+
   )
 }
 

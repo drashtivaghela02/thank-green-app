@@ -14,19 +14,19 @@ const PaymentScreen = props => {
   const accessToken = useSelector(state => state.auth.accessToken);
   const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   setIsLoading(true); // Set loading state to true before fetching data
-  //   dispatch(userAction.getCard(accessToken))
-  //     .then((response) => {
-  //       setIsLoading(false); // Set loading state to false after fetching data
-  //       setCard(response.data); // Set fetched data to state
-  //       console.log(response.data);
-  //     })
-  //     .catch(error => {
-  //       setIsLoading(false); // Set loading state to false in case of error
-  //       Alert.alert("Error fetching user information:", error);
-  //     });
-  // }, [accessToken]);
+  useEffect(() => {
+    setIsLoading(true); // Set loading state to true before fetching data
+    dispatch(userAction.getCard(accessToken))
+      .then((response) => {
+        setIsLoading(false); // Set loading state to false after fetching data
+        setCard(response.data); // Set fetched data to state
+        console.log(response.data);
+      })
+      .catch(error => {
+        setIsLoading(false); // Set loading state to false in case of error
+        Alert.alert("Error fetching user information:", error);
+      });
+  }, [accessToken]);
 
   console.log("card ==>", card);
 
@@ -48,19 +48,18 @@ const PaymentScreen = props => {
     </View>)
   }
   else {
-    cardPreview = (<CreditCard />)
-    //   (
-    //   <FlatList
-    //     data={card} // Passing curent order as data
-    //     showsVerticalScrollIndicator={false}
-    //     keyExtractor={item => item.id} // Adjust keyExtractor as per your data structure
-    //     renderItem={itemData =>
-    //       <cardCard
-    //         param={itemData.item}
-    //         onEdit={editcardHandler}
-    //       />}
-    //   />
-    // )
+    cardPreview = (
+      <FlatList
+        data={card} // Passing curent order as data
+        showsVerticalScrollIndicator={false}
+        keyExtractor={item => item.id} // Adjust keyExtractor as per your data structure
+        renderItem={itemData =>
+          <CreditCard
+            param={itemData.item}
+            onEdit={editcardHandler}
+          />}
+      />
+    )
   }
 
 

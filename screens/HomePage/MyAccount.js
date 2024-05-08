@@ -1,5 +1,5 @@
 import { ScrollView, Button, Image, StyleSheet, Text, TextInput, TouchableOpacity, View, Dimensions } from "react-native";
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
@@ -8,56 +8,102 @@ import { ACCOUNT } from "../../data/myaccount-data";
 import { FontAwesome6 } from '@expo/vector-icons';
 import RBSheet from "react-native-raw-bottom-sheet";
 import { MaterialIcons } from '@expo/vector-icons';
+import { Divider } from "react-native-paper";
+import { useDispatch, useSelector } from "react-redux";
+import * as userAction from '../../store/actions/User';
+
 
 const MyAccount = props => {
-    const sheetRef = useRef(null); // Initialize the ref
+    const sheetRef = useRef(null);
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [image, setImage] = useState('');
+
+    const accessToken = useSelector(state => state.auth.accessToken)
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        setIsLoading(true);
+        dispatch(userAction.getInfo(accessToken))
+            .then((response) => {
+                setIsLoading(false);
+                setImage(response?.data[0]?.profileImageUrl);
+                console.log(response?.data[0]?.profileImageUrl)
+            })
+            .catch(error => {
+                setIsLoading(false);
+            });
+    }, [accessToken]);
+
+    const EditImageHandler = () => {
+        console.log('Edit profile')
+    }
 
     const handleLogout = () => {
-        // Add logout logic here
-        props.navigation.navigate('FormNavigator'); 
+        props.navigation.navigate('FormNavigator');
         console.log('logout');
-        // Close the bottom sheet
         sheetRef.current.close();
     };
 
+    const header = (
+        <View style={styles.header}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <TouchableOpacity onPress={() => props.navigation.goBack()}>
+                    <AntDesign name="arrowleft" size={28} color='white' />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={EditImageHandler}>
+                    <FontAwesome name="edit" size={24} color="white" />
+                </TouchableOpacity>
+            </View>
+        </View>
+    )
+
     return (
         <View style={styles.container}>
-            <LinearGradient
-                colors={['#2c843e', '#1e4c5e']}
-                start={{ x: 0.5, y: 0 }}
-                end={{ x: 0.5, y: 1 }}
-                style={{ flex: 0.5 }}
-            >
-                <View style={styles.header}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <AntDesign name="arrowleft" size={28} color='white' />
-                        <FontAwesome6 name="edit" size={24} color="white" />
-                    </View>
-                </View>
-            </LinearGradient>
+            <View style={{ flex: 0.40 }}>
 
-            <View style={styles.body}>
-                {
-                    ACCOUNT.map((item, index) => (
-                        <View key={index}>
-                            <TouchableOpacity style={styles.itemContainer} onPress={() => {
-                                if (item.label === 'Logout') {
-                                    sheetRef.current.open();
-                                } else {
-                                    props.navigation.navigate(item.screenName);
-                                }
-                            }}>
-                                <View style={styles.firstContainer}>
-                                    {item.leftIcon}
-                                    <Text style={styles.textStyle}>{item.label}</Text>
-                                </View>
-                                {item.rightIcon}
-                            </TouchableOpacity>
-                            <View style={{ borderBottomWidth: 0.8, paddingVertical: 4, borderColor: '#eef1f4' }}></View>
-                        </View>
-                    ))
+                {image
+                    ?
+                    <View style={{ flex: 1 }}>
+                        <Image source={{ uri: image }} style={styles.image} />
+                        <View style={styles.overlay}>{header}</View>
+                    </View>
+                    :
+                    <LinearGradient
+                        colors={['#2c843e', '#1e4c5e']}
+                        start={{ x: 0.5, y: 0 }}
+                        end={{ x: 0.5, y: 1 }}
+                        style={{ flex: 1 }}
+                    >
+                        {header}
+                    </LinearGradient>
                 }
             </View>
+            {/* <View style={styles.bodyContainer}> */}
+
+                <View style={styles.body}>
+                    {
+                        ACCOUNT.map((item, index) => (
+                            <View key={index}>
+                                <TouchableOpacity style={styles.itemContainer} onPress={() => {
+                                    if (item.label === 'Logout') {
+                                        sheetRef.current.open();
+                                    } else {
+                                        props.navigation.navigate(item.screenName);
+                                    }
+                                }}>
+                                    <View style={styles.firstContainer}>
+                                        {item.leftIcon}
+                                        <Text style={styles.textStyle}>{item.label}</Text>
+                                    </View>
+                                    {item.rightIcon}
+                                </TouchableOpacity>
+                                <Divider />
+                            </View>
+                        ))
+                    }
+                </View>
+            {/* </View> */}
 
             {/* Bottom Sheet for Logout */}
             <RBSheet
@@ -107,10 +153,30 @@ const styles = StyleSheet.create({
     header: {
         paddingTop: 40,
         paddingHorizontal: 20,
-        // height: Dimensions.get('window').height*0.30
+    }, overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0,0,0,0.4)',
+    },
+    image: {
+        flex: 1,
+        resizeMode: 'cover',
+    },
+    headerImage: {
+        paddingTop: 40,
+        paddingHorizontal: 20,
+        position: 'absolute'
+    },
+    bodyContainer: {
     },
     body: {
-        flex: 1,
+        flex: 0.76,
+        backgroundColor: 'transparent',
+        position: 'absolute',
+        top: '35%',
+        left: 0,
+        right: 0,
+        bottom: 0,
+        // flex: 0.76,
         borderTopLeftRadius: 40,
         borderTopRightRadius: 40,
         backgroundColor: 'white',
@@ -120,7 +186,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingHorizontal: 40,
-        paddingVertical: 11
+        paddingVertical: 15
         // paddingTop: 28
     },
     firstContainer: {
@@ -151,25 +217,6 @@ const styles = StyleSheet.create({
     },
     spacer: {
         marginBottom: 12,
-    },
-    /** Placeholder */
-    placeholder: {
-        flexGrow: 1,
-        flexShrink: 1,
-        flexBasis: 0,
-        height: 400,
-        marginTop: 0,
-        padding: 24,
-        backgroundColor: 'transparent',
-    },
-    placeholderInset: {
-        borderWidth: 4,
-        borderColor: '#e5e7eb',
-        borderStyle: 'dashed',
-        borderRadius: 9,
-        flexGrow: 1,
-        flexShrink: 1,
-        flexBasis: 0,
     },
     /** Sheet */
     sheet: {

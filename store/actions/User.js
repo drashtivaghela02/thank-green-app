@@ -23,7 +23,14 @@ export const getInfo = (accessToken) => {
       }
       const resData = await response.json();
       console.log("getinfo resData", resData?.data[0]);
-      dispatch({ type: GET_INFO, data: resData?.data[0] });
+      dispatch({
+        type: GET_INFO,
+        userdata: resData?.data[0],
+        name: resData?.data[0].name,
+        email : resData?.data[0].email,
+        phone_number: resData?.data[0].phone_number,
+        profileImageUrl : resData?.data[0].profileImageUrl,
+      });
       return resData;
     } catch (error) {
       console.error("Get Info error", error);
@@ -86,13 +93,10 @@ export const getAddress = (accessToken) => {
 
 
 export const addNewAddress = (values, accessToken) => {
-
   return async dispatch => {
     try {
       console.log('sdfugy', values);
-      const response = await fetch('https://thankgreen.onrender.com/api/userprofile/add-address',
-
-        {
+      const response = await fetch('https://thankgreen.onrender.com/api/userprofile/add-address', {
           method: 'POST',
           headers: {
             'Authorization': 'Bearer ' + accessToken,
@@ -198,7 +202,7 @@ export const getCard = (accessToken) => {
       dispatch({ type: GET_CARD, data: resData });
       return resData;
     } catch (error) {
-      console.error("Get Info error", error);
+      console.error("Get card error", error);
       // Optionally dispatch an action to update the state with the error
       dispatch({ type: GET_CARD, error: error.message });
     }
@@ -206,3 +210,87 @@ export const getCard = (accessToken) => {
   
 };
 
+export const addNewCard = (values, accessToken) => {
+  return async dispatch => {
+    try {
+      console.log('sdfugy', values);
+      const response = await fetch('https://thankgreen.onrender.com/api/userprofile/add-card', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + accessToken,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            number: values.cardNumber,
+            holder_name: values.cardHolder,
+            expiry: values.expirationDate,
+            cvv: values.cvv,
+          })
+        }
+      );
+      const resData = await response.json();
+      console.log("add new card resData", resData);
+      dispatch({ type: ADD_NEW_ADDRESS });
+      return resData;
+    } catch (error) {
+      console.error("add new card error", error);
+    }
+  };
+};
+
+export const editCard = (id, values, accessToken) => {
+
+  return async dispatch => {
+    try {
+      // console.log('edit', values);
+      const response = await fetch(`https://thankgreen.onrender.com/api/userprofile/update-card/${id}`,
+
+        {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + accessToken,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            number: values.cardNumber,
+            holder_name: values.cardHolder,
+            expiry: values.expirationDate,
+            cvv: values.cvv,
+          })
+        }
+      );
+      const resData = await response.json();
+      console.log("edit card resData", resData);
+      dispatch({ type: EDIT_ADDRESS });
+      return resData;
+    } catch (error) {
+      console.error("edit card error", error);
+    }
+  };
+};
+
+export const deleteCard = (cardId, accessToken) => {
+  console.log("action a data:  >>>>>>", cardId, accessToken)
+    return async dispatch => {
+      try {
+        console.log('sdfugy', cardId);
+        const response = await fetch(`https://thankgreen.onrender.com/api/userprofile/delete-card/${cardId}`,
+  
+          {
+            method: 'DELETE',
+            headers: {
+              'Authorization': 'Bearer ' + accessToken,
+            },
+           
+          }
+        );
+        const resData = await response.json();
+        console.log("Delete address resData", resData);
+        dispatch({ type: DELETE_ADDRESS });
+        return resData;
+      } catch (error) {
+        console.error("Sign up error", error);
+      }
+    };
+  };
+  

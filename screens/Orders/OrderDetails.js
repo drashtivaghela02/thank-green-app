@@ -87,7 +87,7 @@ const OrderDetails = (props) => {
                   <View style={styles.textcontainer}>
                     <View>
                       <Text style={{ fontSize: 15, fontWeight: '500', color: '#888' }}>{product.product_name}</Text>
-                      <Text style={{ fontSize: 13, fontWeight: '400', color: '#888' }}>Net width: {product.quantity_variant}</Text>
+                      <Text style={{ fontSize: 13, fontWeight: '400', color: '#888' }}>Net wt: {product.quantity_variant}</Text>
                       <Text style={{ fontSize: 13, fontWeight: '400', color: '#888' }}>Qty: {product.quantity}</Text>
                     </View>
                     <Text style={{ fontSize: 18, fontWeight: '800', color: '#666' }}>${product.order_price}</Text>

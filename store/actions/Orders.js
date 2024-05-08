@@ -3,6 +3,7 @@ const GET_ORDER_DETAILS_INFO = 'GET_ORDER_DETAILS_INFO';
 const RATE_ORDER = 'RATE_ORDER';
 const CANCEL_ORDER = 'CANCEL_ORDER';
 const TRACK_ORDER = 'TRACK_ORDER';
+
 export const getOrderInfo = (accessToken) => {
 
   return async dispatch => {
