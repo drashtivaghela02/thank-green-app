@@ -57,6 +57,7 @@ const ChangePasswordScreen = props => {
 
                     if (response.status === "success") {
                         setIsLoading(false)
+                        Alert.alert("Success!", response.msg)
                         showMessage({
                             message: "Password changed successfully!!",
                             type: "success",
@@ -67,7 +68,7 @@ const ChangePasswordScreen = props => {
                 })
         }
         catch (error) {
-            console.error('Change password error!! : ', error)
+            // console.error('Change password error!! : ', error)
             setError(error.message);
             setIsLoading(false);
         };

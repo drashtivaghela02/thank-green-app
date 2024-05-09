@@ -1,6 +1,7 @@
 import { GET_INFO, UPDATE_INFO } from "../actions/User";
 
 const initialState = {
+  data : [],
   name: '',
   email: '',
   contactNo : '',

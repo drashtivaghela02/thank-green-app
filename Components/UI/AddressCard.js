@@ -6,9 +6,11 @@ import RBSheet from "react-native-raw-bottom-sheet";
 import * as userAction from '../../store/actions/User';
 
 import { useDispatch, useSelector } from "react-redux";
+import { useIsFocused } from "@react-navigation/native";
 
 
-const AddressCard = (param) => {
+const AddressCard = (param, { navigation }) => {
+  const isFocused = useIsFocused()
   data = param.param
   const accessToken = useSelector(state => state.auth.accessToken)
   const dispatch = useDispatch();
@@ -19,7 +21,6 @@ const AddressCard = (param) => {
   const Id = data.id
   const editData = data
 
-
   const deleteHandler = () => {
     console.log(Id, accessToken)
     setIsLoading(true)
@@ -28,6 +29,7 @@ const AddressCard = (param) => {
         .then((state) => {
           console.log("Staet sign up =====> ", state)
           if (state.status == 'success') {
+            dispatch(userAction.getAddress(accessToken))
             setIsLoading(false)
             Alert.alert('Success!!', state.msg)
           }
@@ -38,8 +40,7 @@ const AddressCard = (param) => {
             ])
             setIsLoading(false)
           }
-        }
-        )
+        })
     } catch (err) {
       setError(err.message);
       setIsLoading(false);
@@ -49,8 +50,6 @@ const AddressCard = (param) => {
   return (
     <View style={{ padding: 5 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
-
-
         <View style={styles.product}>
           <View>
             <View style={styles.detail}>
@@ -67,7 +66,7 @@ const AddressCard = (param) => {
           <View style={{ flexDirection: 'row', gap: 30, paddingHorizontal: 10 }}>
             <TouchableOpacity style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }} onPress={() => param.onEdit(Id, editData)}  >
               <MaterialIcons name="mode-edit-outline" size={20} color="#888" />
-              <Text style={{fontSize: 16, fontWeight: '500'}}>EDIT</Text>
+              <Text style={{ fontSize: 16, fontWeight: '500' }}>EDIT</Text>
             </TouchableOpacity>
 
             <Text>|</Text>
@@ -78,10 +77,10 @@ const AddressCard = (param) => {
               {isLoading
                 ? <ActivityIndicator size={22} color="#2c843e" />
                 : (<View style={{ flexDirection: 'row', gap: 3, alignItems: 'center' }}>
-<AntDesign name="delete" size={20} color="#888" />
-                  <Text style={{fontSize: 16, fontWeight: '500'}}> DELETE</Text>
+                  <AntDesign name="delete" size={20} color="#888" />
+                  <Text style={{ fontSize: 16, fontWeight: '500' }}> DELETE</Text>
                 </View>
-                  )
+                )
               }
             </TouchableOpacity>
           </View>

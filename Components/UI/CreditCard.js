@@ -84,8 +84,8 @@ import { useDispatch, useSelector } from "react-redux";
                     "Are you sure?",
                     "You want to delete card...",
                     [
-                      { text: 'cancel', style: 'cancel' },
-                      { text: 'Ok', onPress: deleteHandler }
+                      { text: 'NO', style: 'cancel' },
+                      { text: 'YES', onPress: deleteHandler }
                     ])
 
                 }} >

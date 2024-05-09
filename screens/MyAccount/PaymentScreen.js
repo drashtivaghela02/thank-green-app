@@ -9,21 +9,21 @@ import CreditCard from "../../Components/UI/CreditCard";
 
 
 const PaymentScreen = props => {
-  const [isLoading, setIsLoading] = useState(false); // Set an initial value
-  const [card, setCard] = useState([]); // State to hold past orders
+  const [isLoading, setIsLoading] = useState(false);
+  const [card, setCard] = useState([]); 
   const accessToken = useSelector(state => state.auth.accessToken);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setIsLoading(true); // Set loading state to true before fetching data
+    setIsLoading(true); 
     dispatch(userAction.getCard(accessToken))
       .then((response) => {
-        setIsLoading(false); // Set loading state to false after fetching data
-        setCard(response.data); // Set fetched data to state
-        console.log(response.data);
+        setIsLoading(false); 
+        setCard(response.data); 
+        // console.log(response.data);
       })
       .catch(error => {
-        setIsLoading(false); // Set loading state to false in case of error
+        setIsLoading(false);
         Alert.alert("Error fetching user information:", error);
       });
   }, [accessToken]);
@@ -39,15 +39,13 @@ const PaymentScreen = props => {
   let cardPreview;
 
   if (card.length === 0) {
-
     cardPreview = (<View style={styles.logoContainer} >
       <Image source={require('../../assets/Credit_Card_Payment-cuate.png')} style={styles.logo} />
       <Text style={styles.bodyMainText}>No Saved Cards</Text>
       <Text style={styles.bodyText}>All cards added will be saveed here.</Text>
       <Text style={styles.bodyText}>In case you want to edit them later.</Text>
     </View>)
-  }
-  else {
+  } else {
     cardPreview = (
       <FlatList
         data={card} // Passing curent order as data

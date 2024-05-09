@@ -5,6 +5,9 @@ const ADD_NEW_ADDRESS = 'ADD_NEW_ADDRESS';
 const EDIT_ADDRESS = 'EDIT_ADDRESS';
 const DELETE_ADDRESS = 'DELETE_ADDRESS';
 const GET_CARD = 'GET_CARD';
+const ADD_NEW_CARD = 'ADD_NEW_CARD';
+const EDIT_CARD = 'EDIT_CARD';
+const DELETE_CARD = 'DELETE_CARD';
 
 export const getInfo = (accessToken) => {
 
@@ -29,7 +32,7 @@ export const getInfo = (accessToken) => {
         name: resData?.data[0].name,
         email : resData?.data[0].email,
         phone_number: resData?.data[0].phone_number,
-        profileImageUrl : resData?.data[0].profileImageUrl,
+        profileImageUrl : resData?.data[0].profileImageUrl
       });
       return resData;
     } catch (error) {
@@ -230,7 +233,7 @@ export const addNewCard = (values, accessToken) => {
       );
       const resData = await response.json();
       console.log("add new card resData", resData);
-      dispatch({ type: ADD_NEW_ADDRESS });
+      dispatch({ type: ADD_NEW_CARD });
       return resData;
     } catch (error) {
       console.error("add new card error", error);
@@ -261,7 +264,7 @@ export const editCard = (id, values, accessToken) => {
       );
       const resData = await response.json();
       console.log("edit card resData", resData);
-      dispatch({ type: EDIT_ADDRESS });
+      dispatch({ type: EDIT_CARD });
       return resData;
     } catch (error) {
       console.error("edit card error", error);
@@ -286,7 +289,7 @@ export const deleteCard = (cardId, accessToken) => {
         );
         const resData = await response.json();
         console.log("Delete address resData", resData);
-        dispatch({ type: DELETE_ADDRESS });
+        dispatch({ type: DELETE_CARD });
         return resData;
       } catch (error) {
         console.error("Sign up error", error);

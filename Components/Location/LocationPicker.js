@@ -39,7 +39,6 @@ function LocationPicker({ navigation, route }) {
 
     useEffect(() => {
         console.log("Picked Location Updated:", pickedLocation);
-       
     }, [pickedLocation]);
 
     const pickOnMapHandler = () => {
@@ -103,7 +102,6 @@ function LocationPicker({ navigation, route }) {
             values.longitude = pickedLocation.longitude;
         }
         // console.log(values)
-
         if (editedAddress) {
 
             try {

@@ -6,8 +6,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as userAction from '../../store/actions/User';
 import React, { useEffect } from "react";
 import { ActivityIndicator } from "react-native-paper";
+import { useIsFocused } from "@react-navigation/native";
 
 const SavedAddressScreen = props => {
+  const isFocused = useIsFocused();
 
   const [isLoading, setIsLoading] = React.useState(false); // Set an initial value
   const [address, setAddress] = React.useState([]); // State to hold past orders
@@ -26,7 +28,7 @@ const SavedAddressScreen = props => {
         setIsLoading(false); // Set loading state to false in case of error
         Alert.alert("Error fetching user information:", error);
       });
-  }, [accessToken]);
+  }, [accessToken, isFocused]);
 
   console.log("address ==>", address);
 
@@ -59,6 +61,7 @@ const SavedAddressScreen = props => {
           <AddressCard
             param={itemData.item}
             onEdit={editAddressHandler}
+            isFocused={isFocused}
           />}
       />
     )

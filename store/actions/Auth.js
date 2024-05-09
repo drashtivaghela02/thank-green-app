@@ -120,7 +120,13 @@ export const loginEmail = (email, password) => {
         return resData;
       }
 
-      dispatch({ type: LOGINEMAIL, status: resData.status, accessToken: resData.data.accessToken, refreshToken: resData.data.refreshToken, password: password });
+      dispatch({
+        type: LOGINEMAIL,
+        status: resData.status,
+        accessToken: resData.data.accessToken,
+        refreshToken: resData.data.refreshToken,
+        password: password
+      });
       return resData;
 
     } catch (error) {
@@ -160,7 +166,13 @@ export const loginContact = (contact, password) => {
       return resData;
     }
 
-    dispatch({ type: LOGINCONTACT, status: resData.status, accessToken: resData.data.accessToken, refreshToken: resData.data.refreshToken, password: password });
+    dispatch({
+      type: LOGINCONTACT,
+      status: resData.status,
+      accessToken: resData.data.accessToken,
+      refreshToken: resData.data.refreshToken,
+      password: password
+    });
     return resData;
   };
 };
