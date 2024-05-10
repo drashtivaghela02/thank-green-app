@@ -62,11 +62,7 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     paddingVertical: 2.8
   },
-  drawerItem: {
-    paddingVertical: 5,
-    backgroundColor: 'white',
-    flexDirection: 'row',
-    // backgroundColor: '#a6a6aa'
-  },
+  
+  
 
 });

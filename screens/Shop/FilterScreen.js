@@ -5,18 +5,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import CustomHeader from "../../Components/UI/CustomHeader";
 import RadioGroup, { RadioButton } from 'react-native-paper';
 import SortByScreen from './SortByScreen';
-
-
-function FilterByScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Current Order!</Text>
-    </View>
-  );
-}
-
-
-
+import FilterByScreen from './FilterByScreen';
 
 
 const Tab = createMaterialTopTabNavigator();

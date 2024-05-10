@@ -3,9 +3,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { FontAwesome, MaterialIcons, MaterialCommunityIcons, Fontisto } from '@expo/vector-icons';
+import { FontAwesome, MaterialIcons, MaterialCommunityIcons, Fontisto, AntDesign, Feather, Entypo } from '@expo/vector-icons';
 
-import { Dimensions } from 'react-native';
+import { Dimensions, Image, SafeAreaView, Text, View } from 'react-native';
 import CustomHeader from '../Components/UI/CustomHeader';
 
 import SignIn from '../Components/Form/SignIn'
@@ -38,6 +38,12 @@ import TrackOrder from '../screens/Orders/TrackOrder';
 import ReportIssue from '../screens/Orders/ReportIssue';
 import CurrentOrder from '../screens/Orders/CurrentOrder';
 import PastOrder from '../screens/Orders/PastOrder';
+import NotificationScreen from '../screens/Home/NotificationScreen';
+import SearchScreen from '../screens/Home/SearchScreen';
+import { DrawerContentScrollView, DrawerItemList, createDrawerNavigator } from '@react-navigation/drawer';
+import { TouchableOpacity } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import CustomDrawer from '../Components/Drawer/CustomDrawer';
 
 
 const FormStack = createStackNavigator();
@@ -56,7 +62,7 @@ const AuthNavigator = () => {
       <AuthStack.Navigator>
         <AuthStack.Screen name="FormNavigator" component={FormNavigator} options={{ headerShown: false }} />
         <AuthStack.Screen name="VerificationCode" component={VerificationCode} options={{ headerShown: false }} />
-        <AuthStack.Screen name="Home" component={TabsNavigator} options={{ headerShown: false }} />
+        <AuthStack.Screen name="Home" component={DrawerNavigator} options={{ headerShown: false }} />
         <AuthStack.Screen name='ReferAFriends' component={ReferAFriendScreen} options={{ headerShown: false, }} />
         <AuthStack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
         <AuthStack.Screen name="ForgetPassword" component={ForgetPassword} options={{ headerShown: false }} />
@@ -79,11 +85,32 @@ const LocationScreen = () => {
   )
 }
 
+
+const Drawer = createDrawerNavigator();
+const DrawerNavigator = () => {
+  return (
+    <Drawer.Navigator
+      initialRouteName="DashBoard"
+      screenOptions={{
+        drawerStyle: {
+          width: Dimensions.get('window').width * 0.85,
+        },
+      }}
+      drawerContent={props => <CustomDrawer {...props} />}
+    >
+      <Drawer.Screen name='HomeDrawer' component={TabsNavigator} options={{ headerShown: false }} />
+    </Drawer.Navigator>
+  )
+}
+
+
 const HomeStack = createStackNavigator();
 const HomeScreen = () => {
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen name='Home' component={Home} options={{ headerShown: false }} />
+      <HomeStack.Screen name="Notifications" component={NotificationScreen} options={{ headerShown: false }} />
+      <HomeStack.Screen name="HomeSearch" component={SearchScreen} options={{ headerShown: false }} />
     </HomeStack.Navigator>
   )
 }
@@ -97,6 +124,7 @@ const PaymentDetailScreen = () => {
     </PaymentStack.Navigator>
   )
 }
+
 const ShopCategory = createStackNavigator();
 const ShopScreens = () => {
   return (
@@ -145,6 +173,7 @@ const Tabs = () => {
     </OrderTopTabBar.Navigator>
   );
 }
+
 const OrderStack = createStackNavigator();
 export const OrdersScreens = () => {
   return (

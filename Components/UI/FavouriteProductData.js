@@ -49,9 +49,7 @@ const styles = StyleSheet.create({
   gridItem: {
     flex: 0.5,
     margin: 10,
-    height: 200,
     borderRadius: 8,
-    overflows: 'hidden',
     elevation: 8,
     borderRadius: 10,
     backgroundColor: 'white',
@@ -60,17 +58,10 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    // borderRadius : 10,
-    // padding : 15,
-    // justifyContent: 'flex-end',
-    // alignItems: 'flex-end'
-    // overflows: 'hidden'
-
   },
   image: {
     flex: 1,
     resizeMode: 'cover',
-    // overflow : 'hidden'
   },
   title: {
     fontSize: 14,

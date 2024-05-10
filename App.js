@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import AuthNavigator from './navigation/Navigator'
@@ -14,13 +15,13 @@ const rootReducer = combineReducers({
   user: userReducer
 });
 
-const store = createStore(rootReducer, applyMiddleware(thunk,saveStateMiddleware));
+const store = createStore(rootReducer, applyMiddleware(thunk, saveStateMiddleware));
 export default function App() {
 
   useEffect(() => {
     store.dispatch(loadInitialState());
   }, []);
-  
+
   return (
     // <View style={styles.container}>
     //   <Text>Open up App.js to start working on your app!</Text>
@@ -29,6 +30,8 @@ export default function App() {
     <Provider store={store} >
       <AuthNavigator />
       <FlashMessage position="bottom" />
+      <StatusBar style="auto" />
+
     </Provider>
   );
 }

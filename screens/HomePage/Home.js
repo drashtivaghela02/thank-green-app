@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
 import CustomHeader from "../../Components/UI/CustomHeader";
 import { LinearGradient } from "expo-linear-gradient";
-import { AntDesign, Entypo, Feather, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { AntDesign, Entypo, Feather, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 
 const Home = props => {
 
@@ -14,16 +14,18 @@ const Home = props => {
       >
         <View style={styles.header}>
           <View style={{ flexDirection: 'row', gap: 10, justifyContent: 'space-between', alignItems: 'center' }}>
-            <Entypo name="menu" size={28} color="white" onPress={() => { props.navigation.goBack() }} />
+            <Entypo name="menu" size={28} color="white" onPress={()=> props.navigation.toggleDrawer()}  />
             <View>
               <Text style={styles.subHeading} >Deliver to</Text>
               <Text numberOfLines={1} style={styles.heading}>Culture Tea Bar, Broad...</Text>
             </View>
-            <Ionicons name="notifications-outline" size={28} color="white" />
-            <MaterialCommunityIcons name="cart-variant" size={28} color='white' />
+            <Ionicons name="notifications-outline" size={28} color="white" onPress={() => { props.navigation.navigate('Notifications') }} />
+            <MaterialCommunityIcons name="cart-variant" size={28} color='white' onPress={() => { props.navigation.navigate('CheckOut') }} />
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <View style={{
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate('HomeSearch')}
+              style={{
               flexDirection: 'row',
               alignItems:'center',
               width: Dimensions.get('window').width * 0.8,
@@ -37,8 +39,9 @@ const Home = props => {
             }}>
               <Feather name="search" size={18} color="black" style={{ marginLeft: 1 }} />
               <Text style={{fontSize:17}}>Search</Text>
-            </View>
-            <MaterialIcons name="filter-list" size={28} color="white" onPress={() => { props.navigation.goBack() }} />
+            </TouchableOpacity>
+            <AntDesign name="bars" size={28} color="white" />
+            {/* <FontAwesome6 name="bars-staggered" size={24} color="white" onPress={() => { props.navigation.goBack() }} /> */}
           </View>
         </View>
       </LinearGradient>
