@@ -1,20 +1,32 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
 import { View, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
-const CategoryFood = ({ text, imagepath, bordercolor, onPress }) => {
+import { Divider } from 'react-native-paper';
+const CategoryFood = (param) => {
+    console.log("sfhsulkahfoiahfo;aif;ojOJAdfi", param)
+    const data = param.param
+    const id = param.param.id
+    const name = param.param.name
+
     return (
-        <TouchableOpacity onPress={onPress}>
+        <TouchableOpacity onPress={() => param.onSelect(id, name)}>
         <View style={styles.mainscreen}>
-            <View style={{...styles.imagePreview,...{ borderWidth: 2, marginHorizontal: 10, borderRadius: 7, borderColor: bordercolor ? bordercolor : 'black' }}}>
-                <Image style={styles.image} source={{uri : imagepath}} />
+                <View style={{
+                    ...styles.imagePreview, ...{
+                        borderWidth: 2, marginHorizontal: 10, borderRadius: 7,
+                        // borderColor: bordercolor ? bordercolor : 'black'
+                    }
+                }}>
+                <Image style={styles.image} source={{uri : data.image}} />
             </View>
             <View style={styles.textcontainer}>
                 <Text style={{ fontSize: 19, fontWeight: '500' }}>
-                    {text}
+                    {data.name}
                 </Text>
                 <MaterialCommunityIcons style={styles.sideicon} size={26} name='arrow-right' color='#CCCCCC' />
             </View>
         </View>
+        <Divider />
         </TouchableOpacity>
     )
 }

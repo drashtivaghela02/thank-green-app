@@ -7,31 +7,57 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import List from '../../Components/UI/List';
 import CategoryFood from '../../Components/UI/CategoryFood';
+import { FlatList } from 'react-native';
+import * as productAction from '../../store/actions/Products';
+import { useDispatch, useSelector } from 'react-redux';
+
 
 const ShopCategoryScreen = props => {
+  const accessToken = useSelector(state => state.auth.accessToken)
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [resData, setResdata] = useState();
 
   const [searchPhrase, setSearchPhrase] = useState("");
   const [clicked, setClicked] = useState(false);
-  const [fakeData, setFakeData] = useState();
 
-  // get data from the fake api endpoint
   useEffect(() => {
-    const getData = async () => {
-      const apiResponse = await fetch(
-        "https://my-json-server.typicode.com/kevintomas1995/logRocket_searchBar/languages"
-      );
-      const data = await apiResponse.json();
-      setFakeData(data);
-    };
-    getData();
-  }, []);
+    setIsLoading(true);
+    dispatch(productAction.getCategory(accessToken))
+      .then((response) => {
+        setIsLoading(false);
+        console.log("sgdagfv xzv=> ", response?.data)
+        setResdata(response?.data);
+      })
+      .catch(error => {
+        setIsLoading(false);
+        console.error("Error fetching user information:", error);
+      });
+  }, [accessToken])
+
+  const onProductSelectHandler = (id, name) => {
+    console.log("touched", id)
+   props.navigation.navigate('CategoryList', {categoryId: id, name: name}) 
+  }
+  // const [fakeData, setFakeData] = useState();
+
+  // // get data from the fake api endpoint
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     const apiResponse = await fetch(
+  //       "https://my-json-server.typicode.com/kevintomas1995/logRocket_searchBar/languages"
+  //     );
+  //     const data = await apiResponse.json();
+  //     setFakeData(data);
+  //   };
+  //   getData();
+  // }, []);
 
 
   return (
     <View style={styles.container} >
       <CustomHeader label='Shop' press={() => { props.navigation.goBack() }} />
-
-
       <View style={styles.body}>
         <SearchBar
           searchPhrase={searchPhrase}
@@ -46,20 +72,38 @@ const ShopCategoryScreen = props => {
             setClicked={setClicked}
           />
         )} */}
-        <View style={{flex:1}}>
-          <ScrollView style={{ height: Dimensions.get('screen').height, width: Dimensions.get('window').width }} contentContainerStyle={styles.categoryScreen}>
-            
-            <CategoryFood text='Fruits & Vegetables' bordercolor='#4b6b88' onPress={() => {props.navigation.navigate('CategoryList')}} />
-          <CategoryFood text='Eggs, Meat and Fish' bordercolor='#5cb986' />
-          <CategoryFood text='Beverages' bordercolor='#f2ae3a' />
-          <CategoryFood text='Baker, Cakes & Dairy' bordercolor='#c0e15c' />
-          <CategoryFood text='Foodgrains & Spices' bordercolor='#4b6b88' />
-          <CategoryFood text='Snacks' bordercolor='#4b6b88' imagepath= 'https://res.cloudinary.com/djuz5lkbf/image/upload/v1712557897/ThankGreen/vqzfbuarl0hzvrm5efzl.jpg' />
-        </ScrollView>
+        <View style={{ flex: 1 }}>
+
+          <View
+            style={{
+              height: Dimensions.get('screen').height,
+              width: Dimensions.get('window').width,
+              backgroundColor: '#f1f0f5',
+              gap: 5,
+            }}
+          // contentContainerStyle={styles.categoryScreen}
+          >
+            <FlatList
+              data={resData}
+              keyExtractor={(item) => item.id}
+              renderItem={itemData =>
+                <CategoryFood
+                  param={itemData.item}
+                  onSelect={onProductSelectHandler}
+                />
+              }
+            />
+            {/* <CategoryFood text='Fruits & Vegetables' bordercolor='#4b6b88' onPress={() => { props.navigation.navigate('CategoryList') }} />
+            <CategoryFood text='Eggs, Meat and Fish' bordercolor='#5cb986' />
+            <CategoryFood text='Beverages' bordercolor='#f2ae3a' />
+            <CategoryFood text='Baker, Cakes & Dairy' bordercolor='#c0e15c' />
+            <CategoryFood text='Foodgrains & Spices' bordercolor='#4b6b88' />
+            <CategoryFood text='Snacks' bordercolor='#4b6b88' imagepath='https://res.cloudinary.com/djuz5lkbf/image/upload/v1712557897/ThankGreen/vqzfbuarl0hzvrm5efzl.jpg' /> */}
+          </View>
 
         </View>
       </View>
-    </View>
+    </View >
   );
 };
 

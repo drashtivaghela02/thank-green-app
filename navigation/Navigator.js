@@ -44,6 +44,7 @@ import { DrawerContentScrollView, DrawerItemList, createDrawerNavigator } from '
 import { TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import CustomDrawer from '../Components/Drawer/CustomDrawer';
+import ProductsListing from '../screens/Shop/ProductsListing';
 
 
 const FormStack = createStackNavigator();
@@ -92,6 +93,7 @@ const DrawerNavigator = () => {
     <Drawer.Navigator
       initialRouteName="DashBoard"
       screenOptions={{
+        swipeEnabled : false,
         drawerStyle: {
           width: Dimensions.get('window').width * 0.85,
         },
@@ -111,6 +113,9 @@ const HomeScreen = () => {
       <HomeStack.Screen name='Home' component={Home} options={{ headerShown: false }} />
       <HomeStack.Screen name="Notifications" component={NotificationScreen} options={{ headerShown: false }} />
       <HomeStack.Screen name="HomeSearch" component={SearchScreen} options={{ headerShown: false }} />
+      <HomeStack.Screen name='CategoryList' component={CategoryList} options={{ headerShown: false }} />
+      <HomeStack.Screen name='ProductsListing' component={ProductsListing} options={{ headerShown: false }} />
+
     </HomeStack.Navigator>
   )
 }
@@ -131,6 +136,7 @@ const ShopScreens = () => {
     <ShopCategory.Navigator>
       <ShopCategory.Screen name='ShopCategory' component={ShopCategoryScreen} options={{ headerShown: false }} />
       <ShopCategory.Screen name='CategoryList' component={CategoryList} options={{ headerShown: false }} />
+      <ShopCategory.Screen name='ProductsListing' component={ProductsListing} options={{ headerShown: false }} />
       <ShopCategory.Screen name='Filters' component={FilterScreen} options={{ headerShown: false }} />
     </ShopCategory.Navigator>
   )

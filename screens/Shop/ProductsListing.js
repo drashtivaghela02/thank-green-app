@@ -5,13 +5,13 @@ import { FlatList, TouchableOpacity } from "react-native";
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as productAction from '../../store/actions/Products';
-import SubCategoryListing from "../../Components/UI/SubCategoryListing";
+import Products from "../../Components/UI/Products";
 
 
-const CategoryList = props => {
-  const categoryId = props.route.params.categoryId;
-  const name = props.route.params.name;
-  // console.log("hello", categoryId, name)
+const ProductsListing = props => {
+  const SubCategoryId = props.route.params.SubCatId;
+  const name = props.route.params.SubCatName;
+  console.log("hello", SubCategoryId, name)
 
   const accessToken = useSelector(state => state.auth.accessToken)
   const dispatch = useDispatch();
@@ -21,7 +21,7 @@ const CategoryList = props => {
 
   useEffect(() => {
     setIsLoading(true);
-    dispatch(productAction.getSubCategory(categoryId, accessToken))
+    dispatch(productAction.getProducts(SubCategoryId, accessToken))
       .then((response) => {
         setIsLoading(false);
         console.log("sgdagfv xzv=> ", response?.data)
@@ -33,9 +33,9 @@ const CategoryList = props => {
       });
   }, [accessToken])
 
-  const onSubCategorySelectHandler = (id, subCategoryName) => {
-  props.navigation.navigate('ProductsListing', {SubCatId: id, SubCatName: subCategoryName})
-}
+  // const onSubCategorySelectHandler = (id, subCategoryName) => {
+  //   props.navigation.navigate('ProductsListing', { SubCatId: id, SubCatName: subCategoryName })
+  // }
 
   return (
     <View style={styles.container}>
@@ -47,10 +47,7 @@ const CategoryList = props => {
         <View style={styles.header}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <AntDesign name="arrowleft" size={28} color='white' onPress={() => { props.navigation.goBack() }} />
-            <View style={{ flexDirection: 'row', marginHorizontal: 2, gap: 12 }}>
-              <Feather name="search" size={28} color="white" />
-              <MaterialCommunityIcons name="cart-variant" size={28} color="white" />
-            </View>
+            <MaterialCommunityIcons name="cart-variant" size={28} color="white" />
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, }}>
             <Text style={styles.heading}>{name}</Text>
@@ -60,29 +57,14 @@ const CategoryList = props => {
       </LinearGradient>
 
       <View style={styles.body}>
-        <Image source={require('../../assets/FoodCategory.png')} style={styles.image} />
-
-        <View style={{ width: '100%', padding: 20 }}>
-          <View style={styles.btnSecondary}>
-
-            <LinearGradient
-              colors={['#1f4a6b', '#25a05d']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            >
-              <Text style={styles.textStyle}>SHOP BY CATEGORY</Text>
-            </LinearGradient>
-          </View>
-        </View>
-        <View style={{flex:1, width: '100%'}}>
+        <View style={{ flex: 1, width: '100%' }}>
           <FlatList
             data={resData}
-            keyExtractor={(item) => item.id}
-            numColumns={2}
+            keyExtractor={(item) => item.product_id}
             renderItem={itemData =>
-              <SubCategoryListing
+              <Products
                 param={itemData.item}
-                onSelect={onSubCategorySelectHandler}
+                // onSelect={onSubCategorySelectHandler}
               />}
           />
         </View>
@@ -131,4 +113,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default CategoryList;
+export default ProductsListing;

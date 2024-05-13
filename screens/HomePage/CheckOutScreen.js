@@ -7,7 +7,7 @@ import CustomHeader from "../../Components/UI/CustomHeader";
 const CheckOutScreen = props => {
   return (
     <View style={styles.container}>
-      <CustomHeader label='Cart' />
+      <CustomHeader label='Cart' press={() => props.navigation.goBack()} />
 
       <View style={styles.body}>
         <View style = {{elevation: 2, overflow: 'hidden' }}>

@@ -5,11 +5,36 @@ import { Dimensions, Text, TouchableOpacity } from "react-native";
 import { View } from "react-native";
 import { Image, StyleSheet } from "react-native";
 import { CATEGORY } from "../../data/category-data";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Divider } from "react-native-paper";
+import { useDispatch, useSelector } from "react-redux";
+import * as productAction from '../../store/actions/Products';
 
 const CustomDrawer = props => {
-  const [showDetails, setShowDetails] = useState(Array(CATEGORY.length).fill(false));
+  
+  const accessToken = useSelector(state => state.auth.accessToken)
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const [resData, setResdata] = useState([]);
+  const [subCatData, setSubCatdata] = useState([])
+  
+  const [showDetails, setShowDetails] = useState(Array(resData.length).fill(false));
+  
+  useEffect(() => {
+    setIsLoading(true);
+    dispatch(productAction.getCategory(accessToken))
+      .then((response) => {
+        setIsLoading(false);
+        console.log("sgdagfv xzv=> ", response?.data)
+        setResdata(response?.data);
+      })
+      .catch(error => {
+        setIsLoading(false);
+        console.error("Error fetching user information:", error);
+      });
+  }, [accessToken])
+
 
   return (
     <View style={{ flex: 1 }}>
@@ -40,18 +65,20 @@ const CustomDrawer = props => {
           </View>
         </LinearGradient>
 
-        {CATEGORY.map((item, index) =>
+        {resData.map((item, index) =>
           <View key={index}>
             <TouchableOpacity onPress={props.onPress}>
               <View style={styles.mainscreen}>
                 <View style={{ ...styles.imagePreview, ...{ borderWidth: 2, marginHorizontal: 10, borderRadius: 7, borderColor: props.bordercolor ? props.bordercolor : 'black' } }}>
-                  <Image style={styles.image} source={{ uri: 'https://res.cloudinary.com/djuz5lkbf/image/upload/v1712557897/ThankGreen/vqzfbuarl0hzvrm5efzl.jpg' }} />
+                  <Image style={styles.image} source={{ uri: item.image }} />
                 </View>
                 <View style={styles.textcontainer}>
                   <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: '500' }}>
-                    {item.Category}
+                    {item.name}
                   </Text>
-                  <AntDesign name={showDetails[index] ? 'up' : 'down'} size={16} color="#a6a6aa" onPress={() => {
+                  <AntDesign name={showDetails[index] ? 'up' : 'down'} size={16} color="#a6a6aa"
+                    onPress={() => {
+                    SubCatDataHandler(item.id)
                     setShowDetails(prevState => {
                       const newState = [...prevState];
                       newState[index] = !newState[index];
@@ -62,9 +89,9 @@ const CustomDrawer = props => {
               </View>
             </TouchableOpacity>
 
-            {showDetails[index] && (
+            {showDetails[index] && subCatData[index] && (
               <View style={styles.subcategoryContainer}>
-                {item.subCategory.map((ct, subIndex) => (
+                {subCatData[index].map((ct, subIndex) => (
                   <TouchableOpacity key={subIndex} onPress={() => console.log("Subcategory clicked:", ct)}>
                     <View style={styles.drawerItem}>
                       <Text style={{ fontSize: 16, fontWeight: '500', color: '#666' }}>{ct}</Text>
