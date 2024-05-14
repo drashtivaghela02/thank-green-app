@@ -1,4 +1,6 @@
 const GET_CATEGORY = 'GET_CATEGORY';
+const GET_SUB_CATEGORY = 'GET_SUB_CATEGORY';
+const GET_PRODUCTS = 'GET_PRODUCTS';
 
 export const getCategory = (accessToken) => {
 
@@ -17,7 +19,9 @@ export const getCategory = (accessToken) => {
       }
       const resData = await response.json();
       console.log("get category info resData", resData);
-      dispatch({type: GET_CATEGORY,});
+      dispatch({type: GET_CATEGORY, payload: {
+        categories: resData.data
+      }});
       return resData;
     } catch (error) {
       console.error("Get category Info error", error);
@@ -45,7 +49,7 @@ export const getSubCategory = (id, accessToken) => {
       }
       const resData = await response.json();
       console.log("get category info resData", resData);
-      dispatch({type: GET_CATEGORY,});
+      dispatch({type: GET_SUB_CATEGORY,});
       return resData;
     } catch (error) {
       console.error("Get category Info error", error);
@@ -67,15 +71,15 @@ export const getProducts = (id, accessToken) => {
           },
         }
       );
-      if (!response.ok) {
-        throw new Error('Failed to fetch user info');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Failed to fetch user info');
+      // }
       const resData = await response.json();
       console.log("get category info resData", resData);
-      dispatch({type: GET_CATEGORY,});
+      dispatch({type: GET_PRODUCTS, payload: {products: resData.data}});
       return resData;
     } catch (error) {
-      console.error("Get category Info error", error);
+      // console.error("Get category Info error", error);
       // Optionally dispatch an action to update the state with the error
       // dispatch({ type: GET_INFO, error: error.message });
     }

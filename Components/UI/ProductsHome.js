@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { Dimensions, StyleSheet, TouchableOpacity } from "react-native";
 import { Image } from "react-native";
 import { Text } from "react-native";
 import { View } from "react-native";
 
-const FavouriteProductData = (props) => {
-  const [favourites, setFavorites] =useState(true)
+const ProductsHome = (props) => {
+
+  const id = props.param.product_id;
+  const data = props.param;
+  
   let actual_price = '$' + props.param.quantity_variants[0].actual_price
   let selling_price = props.param.quantity_variants[0].selling_price
   if (!selling_price) {
@@ -16,16 +19,16 @@ const FavouriteProductData = (props) => {
 
   return (
     <View style={styles.gridItem}>
-      <TouchableOpacity style={{ flex: 1 }} onPress={props.onSelect} >
+      <TouchableOpacity style={{ flex: 1 }} onPress={() => props.onSelect(id, data)} >
         <View style={styles.container} >
           <View style={{ flex: 1 }}>
             <Image source={{ uri: props.param.images }} style={styles.image} />
             <View style={{position: 'absolute', top: 0, right: 0, padding: 5, backgroundColor:'white',borderBottomLeftRadius: 10, elevation: 6, opacity: 0.8}}>
-              {favourites ? <MaterialIcons name="favorite" size={24} color="red" /> :<MaterialIcons name="favorite-border" size={24} color="#888" />}
+              {props.param.is_favorite === 1 ? <MaterialIcons name="favorite" size={24} color="red" /> :<MaterialIcons name="favorite-border" size={24} color="#888" />}
             </View>
           </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5 }}>
-            <View>
+          <View style={{width: '100%',flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5 }}>
+            <View style={{flex:1}}>
               <Text numberOfLines={1} style={styles.title}>{props.param.product_title}</Text>
               <Text style={styles.weight}>Net wt. {props.param.quantity_variants[0].quantity_variant}</Text>
             </View>
@@ -47,11 +50,12 @@ const FavouriteProductData = (props) => {
 
 const styles = StyleSheet.create({
   gridItem: {
+    // flex: 0.5,
     width: Dimensions.get('window').width/2 - 20,
     margin: 10,
     borderRadius: 8,
     elevation: 8,
-    borderRadius: 10,
+    // borderRadius: 10,
     backgroundColor: 'white',
     height: 200,
     overflow: 'hidden',
@@ -64,9 +68,10 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   title: {
+    flex: 0.9,
     fontSize: 14,
     fontWeight: '600',
-    width: '90%'
+    // width: '90%'
   },
   weight: {
     fontSize: 11,
@@ -85,4 +90,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default FavouriteProductData;
+export default ProductsHome;

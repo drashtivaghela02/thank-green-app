@@ -33,9 +33,9 @@ const ProductsListing = props => {
       });
   }, [accessToken])
 
-  // const onSubCategorySelectHandler = (id, subCategoryName) => {
-  //   props.navigation.navigate('ProductsListing', { SubCatId: id, SubCatName: subCategoryName })
-  // }
+  const onProductSelectHandler = (id, data) => {
+    props.navigation.navigate('ProductDescription', { ProductId: id, data: data})
+  }
 
   return (
     <View style={styles.container}>
@@ -50,7 +50,7 @@ const ProductsListing = props => {
             <MaterialCommunityIcons name="cart-variant" size={28} color="white" />
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, }}>
-            <Text style={styles.heading}>{name}</Text>
+            <Text numberOfLines={1} style={styles.heading}>{name}</Text>
             <MaterialIcons name="filter-list" size={28} color="white" onPress={() => { props.navigation.navigate('Filters') }} />
           </View>
         </View>
@@ -64,7 +64,7 @@ const ProductsListing = props => {
             renderItem={itemData =>
               <Products
                 param={itemData.item}
-                // onSelect={onSubCategorySelectHandler}
+                onSelect={onProductSelectHandler}
               />}
           />
         </View>

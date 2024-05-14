@@ -11,16 +11,16 @@ import { useDispatch, useSelector } from "react-redux";
 import * as productAction from '../../store/actions/Products';
 
 const CustomDrawer = props => {
-  
+
   const accessToken = useSelector(state => state.auth.accessToken)
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const [resData, setResdata] = useState([]);
-  const [subCatData, setSubCatdata] = useState([])
-  
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
   const [showDetails, setShowDetails] = useState(Array(resData.length).fill(false));
-  
+
   useEffect(() => {
     setIsLoading(true);
     dispatch(productAction.getCategory(accessToken))
@@ -54,7 +54,7 @@ const CustomDrawer = props => {
               <Text
                 style={styles.title}
               >Categories</Text>
-              <Entypo name="menu" size={28} color="white" onPress={()=> props.navigation.toggleDrawer()} />
+              <Entypo name="menu" size={28} color="white" onPress={() => props.navigation.toggleDrawer()} />
             </View>
             <TouchableOpacity
               onPress={() => props.navigation.navigate('HomeSearch')}
@@ -67,39 +67,38 @@ const CustomDrawer = props => {
 
         {resData.map((item, index) =>
           <View key={index}>
-            <TouchableOpacity onPress={props.onPress}>
+            <TouchableOpacity >
               <View style={styles.mainscreen}>
-                <View style={{ ...styles.imagePreview, ...{ borderWidth: 2, marginHorizontal: 10, borderRadius: 7, borderColor: props.bordercolor ? props.bordercolor : 'black' } }}>
-                  <Image style={styles.image} source={{ uri: item.image }} />
+                <View style={{ ...styles.imagePreview, ...{ borderWidth: 1, marginHorizontal: 10, borderRadius: 7, } }}>
+                  <Image style={styles.image} source={{ uri: item.category_image }} />
                 </View>
                 <View style={styles.textcontainer}>
                   <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: '500' }}>
-                    {item.name}
+                    {item.category_name}
                   </Text>
                   <AntDesign name={showDetails[index] ? 'up' : 'down'} size={16} color="#a6a6aa"
                     onPress={() => {
-                    SubCatDataHandler(item.id)
-                    setShowDetails(prevState => {
-                      const newState = [...prevState];
-                      newState[index] = !newState[index];
-                      return newState;
-                    });
-                  }} />
+                      setSelectedCategory(item.category_id)
+                      setShowDetails(prevState => {
+                        const newState = [...prevState];
+                        newState[index] = !newState[index];
+                        return newState;
+                      });
+                    }} />
                 </View>
               </View>
             </TouchableOpacity>
 
-            {showDetails[index] && subCatData[index] && (
+            {showDetails[index] && item.category_id === selectedCategory && item.subcategories && (
               <View style={styles.subcategoryContainer}>
-                {subCatData[index].map((ct, subIndex) => (
-                  <TouchableOpacity key={subIndex} onPress={() => console.log("Subcategory clicked:", ct)}>
+                {item.subcategories.map((subcategory, subIndex) => (
+                  <TouchableOpacity key={subIndex} onPress={() => props.navigation.navigate('ProductsListing',{SubCatId: item.category_id, SubCatName: subcategory.subcategory_name})}>
                     <View style={styles.drawerItem}>
-                      <Text style={{ fontSize: 16, fontWeight: '500', color: '#666' }}>{ct}</Text>
+                      <Text style={{ fontSize: 16, fontWeight: '500', color: '#666' }}>{subcategory.subcategory_name}</Text>
                     </View>
                   </TouchableOpacity>
                 ))}
               </View>
-
             )}
             <Divider />
           </View>
@@ -152,8 +151,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10
   },
   imagePreview: {
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
     marginVertical: 8,
     justifyContent: 'center',
     alignItems: 'center',

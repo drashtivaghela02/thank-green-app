@@ -76,23 +76,24 @@ const OrderDetails = (props) => {
             {/* Card 2 */}
             <Text style={styles.headingTitle}>Product Details</Text>
             <View style={styles.card}>
-              {productData.map((product, index) => (
+              {productData.map((productDetail, index) => (
                 <View key={index}>
-                  
-                  <Text style={{ fontSize: 15, fontWeight: '500', color: '#888', paddingHorizontal: 10 }}>{ product.subcategory_name}</Text>
-                <View style={styles.mainscreen} >
-                  <View style={{ ...styles.imagePreview, ...{ borderWidth: 1, marginHorizontal: 10, borderRadius: 7, borderColor: 'white' } }}>
-                    <Image style={styles.image} source={{ uri: product.product_image }} />
-                  </View>
-                  <View style={styles.textcontainer}>
-                    <View>
-                      <Text style={{ fontSize: 15, fontWeight: '500', color: '#888' }}>{product.product_name}</Text>
-                      <Text style={{ fontSize: 13, fontWeight: '400', color: '#888' }}>Net wt: {product.quantity_variant}</Text>
-                      <Text style={{ fontSize: 13, fontWeight: '400', color: '#888' }}>Qty: {product.quantity}</Text>
+                  <Text style={{ fontSize: 15, fontWeight: '500', color: '#888', paddingHorizontal: 10 }}>{productDetail.subcategory_name}</Text>
+                  {productDetail.products.map((product, productIndex) => (
+                    <View key={productIndex} style={styles.mainscreen}>
+                      <View style={{ ...styles.imagePreview, ...{ borderWidth: 1, marginHorizontal: 10, borderRadius: 7, borderColor: 'white' } }}>
+                        <Image style={styles.image} source={{ uri: product.product_image }} />
+                      </View>
+                      <View style={styles.textcontainer}>
+                        <View>
+                          <Text style={{ fontSize: 15, fontWeight: '500', color: '#888' }}>{product.product_name}</Text>
+                          <Text style={{ fontSize: 13, fontWeight: '400', color: '#888' }}>Net wt: {product.quantity_variant}</Text>
+                          <Text style={{ fontSize: 13, fontWeight: '400', color: '#888' }}>Qty: {product.quantity}</Text>
+                        </View>
+                        <Text style={{ fontSize: 18, fontWeight: '800', color: '#666' }}>${product.order_price}</Text>
+                      </View>
                     </View>
-                    <Text style={{ fontSize: 18, fontWeight: '800', color: '#666' }}>${product.order_price}</Text>
-                  </View>
-                </View>
+                  ))}
                 </View>
               ))}
             </View>
@@ -171,7 +172,7 @@ const OrderDetails = (props) => {
               }
               {details.order_status !== "delivered" && details.order_status !== "cancel" &&
                 <View>
-                  <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('TrackOrder', {Id: details.order_number, status: details.order_status}); }}>
+                  <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('TrackOrder', { Id: details.order_number, status: details.order_status }); }}>
                     <Text style={styles.verifyButton}>TRACK ORDER</Text>
                   </TouchableOpacity>
 
@@ -337,7 +338,7 @@ const styles = StyleSheet.create({
     // marginBottom: 60,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    
+
     elevation: 8,
     borderRadius: 10,
     backgroundColor: 'white',

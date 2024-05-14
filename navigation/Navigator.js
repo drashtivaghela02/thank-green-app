@@ -45,6 +45,7 @@ import { TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import CustomDrawer from '../Components/Drawer/CustomDrawer';
 import ProductsListing from '../screens/Shop/ProductsListing';
+import ProductDescription from '../screens/Shop/ProductDescription';
 
 
 const FormStack = createStackNavigator();
@@ -115,6 +116,8 @@ const HomeScreen = () => {
       <HomeStack.Screen name="HomeSearch" component={SearchScreen} options={{ headerShown: false }} />
       <HomeStack.Screen name='CategoryList' component={CategoryList} options={{ headerShown: false }} />
       <HomeStack.Screen name='ProductsListing' component={ProductsListing} options={{ headerShown: false }} />
+      <HomeStack.Screen name='ProductDescription' component={ProductDescription} options={{ headerShown: false }} />
+
 
     </HomeStack.Navigator>
   )
@@ -137,7 +140,9 @@ const ShopScreens = () => {
       <ShopCategory.Screen name='ShopCategory' component={ShopCategoryScreen} options={{ headerShown: false }} />
       <ShopCategory.Screen name='CategoryList' component={CategoryList} options={{ headerShown: false }} />
       <ShopCategory.Screen name='ProductsListing' component={ProductsListing} options={{ headerShown: false }} />
+      <ShopCategory.Screen name='ProductDescription' component={ProductDescription} options={{ headerShown: false }} />
       <ShopCategory.Screen name='Filters' component={FilterScreen} options={{ headerShown: false }} />
+      
     </ShopCategory.Navigator>
   )
 }

@@ -3,8 +3,8 @@ import { StyleSheet, TouchableOpacity, View } from "react-native"
 
 const SubCategoryListing = (props) => {
   console.log(props.param)
-  const id = props.param.id;
-  const subCategoryName = props.param.subCategory_name
+  const id = props.param.subcategory_id;
+  const subCategoryName = props.param.subcategory_name
   const data = props.param
   return (
     <View style={styles.gridItem}>
@@ -14,7 +14,7 @@ const SubCategoryListing = (props) => {
       >
         <View style={styles.container} >
           <View style={{ flex: 1 }}>
-            <Image source={{ uri: data.image }} style={styles.image} />
+            <Image source={{ uri: data.subcategory_image }} style={styles.image} />
           </View>
         </View>
         <View
@@ -27,7 +27,10 @@ const SubCategoryListing = (props) => {
             width: '100%',
             elevation: 3
           }}>
-          <Text style={{ fontSize: 17, fontWeight: '500'}}> {data.subCategory_name}</Text>
+          <Text style={{
+            fontSize: 17, fontWeight: '500', 
+            textAlign: "center"
+          }}> {subCategoryName}</Text>
         </View>
       </TouchableOpacity>
     </View>

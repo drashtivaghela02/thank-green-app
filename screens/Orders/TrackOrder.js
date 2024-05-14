@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ActivityIndicator, Alert, Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Dimensions, Image, Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CustomHeader from "../../Components/UI/CustomHeader";
 import StepIndicator from "react-native-step-indicator";
 import * as orderAction from '../../store/actions/Orders';
@@ -10,6 +10,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 const TrackOrder = (props) => {
   let status = props.route.params.status
   const Id = props.route.params.Id
+  const [driver, setDriver] = useState([]);
   const [data, setData] = useState([
     { title: "Order Placed", status: "placed", time: "" },
     { title: "Packed", status: "packed", time: "" },
@@ -29,8 +30,9 @@ const TrackOrder = (props) => {
     dispatch(orderAction.trackInfo(Id, accessToken))
       .then((response) => {
         setIsLoading(false); // Set loading state to false after fetching data
-        console.log(response.data.order_status);
-        setResponseData(response.data.order_status)
+        console.log(response.data.status.order_status);
+        setResponseData(response.data.status.order_status)
+        setDriver(response.data.driverDetails)
         console.log("heya ahfielwh", responseData)
       })
       .catch(error => {
@@ -41,10 +43,10 @@ const TrackOrder = (props) => {
 
   useEffect(() => {
     console.log("reeywvr", responseData);
-    let newData = [...data]; 
-    for (let i = 0; i < responseData.length; i++) {
+    let newData = [...data];
+    for (let i = 0; i < responseData?.length; i++) {
       let x = responseData[i].time;
-      newData[i].time = days[new Date(x).getDay()] +', '+ x.split(' ')[0]
+      newData[i].time = days[new Date(x).getDay()] + ', ' + x.split(' ')[0]
     }
     setData(newData);
   }, [responseData]);
@@ -119,10 +121,12 @@ const TrackOrder = (props) => {
           </View>
           <View>
             <Text style={styles.timeText}>Driver Details</Text>
-            <Text style={styles.titleText}>Kunal Agarwal</Text>
+            <Text style={styles.titleText}>{driver.name}</Text>
           </View>
         </View>
-        <FontAwesome5 name="phone-alt" size={26} color='#2c843e' />
+        <TouchableOpacity onPress={() => Linking.openURL(`tel:${driver.contact_number}`)}>
+          <FontAwesome5 name="phone-alt" size={26} color='#2c843e' />
+        </TouchableOpacity>
       </View>
     </View>
   );

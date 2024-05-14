@@ -44,6 +44,7 @@ export const getInfo = (accessToken) => {
 };
 
 export const updateInfo = (formData, accessToken) => {
+  console.log("asfhdshf",formData)
   return async dispatch => {
     try {
       const response = await fetch('https://thankgreen.onrender.com/api/userprofile/info',

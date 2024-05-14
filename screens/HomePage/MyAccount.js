@@ -1,4 +1,4 @@
-import { ScrollView, Button, Image, StyleSheet, Text, TextInput, TouchableOpacity, View, Dimensions } from "react-native";
+import { ScrollView, Button, Image, StyleSheet, Text, TextInput, TouchableOpacity, View, Dimensions, Alert } from "react-native";
 import React, { useEffect, useRef, useState } from 'react';
 
 import { AntDesign } from '@expo/vector-icons';
@@ -11,6 +11,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Divider } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import * as userAction from '../../store/actions/User';
+import ImagePicker from "../../Components/Image/ImagePicker";
 
 
 const MyAccount = props => {
@@ -18,6 +19,7 @@ const MyAccount = props => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [image, setImage] = useState('');
+    const [imagePicker, setImagePicker] = useState(false);
 
     const accessToken = useSelector(state => state.auth.accessToken)
     const dispatch = useDispatch();
@@ -35,9 +37,33 @@ const MyAccount = props => {
             });
     }, [accessToken]);
 
-    const EditImageHandler = () => {
-        console.log('Edit profile')
+    const handleImagePicked = (imageUri) => {
+        setImage(imageUri);
+        setImagePicker(false)
+
+        const formData = new FormData();
+   
+        formData.append('profileImage', {
+            uri: imageUri,
+            type: 'image/jpeg',
+            name: 'photo.jpg',
+        });
+
+        dispatch(userAction.updateInfo(formData, accessToken)).then(response => {
+            console.log('Personal info update : :: ', response);
+            if (response.status === 'error') {
+                Alert.alert("Alert!", response.msg || error)
+                setIsLoading(false)
+            }
+            if (response.status === "success") {
+                Alert.alert("Successs!", response.msg)
+                setIsLoading(false)
+            }
+        })
     }
+    const EditImageHandler = () => {
+        setImagePicker(true);
+    };
 
     const handleLogout = () => {
         props.navigation.navigate('FormNavigator');
@@ -79,30 +105,32 @@ const MyAccount = props => {
                     </LinearGradient>
                 }
             </View>
+
+            {imagePicker && <ImagePicker onImagePicked={handleImagePicked} />}
             {/* <View style={styles.bodyContainer}> */}
 
-                <View style={styles.body}>
-                    {
-                        ACCOUNT.map((item, index) => (
-                            <View key={index}>
-                                <TouchableOpacity style={styles.itemContainer} onPress={() => {
-                                    if (item.label === 'Logout') {
-                                        sheetRef.current.open();
-                                    } else {
-                                        props.navigation.navigate(item.screenName);
-                                    }
-                                }}>
-                                    <View style={styles.firstContainer}>
-                                        {item.leftIcon}
-                                        <Text style={styles.textStyle}>{item.label}</Text>
-                                    </View>
-                                    {item.rightIcon}
-                                </TouchableOpacity>
-                                <Divider />
-                            </View>
-                        ))
-                    }
-                </View>
+            <View style={styles.body}>
+                {
+                    ACCOUNT.map((item, index) => (
+                        <View key={index}>
+                            <TouchableOpacity style={styles.itemContainer} onPress={() => {
+                                if (item.label === 'Logout') {
+                                    sheetRef.current.open();
+                                } else {
+                                    props.navigation.navigate(item.screenName);
+                                }
+                            }}>
+                                <View style={styles.firstContainer}>
+                                    {item.leftIcon}
+                                    <Text style={styles.textStyle}>{item.label}</Text>
+                                </View>
+                                {item.rightIcon}
+                            </TouchableOpacity>
+                            <Divider />
+                        </View>
+                    ))
+                }
+            </View>
             {/* </View> */}
 
             {/* Bottom Sheet for Logout */}

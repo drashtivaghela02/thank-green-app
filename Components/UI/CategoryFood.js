@@ -5,11 +5,13 @@ import { Divider } from 'react-native-paper';
 const CategoryFood = (param) => {
     console.log("sfhsulkahfoiahfo;aif;ojOJAdfi", param)
     const data = param.param
-    const id = param.param.id
-    const name = param.param.name
+    const id = param.param.category_id
+    const name = param.param.category_name
+    const subcategories = param.param.subcategories
+
 
     return (
-        <TouchableOpacity onPress={() => param.onSelect(id, name)}>
+        <TouchableOpacity onPress={() => param.onSelect(id, name, subcategories)}>
         <View style={styles.mainscreen}>
                 <View style={{
                     ...styles.imagePreview, ...{
@@ -17,11 +19,11 @@ const CategoryFood = (param) => {
                         // borderColor: bordercolor ? bordercolor : 'black'
                     }
                 }}>
-                <Image style={styles.image} source={{uri : data.image}} />
+                <Image style={styles.image} source={{uri : data.category_image}} />
             </View>
             <View style={styles.textcontainer}>
                 <Text style={{ fontSize: 19, fontWeight: '500' }}>
-                    {data.name}
+                    {name}
                 </Text>
                 <MaterialCommunityIcons style={styles.sideicon} size={26} name='arrow-right' color='#CCCCCC' />
             </View>

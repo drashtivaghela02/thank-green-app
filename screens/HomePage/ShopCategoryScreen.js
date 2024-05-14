@@ -36,9 +36,9 @@ const ShopCategoryScreen = props => {
       });
   }, [accessToken])
 
-  const onProductSelectHandler = (id, name) => {
+  const onProductSelectHandler = (id, name, subcategories) => {
     console.log("touched", id)
-   props.navigation.navigate('CategoryList', {categoryId: id, name: name}) 
+   props.navigation.navigate('CategoryList', {categoryId: id, name: name, subCategories: subcategories}) 
   }
   // const [fakeData, setFakeData] = useState();
 
@@ -85,10 +85,10 @@ const ShopCategoryScreen = props => {
           >
             <FlatList
               data={resData}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item.category_id}
               renderItem={itemData =>
                 <CategoryFood
-                  param={itemData.item}
+                  param={itemData?.item}
                   onSelect={onProductSelectHandler}
                 />
               }

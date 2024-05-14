@@ -11,31 +11,32 @@ import SubCategoryListing from "../../Components/UI/SubCategoryListing";
 const CategoryList = props => {
   const categoryId = props.route.params.categoryId;
   const name = props.route.params.name;
+  const subCategories = props.route.params.subCategories;
   // console.log("hello", categoryId, name)
 
   const accessToken = useSelector(state => state.auth.accessToken)
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
 
-  const [resData, setResdata] = useState();
+  // const [resData, setResdata] = useState();
 
-  useEffect(() => {
-    setIsLoading(true);
-    dispatch(productAction.getSubCategory(categoryId, accessToken))
-      .then((response) => {
-        setIsLoading(false);
-        console.log("sgdagfv xzv=> ", response?.data)
-        setResdata(response?.data);
-      })
-      .catch(error => {
-        setIsLoading(false);
-        console.error("Error fetching user information:", error);
-      });
-  }, [accessToken])
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   dispatch(productAction.getSubCategory(categoryId, accessToken))
+  //     .then((response) => {
+  //       setIsLoading(false);
+  //       console.log("sgdagfv xzv=> ", response?.data)
+  //       setResdata(response?.data);
+  //     })
+  //     .catch(error => {
+  //       setIsLoading(false);
+  //       console.error("Error fetching user information:", error);
+  //     });
+  // }, [accessToken])
 
   const onSubCategorySelectHandler = (id, subCategoryName) => {
-  props.navigation.navigate('ProductsListing', {SubCatId: id, SubCatName: subCategoryName})
-}
+    props.navigation.navigate('ProductsListing', { SubCatId: id, SubCatName: subCategoryName })
+  }
 
   return (
     <View style={styles.container}>
@@ -74,10 +75,10 @@ const CategoryList = props => {
             </LinearGradient>
           </View>
         </View>
-        <View style={{flex:1, width: '100%'}}>
+        <View style={{ flex: 1, width: '100%' }}>
           <FlatList
-            data={resData}
-            keyExtractor={(item) => item.id}
+            data={subCategories}
+            keyExtractor={(item) => item.subcategory_id}
             numColumns={2}
             renderItem={itemData =>
               <SubCategoryListing

@@ -1,27 +1,38 @@
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, ScrollView } from "react-native";
 import CustomHeader from "../../Components/UI/CustomHeader";
 import { LinearGradient } from "expo-linear-gradient";
 import { AntDesign, Entypo, Feather, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import CategoryFood from "../../Components/UI/CategoryFood";
 import CategoryFoodHome from "../../Components/UI/CategoryFoodHome";
 import { useDispatch, useSelector } from "react-redux";
-import * as productAction from '../../store/actions/Products';
+import * as homeAction from '../../store/actions/Home';
 import { useEffect, useState } from "react";
+import Carousel from "react-native-reanimated-carousel";
+import { Image } from "react-native";
+import ProductsHome from "../../Components/UI/ProductsHome";
 
 const Home = props => {
   const accessToken = useSelector(state => state.auth.accessToken)
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-
+  const [bannerData, setBannerData] = useState([])
+  const [category, setCategory] = useState([])
+  const [pastOrders, setPastOrders] = useState([])
+  const [recommendedProducts, setRecommendedProducts] = useState([])
   const [resData, setResdata] = useState();
 
   useEffect(() => {
     setIsLoading(true);
-    dispatch(productAction.getCategory(accessToken))
+    dispatch(homeAction.getHome(accessToken))
       .then((response) => {
         setIsLoading(false);
-        console.log("sgdagfv xzv=> ", response?.data)
+        console.log("sgdagfv xzv=> ", response?.data?.recommendedProducts)
         setResdata(response?.data);
+        setBannerData(response?.data?.banner)
+        setCategory(response?.data?.categoryList)
+        setPastOrders(response?.data?.pastOrders)
+        setRecommendedProducts(response?.data?.recommendedProducts)
+
       })
       .catch(error => {
         setIsLoading(false);
@@ -29,10 +40,19 @@ const Home = props => {
       });
   }, [accessToken])
 
-  const onProductSelectHandler = (id, name) => {
-    console.log("touched", id)
-    props.navigation.navigate('CategoryList', { categoryId: id, name: name })
+  const onCategorySelectHandler = () => {
+    console.log("dsfiuhshi")
   }
+  const onProductSelectHandler = (id, data) => {
+    props.navigation.navigate('ProductDescription', { ProductId: id, data: data})
+  }
+
+  const renderItem = ({ item }) => {
+    return (
+      <Image source={{ uri: item.banner_image }} style={styles.image} />
+    );
+  };
+
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -63,19 +83,60 @@ const Home = props => {
         </View>
       </LinearGradient>
 
-      <View style={styles.body}>
-        <Text style={styles.categoryList}>Categories</Text>
-        <FlatList
-          data={resData}
-          keyExtractor={(item) => item.id}
-          horizontal={true}
-          renderItem={itemData =>
-            <CategoryFoodHome
-              param={itemData.item}
-              onSelect={onProductSelectHandler}
-            />}
-        />
-      </View>
+      <ScrollView contentContainerStyle={styles.body}>
+
+        <View style={styles.container1}>
+          <Carousel
+            data={bannerData}
+            renderItem={renderItem}
+            sliderWidth={Dimensions.get("window").width}
+            itemWidth={Dimensions.get("window").width}
+            width={Dimensions.get("window").width}
+
+          />
+        </View>
+        <View>
+          <Text style={styles.categoryList}>Categories</Text>
+          <FlatList
+            data={category}
+            keyExtractor={(item) => item.category_id}
+            horizontal={true}
+            renderItem={itemData =>
+              <CategoryFoodHome
+                param={itemData.item}
+                onSelect={onCategorySelectHandler}
+              />}
+          />
+        </View>
+        <View>
+          <Text style={styles.categoryList}>Past Orders</Text>
+          <FlatList
+            data={pastOrders}
+            keyExtractor={(item) => item.product_id}
+            horizontal={true}
+            style={{ paddingHorizontal: 10 }}
+            renderItem={itemData =>
+              <ProductsHome
+                param={itemData.item}
+                onSelect={onProductSelectHandler}
+              />}
+          />
+        </View>
+        <View>
+          <Text style={styles.categoryList}>Reccomended Products</Text>
+          <FlatList
+            data={recommendedProducts}
+            keyExtractor={(item) => item.product_id}
+            horizontal={true}
+            style={{ paddingHorizontal: 10 }}
+            renderItem={itemData =>
+              <ProductsHome
+                param={itemData.item}
+                onSelect={onProductSelectHandler}
+              />}
+          />
+        </View>
+      </ScrollView>
     </View>
   )
 }
@@ -120,15 +181,29 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   body: {
+    // flex: 1,
     // alignItems: 'center',
     justifyContent: "flex-start",
     backgroundColor: 'white',
-    paddingHorizontal: 20,
-    paddingVertical: 10
+    // paddingHorizontal: 20,
+    // paddingBottom: 50,
+  },
+  container1: {
+    // flex: 1,
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    // width: '100%'
+    height: 200,
+
+  },
+  image: {
+    // width: '100%',
+    height: 180,
   },
   categoryList: {
     fontWeight: '400',
     fontSize: 20,
-    textAlign: "left"
+    textAlign: "left",
+    paddingHorizontal: 20
   }
 })
