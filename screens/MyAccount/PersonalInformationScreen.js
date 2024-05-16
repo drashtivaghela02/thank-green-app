@@ -62,6 +62,7 @@ const PersonalInformationScreen = props => {
   });
 
   const SubmitHandler = (values) => {
+    setIsLoading(true)
     console.log(resData)
 
     const val = getSendingObject(resData, values)
@@ -119,7 +120,7 @@ const PersonalInformationScreen = props => {
                 <Text style={styles.label} >Email</Text>
                 <TextInput
                   onChangeText={handleChange('email')}
-                  onBlur={handleBlur('email')}
+                  onBlur={handleBlur('email')}Activity
                   value={values.email}
                   style={styles.textInput}
                 />
@@ -139,9 +140,9 @@ const PersonalInformationScreen = props => {
                 ) : null}
 
               </View>
-              <TouchableOpacity disabled={!dirty} style={styles.verify} onPress={handleSubmit}>
+              <TouchableOpacity disabled={!dirty || isLoading} style={styles.verify} onPress={handleSubmit}>
                 {isLoading ?
-                  <ActivityIndicator size={25} /> :
+                  <ActivityIndicator size={25} color="white" /> :
                   <Text style={styles.verifyButton}>SAVE</Text>
                 }
               </TouchableOpacity>

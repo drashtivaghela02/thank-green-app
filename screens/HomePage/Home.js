@@ -40,8 +40,8 @@ const Home = props => {
       });
   }, [accessToken])
 
-  const onCategorySelectHandler = () => {
-    console.log("dsfiuhshi")
+  const onCategorySelectHandler = (id, name, subcategories) => {
+    props.navigation.navigate('CategoryList', {categoryId: id, name: name, subCategories: subcategories}) 
   }
   const onProductSelectHandler = (id, data) => {
     props.navigation.navigate('ProductDescription', { ProductId: id, data: data})
@@ -77,7 +77,7 @@ const Home = props => {
               <Feather name="search" size={18} color="black" style={{ marginLeft: 1 }} />
               <Text style={{ fontSize: 17 }}>Search</Text>
             </TouchableOpacity>
-            <AntDesign name="bars" size={28} color="white" />
+            <AntDesign name="bars" size={28} color="white"onPress={() => { props.navigation.navigate('Filters') }}  />
             {/* <FontAwesome6 name="bars-staggered" size={24} color="white" onPress={() => { props.navigation.goBack() }} /> */}
           </View>
         </View>

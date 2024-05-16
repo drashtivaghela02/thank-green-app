@@ -21,7 +21,7 @@ const ProductsListing = props => {
 
   useEffect(() => {
     setIsLoading(true);
-    dispatch(productAction.getProducts(SubCategoryId, accessToken))
+    dispatch(productAction.getProductsFromSubCat(SubCategoryId, accessToken))
       .then((response) => {
         setIsLoading(false);
         console.log("sgdagfv xzv=> ", response?.data)

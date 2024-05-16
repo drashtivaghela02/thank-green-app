@@ -10,7 +10,7 @@ const CategoryFoodHome = (param) => {
   const subcategories = param.param.subcategories
 
   return (
-    <TouchableOpacity onPress={() => param.onSelect(id, name)}>
+    <TouchableOpacity onPress={() => param.onSelect(id, name, subcategories)}>
       <View style={styles.mainscreen}>
         <View style={{
           ...styles.imagePreview, ...{

@@ -1,36 +1,68 @@
 import { AntDesign, Feather, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { TouchableOpacity } from "react-native";
+import { ScrollView, TouchableOpacity } from "react-native";
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import CustomHeader from "../../Components/UI/CustomHeader";
+import { useSelector } from "react-redux";
+import { useState } from "react";
 
 const CheckOutScreen = props => {
+
+  const [isLoading, setIsLoading] = useState(false);
+    // const cartTotalAmount = useSelector(state => state.cart.totalAmount);
+  const cartItems = useSelector(state => {
+      // console.log(state.cart.items)
+        const transformedCartItems = [];
+        for (const key in state.cart.items) {
+            transformedCartItems.push({
+                productId : key,
+                productTitle : state.cart.items[key].productTitle,
+                productPrice : state.cart.items[key].productPrice,
+                quantity : state.cart.items[key].quantity,
+                sum : state.cart.items[key].sum 
+            });
+        }
+      console.log(transformedCartItems)
+        return transformedCartItems; //.sort((a,b) => a.productId > b.productId ? 1 : -1);
+    });
+
+
   return (
     <View style={styles.container}>
       <CustomHeader label='Cart' press={() => props.navigation.goBack()} />
 
-      <View style={styles.body}>
-        <View style = {{elevation: 2, overflow: 'hidden' }}>
-        <View style={{borderColor: 'white', borderRadius: 20, padding: 20, gap: 10, }}>
-          
-        <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-          <Text>Sub Total</Text>
-          <Text>$00.00</Text>
-        </View>
+      <ScrollView contentContainerStyle={styles.body}>
+        {/* <View style={{}}> */}
+          <View style={{
+            elevation: 8,
+            borderRadius: 10,
+            backgroundColor: 'white',
+            // height: 130,
+            width: '100%',
+            padding: 10,
+          overflow: 'hidden',
+            gap: 10
+            // alignSelf: 'flex-end',
+          }}>
 
-        <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-          <Text>Deliver Charges</Text>
-          <Text>$00.00</Text>
-        </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between',  }}>
+              <Text>Sub Total</Text>
+              <Text>$00.00</Text>
+            </View>
 
-        <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-          <Text style={{fontWeight:'bold'}}>Total Amount</Text>
-          <Text style={{fontWeight:'bold'}}>$00.00</Text>
-        </View>
-        </View>
-        </View>
-      
-        <View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Text>Deliver Charges</Text>
+              <Text>$00.00</Text>
+            </View>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Total Amount</Text>
+              <Text style={{ fontWeight: 'bold', fontSize: 18 }}>$00.00</Text>
+            </View>
+          </View>
+        {/* </View> */}
+
+        <View style={{paddingHorizontal: 10}}>
           <TouchableOpacity style={styles.verify} onPress={() => { console.log('Pressed'); }}>
             <Text style={styles.verifyButton}>CHECKOUT</Text>
           </TouchableOpacity>
@@ -40,7 +72,7 @@ const CheckOutScreen = props => {
           </TouchableOpacity>
 
         </View>
-      </View>
+      </ScrollView>
 
     </View>
   );
@@ -66,9 +98,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     // alignItems: 'center',
-    paddingHorizontal: 30,
+    paddingHorizontal: 20,
     paddingVertical: 10,
     backgroundColor: '#f1f0f5',
+    // width: '100%'
     // marginTop: 20,
     // marginBottom: 30
   },

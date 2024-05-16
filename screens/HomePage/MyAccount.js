@@ -12,6 +12,8 @@ import { Divider } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import * as userAction from '../../store/actions/User';
 import ImagePicker from "../../Components/Image/ImagePicker";
+import ProfileImage from "../../Components/Image/ProfileImage";
+import { launchCameraAsync } from "expo-image-picker";
 
 
 const MyAccount = props => {
@@ -40,9 +42,8 @@ const MyAccount = props => {
     const handleImagePicked = (imageUri) => {
         setImage(imageUri);
         setImagePicker(false)
-
         const formData = new FormData();
-   
+
         formData.append('profileImage', {
             uri: imageUri,
             type: 'image/jpeg',
@@ -61,8 +62,25 @@ const MyAccount = props => {
             }
         })
     }
-    const EditImageHandler = () => {
-        setImagePicker(true);
+    const EditImageHandler = async () => {
+        try {
+            const result = await launchCameraAsync({
+                allowsEditing: true,
+                aspect: [4, 4],
+                quality: 0.5,
+            })
+            if (!result.cancelled) {
+                // setImage(result.assets[0].uri);
+                handleImagePicked(result.assets[0].uri);
+            } else {
+                Alert.alert("Alert!", 'Image picking cancelled');
+                console.log('Image picking cancelled');
+            }
+        }
+        catch (err) {
+            Alert.alert("Alert", err)
+
+        }
     };
 
     const handleLogout = () => {
@@ -106,7 +124,7 @@ const MyAccount = props => {
                 }
             </View>
 
-            {imagePicker && <ImagePicker onImagePicked={handleImagePicked} />}
+            {/* {imagePicker && <ProfileImage onImagePicked={handleImagePicked} />} */}
             {/* <View style={styles.bodyContainer}> */}
 
             <View style={styles.body}>

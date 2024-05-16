@@ -40,7 +40,7 @@ function FilterByScreen() {
       <Text style={styles.categoryList}>Categories</Text>
       <FlatList
         data={resData}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.category_id}
         horizontal={true}
         renderItem={renderCategoryItem}
         style={{paddingHorizontal: 10}}

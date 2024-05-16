@@ -1,30 +1,31 @@
 import { AntDesign, Feather, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { FlatList, TouchableOpacity } from "react-native";
+import { ActivityIndicator, FlatList, TouchableOpacity } from "react-native";
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as productAction from '../../store/actions/Products';
 import Products from "../../Components/UI/Products";
-
+import Carousel from "react-native-reanimated-carousel";
+import * as cartItem from '../../store/actions/Cart'
 
 const ProductDescription = props => {
-  const ProductId = props.route.params.ProductId;
-  const data = props.route.params.data;
-  console.log("hello", ProductId, data)
+  const ProductId = props.route.params.ProductId ? props.route.params.ProductId : '';
+  // const data = props.route.params.data ? props.route.params.data : [];
+  console.log("hello", ProductId)
 
   const accessToken = useSelector(state => state.auth.accessToken)
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
 
-  const [resData, setResdata] = useState();
-  const [selectedOption, setSelectedOption] = useState(data.quantity_variants[0].quantity_variant); // Assuming the first size as the initial value
-  const [isFavourite, setIsFavourite] = useState(data.is_favorite)
-  const [actual, setActuals] = useState(data.quantity_variants[0].actual_price)
-  const [selling, setSelling] = useState(data.quantity_variants[0].selling_price)
+  const [data, setResdata] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(data?.quantity_variants[0]?.quantity_variant ?? ''); // Assuming the first size as the initial value
+  const [isFavourite, setIsFavourite] = useState(data?.is_favorite !=null?data?.is_favorite :0)
+  const [actual, setActuals] = useState(data?.quantity_variants[0]?.actual_price??0)
+  const [selling, setSelling] = useState(data?.quantity_variants[0]?.selling_price??0)
   const [qty, setQty] = useState(0);
   const [showOptions, setShowOptions] = useState(false);
-
+console.log('data.quantity_variants?data ', )
   const toggleOptions = () => {
     setShowOptions(!showOptions);
   };
@@ -36,23 +37,35 @@ const ProductDescription = props => {
     setShowOptions(false); // Close the selection list after selecting an option
     // dispatch(addToCart(selling))
   };
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   dispatch(productAction.getProducts(SubCategoryId, accessToken))
-  //     .then((response) => {
-  //       setIsLoading(false);
-  //       console.log("sgdagfv xzv=> ", response?.data)
-  //       setResdata(response?.data);
-  //     })
-  //     .catch(error => {
-  //       setIsLoading(false);
-  //       console.error("Error fetching user information:", error);
-  //     });
-  // }, [accessToken])
+  useEffect(() => {
+    setIsLoading(true);
+     dispatch(productAction.getProducts(ProductId, accessToken))
+      .then((response) => {
+        setIsLoading(false);
+        setResdata(response?.data[0]);
+        setSelectedOption(response?.data[0].quantity_variants[0]?.quantity_variant);
+        setActuals(response?.data[0].quantity_variants[0]?.actual_price);
+        setSelling(response?.data[0].quantity_variants[0]?.selling_price);
+        setIsFavourite(response?.data[0]?.is_favorite)
+        console.log("product description=> ", response?.data[0])
+      })
+      .catch(error => {
+        setIsLoading(false);
+        console.error("Error fetching user information:", error);
+      });
+  }, [accessToken])
 
   // const onProductSelectHandler = (id) => {
   //   props.navigation.navigate('ProductDescription', { ProductId: id })
   // }
+
+  if (isLoading) {
+    return (
+      <View style={{justifyContent: 'center', alignItems: 'center'}}>
+        <ActivityIndicator size={"large"} /> 
+      </View>
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -63,23 +76,35 @@ const ProductDescription = props => {
       >
         <View style={styles.header}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <AntDesign name="arrowleft" size={28} color='white' onPress={() => { props.navigation.goBack() }} />
+            <View style= {{backgroundColor: 'transparent'}}>
+            <AntDesign name="arrowleft" size={28} color='white' style={{elevation: 5, shadowColor: 'black'}} onPress={() => { props.navigation.goBack() }} />
+
+            </View>
             <MaterialCommunityIcons name="cart-variant" size={28} color="white" />
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, }}>
-            <Text numberOfLines={1} style={styles.heading}>{data.product_title}</Text>
+            <Text numberOfLines={1} style={styles.heading}>{data?.product_title??''}</Text>
           </View>
         </View>
       </LinearGradient>
 
       <View style={styles.body}>
-        <View style={{ width: '100%' }}>
-          <Image source={{ uri: data.images }} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height * 0.35, }} />
+        <View style={{ height: Dimensions.get('window').height * 0.35, }}>
+          <Carousel
+            data={ data?.images??[]}
+            renderItem={({ item }) => (
+              <Image source={{ uri: item }} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height * 0.35 }} />
+            )}
+            sliderWidth={Dimensions.get("window").width}
+            itemWidth={Dimensions.get("window").width}
+            width={Dimensions.get("window").width}
+          />
+
         </View>
         <View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15 }}>
             <View>
-              <Text style={styles.title}>{data.product_title}</Text>
+              <Text style={styles.title}>{data?.product_title??''}</Text>
               <Text style={styles.quantity}>Net wt.{selectedOption}</Text>
             </View>
             <View style={{ alignItems: "flex-end" }}>
@@ -87,7 +112,7 @@ const ProductDescription = props => {
               <Text style={styles.selling}>${selling}</Text>
             </View>
           </View>
-          <Text style={{ fontSize: 14, color: '#666', }}>{data.product_description}</Text>
+          <Text style={{ fontSize: 14, color: '#666', }}>{data?.product_description??''}</Text>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5, alignItems: 'center' }}>
             <Text style={{ fontSize: 20, fontWeight: '500' }}>Quantity</Text>
             <View style={[styles.Cart, { justifyContent: 'space-between', alignItems: 'center' }]}>
@@ -108,7 +133,7 @@ const ProductDescription = props => {
             </TouchableOpacity>
             {showOptions && (
               <View style={styles.optionsContainer}>
-                {data.quantity_variants.map((option, index) => (
+                {data?.quantity_variants.map((option, index) => (
                   <TouchableOpacity key={index} onPress={() => handleOptionSelect(option?.quantity_variant, option?.selling_price, option?.actual_price)}>
                     <Text>{option?.quantity_variant}</Text>
                   </TouchableOpacity>
@@ -140,12 +165,15 @@ const ProductDescription = props => {
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={[styles.Cart, {
+            <TouchableOpacity
+              style={[styles.Cart, {
               width: '85%',
               backgroundColor: '#2c843e',
               elevation: 8,
               overflow: 'hidden'
-            }]}>
+              }]}
+              onPress={() => dispatch(cartItem.addToCart(data))}
+            >
               <MaterialCommunityIcons name="cart-variant" size={24} color='white' />
               <Text style={{ fontSize: 17, fontWeight: '500', color: 'white', marginLeft: 5 }}> Add to Cart</Text>
             </TouchableOpacity>
@@ -174,7 +202,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   body: {
-    flex: 1,
+    // flex: 1,
     justifyContent: 'flex-start',
     // alignItems: 'center',
     // paddingHorizontal: 30,

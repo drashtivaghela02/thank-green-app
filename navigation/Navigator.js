@@ -71,6 +71,7 @@ const AuthNavigator = () => {
         <AuthStack.Screen name="Map" component={Map} options={{ headerShown: false }} />
         <AuthStack.Screen name='LocationPicker' component={LocationPicker} options={{ headerShown: false }} />
         <AuthStack.Screen name='TrackOrder' component={TrackOrder} options={{ headerShown: false }} />
+        <AuthStack.Screen name='ProductDescription' component={ProductDescription} options={{ headerShown: false }} />
 
       </AuthStack.Navigator>
     </NavigationContainer>
@@ -116,7 +117,6 @@ const HomeScreen = () => {
       <HomeStack.Screen name="HomeSearch" component={SearchScreen} options={{ headerShown: false }} />
       <HomeStack.Screen name='CategoryList' component={CategoryList} options={{ headerShown: false }} />
       <HomeStack.Screen name='ProductsListing' component={ProductsListing} options={{ headerShown: false }} />
-      <HomeStack.Screen name='ProductDescription' component={ProductDescription} options={{ headerShown: false }} />
 
 
     </HomeStack.Navigator>

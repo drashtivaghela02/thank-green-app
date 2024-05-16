@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, Dimensions } from "react-native";
 import { Image } from "react-native";
 import { Text } from "react-native";
 import { View } from "react-native";
 
 const FavouriteProductData = (props) => {
-  const [favourites, setFavorites] =useState(true)
+  const [favourites, setFavorites] = useState(true)
   let actual_price = '$' + props.param.quantity_variants[0].actual_price
   let selling_price = props.param.quantity_variants[0].selling_price
   if (!selling_price) {

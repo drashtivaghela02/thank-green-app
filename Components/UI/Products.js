@@ -32,7 +32,7 @@ const Products = (props) => {
     <View>
       <View style={styles.mainscreen}>
         <TouchableOpacity
-        onPress={() => props.onSelect(data.id, data)}  
+        onPress={() => props.onSelect(data.product_id, data)}  
           style={{
           ...styles.imagePreview, ...{
             borderWidth: 2, marginHorizontal: 10, borderRadius: 7,

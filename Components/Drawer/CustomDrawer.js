@@ -28,6 +28,7 @@ const CustomDrawer = props => {
         setIsLoading(false);
         console.log("sgdagfv xzv=> ", response?.data)
         setResdata(response?.data);
+        setShowDetails(Array(response?.data.length).fill(false));
       })
       .catch(error => {
         setIsLoading(false);
@@ -78,10 +79,14 @@ const CustomDrawer = props => {
                   </Text>
                   <AntDesign name={showDetails[index] ? 'up' : 'down'} size={16} color="#a6a6aa"
                     onPress={() => {
+                      console.log(showDetails[index])
                       setSelectedCategory(item.category_id)
                       setShowDetails(prevState => {
-                        const newState = [...prevState];
-                        newState[index] = !newState[index];
+                        // prevState.forEach((i) => {
+                          // })
+                          const newState = [...prevState];
+                          newState[index] = !newState[index];
+                          console.log("i Value ajsaf;jsjcdskfp'mkp", prevState)
                         return newState;
                       });
                     }} />
@@ -170,6 +175,7 @@ const styles = StyleSheet.create({
   textcontainer: {
     flex: 1,
     justifyContent: 'space-between',
+    alignItems: 'center',
     flexDirection: 'row',
     paddingLeft: 5
     // marginHorizontal:10

@@ -9,11 +9,13 @@ import authReducer, { loadInitialState, saveStateMiddleware } from './store/redu
 import { useEffect } from 'react';
 import FlashMessage from 'react-native-flash-message';
 import userReducer from './store/reducer/User';
-import productReducer from './store/reducer/Products';
+import categoryReducer from './store/reducer/Products';
+import cart from './store/reducer/Cart';
 const rootReducer = combineReducers({
   auth: authReducer,
   user: userReducer,
-  product : productReducer,
+  product: categoryReducer,
+  cart: cart
 });
 
 const store = createStore(rootReducer, applyMiddleware(thunk, saveStateMiddleware));

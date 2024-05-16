@@ -9,7 +9,7 @@ const ContactUsScreen = props => {
       <CustomHeader label='Contact Us' press={() => { props.navigation.goBack() }} />
 
       <View style={styles.body} >
-        <ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false}>
           <View>
             <View>
               <TouchableOpacity style={styles.itemContainer} onPress={() => { console.log('contact by email') }}>
