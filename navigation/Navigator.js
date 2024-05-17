@@ -140,7 +140,7 @@ const ShopScreens = () => {
       <ShopCategory.Screen name='ShopCategory' component={ShopCategoryScreen} options={{ headerShown: false }} />
       <ShopCategory.Screen name='CategoryList' component={CategoryList} options={{ headerShown: false }} />
       <ShopCategory.Screen name='ProductsListing' component={ProductsListing} options={{ headerShown: false }} />
-      <ShopCategory.Screen name='ProductDescription' component={ProductDescription} options={{ headerShown: false }} />
+      {/* <ShopCategory.Screen name='ProductDescription' component={ProductDescription} options={{ headerShown: false }} /> */}
       <ShopCategory.Screen name='Filters' component={FilterScreen} options={{ headerShown: false }} />
       
     </ShopCategory.Navigator>

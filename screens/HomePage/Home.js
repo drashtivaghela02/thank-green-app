@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import Carousel from "react-native-reanimated-carousel";
 import { Image } from "react-native";
 import ProductsHome from "../../Components/UI/ProductsHome";
+import * as cartItem from '../../store/actions/Cart'
 
 const Home = props => {
   const accessToken = useSelector(state => state.auth.accessToken)
@@ -119,6 +120,8 @@ const Home = props => {
               <ProductsHome
                 param={itemData.item}
                 onSelect={onProductSelectHandler}
+                onRemoveItem={()=> {dispatch(cartItem.removeFromCart(itemData?.item?.productId))}}
+
               />}
           />
         </View>
@@ -133,6 +136,8 @@ const Home = props => {
               <ProductsHome
                 param={itemData.item}
                 onSelect={onProductSelectHandler}
+                onRemoveItem={()=> {dispatch(cartItem.removeFromCart(itemData?.item?.productId))}}
+
               />}
           />
         </View>

@@ -5,18 +5,21 @@ import { StyleSheet } from "react-native";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Divider } from "react-native-paper";
 import { addToCart } from '../../store/actions/Cart';
-import * as cartItem from '../../store/actions/Cart'
 import { useDispatch } from 'react-redux';
+import * as cartItem from '../../store/actions/Cart'
 
 
-const Products = (props) => {
-  const [selectedOption, setSelectedOption] = useState(props.param.quantity_variants[0].quantity_variant); // Assuming the first size as the initial value
-  const [actual, setActuals] = useState(props.param.quantity_variants[0].actual_price)
-  const [selling, setSelling] = useState(props.param.quantity_variants[0].selling_price)
-  const [qty, setQty] = useState(0);
-  const [showOptions, setShowOptions] = useState(false);
-
+const CartProduct = (props) => {
   const dispatch = useDispatch();
+
+  const ProductData = props.param;
+  console.log("etwtuoafevy7na8ohyf7ar0n7", ProductData)
+  const data = props.param.productData;
+  const [selectedOption, setSelectedOption] = useState(props.param.productData.quantity_variants[0].quantity_variant); // Assuming the first size as the initial value
+  const [actual, setActuals] = useState(props.param.productData.quantity_variants[0].actual_price)
+  const [selling, setSelling] = useState(props.param.productData.quantity_variants[0].selling_price)
+  const [qty, setQty] = useState(ProductData.quantity);
+  const [showOptions, setShowOptions] = useState(false);
 
   const toggleOptions = () => {
     setShowOptions(!showOptions);
@@ -30,25 +33,26 @@ const Products = (props) => {
     // dispatch(addToCart(selling))
   };
 
-  const data = props.param;
-  // console.log("etwtuoafevy7na8ohyf7ar0n7",data.images)
 
   return (
     <View>
       <View style={styles.mainscreen}>
         <TouchableOpacity
-          onPress={() => props.onSelect(data.product_id, data)}
+        onPress={() => props.onSelect(data.product_id, data)}  
           style={{
-            ...styles.imagePreview, ...{
-              borderWidth: 2, marginHorizontal: 10, borderRadius: 7,
-            }
-          }}>
-          <Image style={styles.images} source={{ uri: data.images }} />
+          ...styles.imagePreview, ...{
+            borderWidth: 2, marginRight: 10, borderRadius: 7,
+          }
+        }}>
+          <Image style={styles.images} source={{ uri: data.images[0] }} />
         </TouchableOpacity>
         <View style={styles.textcontainer}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <Text style={{ fontSize: 16, fontWeight: '500', color: '#555' }}>
             {data.product_title}
           </Text>
+          <AntDesign name="delete" size={20} color="black" onPress={props.onDeleteItem} />
+          </View>
           <TouchableOpacity onPress={toggleOptions} style={{ width: '100%', borderColor: '#555', borderWidth: 1, borderRadius: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 5, paddingHorizontal: 10 }}>
             <Text style={{ fontSize: 14, color: '#555' }}>{selectedOption}</Text>
             <AntDesign name='down' size={16} color="#888" />
@@ -56,33 +60,26 @@ const Products = (props) => {
           </TouchableOpacity>
 
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <View>
-              <Text style={styles.actual}>${actual}</Text>
+            <View style={{ flexDirection: 'row',gap: 10, alignItems: 'center' }}>
               <Text style={styles.selling}>${selling}</Text>
+              <Text style={styles.actual}>${actual}</Text>
             </View>
 
-            {qty < 1
-              ? (<TouchableOpacity onPress={() => {
-                setQty(qty + 1)
-                dispatch(cartItem.addToCart(data))
-              }}
-                style={styles.Cart}>
-                <MaterialCommunityIcons name="cart-variant" size={24} color='white' />
-                <Text style={{ fontSize: 17, fontWeight: '500', color: 'white', marginLeft: 5 }}> Add</Text>
-              </TouchableOpacity>)
-              : (
-                <View style={[styles.Cart, { justifyContent: 'space-between' }]}>
-                  <TouchableOpacity onPress={() => {
-                    setQty(qty + 1)
-                    dispatch(cartItem.addToCart(data))
-                  }}><AntDesign name="pluscircleo" size={24} color="white" /></TouchableOpacity>
-                  <Text style={{ fontSize: 17, fontWeight: '500', color: 'white' }}>{String(qty).padStart(2, '0')}</Text>
-                  <TouchableOpacity onPress={() => {
-                    setQty(qty - 1)
-                    props.onRemoveItem
-                  }}><AntDesign name="minuscircleo" size={24} color="white" /></TouchableOpacity>
+           
+                <View style={[styles.Cart, { gap: 15}]}>
+              <TouchableOpacity onPress={
+                 () =>{
+                  setQty(qty + 1)
+                  dispatch(cartItem.addToCart(data))
+                }}
+              ><AntDesign name="pluscircleo" size={25} /></TouchableOpacity>
+                  <Text style={{ fontSize: 20, fontWeight: '500', }}>{String(qty).padStart(2, '0')}</Text>
+              <TouchableOpacity disabled={qty === 0} onPress={() => {
+                setQty(qty - 1)
+                props.onRemoveItem
+              }}><AntDesign name="minuscircleo" size={25} /></TouchableOpacity>
                 </View>
-              )}
+             
           </View>
 
           {showOptions && (
@@ -107,7 +104,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     backgroundColor: 'white',
-    paddingHorizontal: 10,
+    // paddingHorizontal: 10,
   },
   imagePreview: {
     width: 80,
@@ -131,13 +128,13 @@ const styles = StyleSheet.create({
     gap: 8, padding: 5
   },
   actual: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
     color: '#555',
     textDecorationLine: 'line-through',
   },
   selling: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700'
   },
   optionsContainer: {
@@ -155,12 +152,12 @@ const styles = StyleSheet.create({
   Cart: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     padding: 8,
-    backgroundColor: '#2c843e',
+paddingRight: 0,
     borderRadius: 5,
     width: '50%'
   }
 });
 
-export default Products;
+export default CartProduct;

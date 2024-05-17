@@ -1,13 +1,14 @@
 import { AntDesign, Feather, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, TouchableOpacity } from "react-native";
+import { ActivityIndicator, FlatList, ScrollView, TouchableOpacity } from "react-native";
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as productAction from '../../store/actions/Products';
 import Products from "../../Components/UI/Products";
 import Carousel from "react-native-reanimated-carousel";
 import * as cartItem from '../../store/actions/Cart'
+import { Pagination } from "react-native-snap-carousel";
 
 const ProductDescription = props => {
   const ProductId = props.route.params.ProductId ? props.route.params.ProductId : '';
@@ -20,12 +21,13 @@ const ProductDescription = props => {
 
   const [data, setResdata] = useState(null);
   const [selectedOption, setSelectedOption] = useState(data?.quantity_variants[0]?.quantity_variant ?? ''); // Assuming the first size as the initial value
-  const [isFavourite, setIsFavourite] = useState(data?.is_favorite !=null?data?.is_favorite :0)
-  const [actual, setActuals] = useState(data?.quantity_variants[0]?.actual_price??0)
-  const [selling, setSelling] = useState(data?.quantity_variants[0]?.selling_price??0)
-  const [qty, setQty] = useState(0);
+  const [isFavourite, setIsFavourite] = useState(data?.is_favorite != null ? data?.is_favorite : 0)
+  const [actual, setActuals] = useState(data?.quantity_variants[0]?.actual_price ?? 0)
+  const [selling, setSelling] = useState(data?.quantity_variants[0]?.selling_price ?? 0)
+  const [qty, setQty] = useState(1);
   const [showOptions, setShowOptions] = useState(false);
-console.log('data.quantity_variants?data ', )
+  const [activeSlide, setActiveSlide] = useState(0);  
+  console.log('data.quantity_variants?data ',)
   const toggleOptions = () => {
     setShowOptions(!showOptions);
   };
@@ -39,7 +41,7 @@ console.log('data.quantity_variants?data ', )
   };
   useEffect(() => {
     setIsLoading(true);
-     dispatch(productAction.getProducts(ProductId, accessToken))
+    dispatch(productAction.getProducts(ProductId, accessToken))
       .then((response) => {
         setIsLoading(false);
         setResdata(response?.data[0]);
@@ -61,66 +63,72 @@ console.log('data.quantity_variants?data ', )
 
   if (isLoading) {
     return (
-      <View style={{justifyContent: 'center', alignItems: 'center'}}>
-        <ActivityIndicator size={"large"} /> 
+      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size={"large"} />
       </View>
     )
   }
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={['#2c843e', '#1e4c5e']}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.6, y: 1 }}
-      >
-        <View style={styles.header}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <View style= {{backgroundColor: 'transparent'}}>
-            <AntDesign name="arrowleft" size={28} color='white' style={{elevation: 5, shadowColor: 'black'}} onPress={() => { props.navigation.goBack() }} />
-
-            </View>
-            <MaterialCommunityIcons name="cart-variant" size={28} color="white" />
-          </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, }}>
-            <Text numberOfLines={1} style={styles.heading}>{data?.product_title??''}</Text>
-          </View>
-        </View>
-      </LinearGradient>
-
-      <View style={styles.body}>
-        <View style={{ height: Dimensions.get('window').height * 0.35, }}>
+      <ScrollView contentContainerStyle={styles.body}>
+        <View style={{ height: Dimensions.get('window').height * 0.60, }}>
           <Carousel
-            data={ data?.images??[]}
+            data={data?.images ?? []}
             renderItem={({ item }) => (
-              <Image source={{ uri: item }} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height * 0.35 }} />
+              <Image source={{ uri: item }} style={{ width: '100%', height: '100%' }} />
             )}
             sliderWidth={Dimensions.get("window").width}
             itemWidth={Dimensions.get("window").width}
             width={Dimensions.get("window").width}
+            onSnapToItem={(index) => setActiveSlide(index)} 
+            
           />
-
+          <Pagination
+            dotsLength={data?.images?.length ?? 0} 
+            activeDotIndex={activeSlide} 
+            containerStyle={{ backgroundColor: 'transparent', position: 'absolute', bottom: 10, width: '100%' }} 
+            dotStyle={{ width: 15, height: 8, borderRadius: 5, backgroundColor: 'rgba(255, 255, 255, 0.92)' }} 
+            inactiveDotStyle={{ width: 10, height: 10, borderRadius: 5, backgroundColor: 'rgba(255, 255, 255, 0.92)' }} 
+            inactiveDotOpacity={0.4} 
+            inactiveDotScale={0.6} 
+          />
+          <View style={styles.header}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
+              <AntDesign name="arrowleft" size={28} color='white' style={{ elevation: 5, shadowColor: 'black' }} onPress={() => { props.navigation.goBack() }} />
+              <MaterialCommunityIcons name="cart-variant" size={28} color="white" onPress={() => { props.navigation.navigate('CheckOut') }} />
+            </View>
+          </View>
         </View>
-        <View style={{ paddingHorizontal: 20, paddingVertical: 10 }}>
+        
+        <View style={{ backgroundColor: 'white',overflow:'hidden', paddingHorizontal: 20, paddingTop: 25 , borderTopLeftRadius: 40, borderTopRightRadius: 40 , shadowColor: 'black',top:-26, elevation: 5}}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15 }}>
             <View>
-              <Text style={styles.title}>{data?.product_title??''}</Text>
-              <Text style={styles.quantity}>Net wt.{selectedOption}</Text>
+              <Text style={styles.title}>{data?.product_title ?? ''}</Text>
+              <Text style={styles.quantity}>Net wt. {selectedOption}</Text>
             </View>
             <View style={{ alignItems: "flex-end" }}>
               <Text style={styles.actual}>${actual}</Text>
               <Text style={styles.selling}>${selling}</Text>
             </View>
           </View>
-          <Text style={{ fontSize: 14, color: '#666', }}>{data?.product_description??''}</Text>
+
+          <Text style={{ fontSize: 14, color: '#666', }}>{data?.product_description ?? ''}</Text>
+          
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5, alignItems: 'center' }}>
             <Text style={{ fontSize: 20, fontWeight: '500' }}>Quantity</Text>
             <View style={[styles.Cart, { justifyContent: 'space-between', alignItems: 'center' }]}>
-              <TouchableOpacity onPress={() => setQty(qty + 1)}><AntDesign name="pluscircleo" size={24} color="#666" /></TouchableOpacity>
-              <Text style={{ fontSize: 18, fontWeight: '500', color: '#666' }}>{qty}</Text>
-              <TouchableOpacity onPress={() => setQty(qty - 1)}><AntDesign name="minuscircleo" size={24} color="#666" /></TouchableOpacity>
+              <TouchableOpacity onPress={
+                () =>{
+                  setQty(qty + 1)
+                  dispatch(cartItem.addToCart(data))
+                }
+
+              }><AntDesign name="pluscircleo" size={24} color="#666" /></TouchableOpacity>
+              <Text style={{ fontSize: 18, fontWeight: '500', color: '#666' }}>{String(qty).padStart(2, '0')}</Text>
+              <TouchableOpacity disabled={qty === 1} onPress={() => {setQty(qty - 1)}}><AntDesign name="minuscircleo" size={24} color="#666" /></TouchableOpacity>
             </View>
-          </View>
+          </View> 
 
 
           <View style={{ marginBottom: 15 }}>
@@ -141,12 +149,13 @@ console.log('data.quantity_variants?data ', )
               </View>
             )}
           </View>
+          
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
-
             <MaterialCommunityIcons name="truck-minus-outline" size={24} color="black" />
             <Text style={{ color: '#2c843e' }}> Free Delivery on purchase above $10</Text>
           </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' , paddingVertical: 10, marginBottom: 25}}>
             <View style={{
               borderRadius: 8,
               elevation: 5,
@@ -167,10 +176,10 @@ console.log('data.quantity_variants?data ', )
 
             <TouchableOpacity
               style={[styles.Cart, {
-              width: '85%',
-              backgroundColor: '#2c843e',
-              elevation: 8,
-              overflow: 'hidden'
+                width: '85%',
+                backgroundColor: '#2c843e',
+                elevation: 8,
+                overflow: 'hidden'
               }]}
               onPress={() => dispatch(cartItem.addToCart(data))}
             >
@@ -179,9 +188,8 @@ console.log('data.quantity_variants?data ', )
             </TouchableOpacity>
           </View>
 
-
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -192,9 +200,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   header: {
+    position: 'absolute',
+    top: 0,
     paddingTop: 40,
     paddingHorizontal: 20,
-    height: Dimensions.get('window').height * 0.17
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height * 0.10,
+    backgroundColor: 'rgba(0,0,0,0.5)'
   },
   heading: {
     fontWeight: '500',
@@ -202,7 +214,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   body: {
-    // flex: 1,
+    flexGrow: 1,
     justifyContent: 'flex-start',
     // alignItems: 'center',
     // paddingHorizontal: 30,

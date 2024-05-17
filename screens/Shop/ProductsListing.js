@@ -6,6 +6,7 @@ import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as productAction from '../../store/actions/Products';
 import Products from "../../Components/UI/Products";
+import * as cartItem from '../../store/actions/Cart'
 
 
 const ProductsListing = props => {
@@ -13,19 +14,19 @@ const ProductsListing = props => {
   const name = props.route.params.SubCatName;
   console.log("hello", SubCategoryId, name)
 
-  const accessToken = useSelector(state => state.auth.accessToken)
+  const accessToken = useSelector(state => state?.auth?.accessToken)
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
 
-  const [resData, setResdata] = useState();
+  const [resData, setResdata] = useState([]);
 
   useEffect(() => {
     setIsLoading(true);
     dispatch(productAction.getProductsFromSubCat(SubCategoryId, accessToken))
       .then((response) => {
+        setResdata(response?.data);
         setIsLoading(false);
         console.log("sgdagfv xzv=> ", response?.data)
-        setResdata(response?.data);
       })
       .catch(error => {
         setIsLoading(false);
@@ -34,7 +35,7 @@ const ProductsListing = props => {
   }, [accessToken])
 
   const onProductSelectHandler = (id, data) => {
-    props.navigation.navigate('ProductDescription', { ProductId: id, data: data})
+    props.navigation.navigate('ProductDescription', { ProductId: id, data: data })
   }
 
   return (
@@ -57,17 +58,30 @@ const ProductsListing = props => {
       </LinearGradient>
 
       <View style={styles.body}>
-        <View style={{ flex: 1, width: '100%' }}>
-          <FlatList
-            data={resData}
-            keyExtractor={(item) => item.product_id}
-            renderItem={itemData =>
-              <Products
-                param={itemData.item}
-                onSelect={onProductSelectHandler}
-              />}
-          />
-        </View>
+      {isLoading ? (
+          <View>
+            <Text>Loading...</Text>
+          </View>
+        ) : resData.length === 0 ? (
+          <View>
+            <Text>No products available for this category</Text>
+          </View>
+        ) 
+          : (<View style={{ flex: 1, width: '100%' }}>
+            <FlatList
+              data={resData}
+              keyExtractor={(item) => item.product_id}
+              renderItem={itemData =>
+                <Products
+                  param={itemData.item}
+                  onSelect={onProductSelectHandler}
+                  onAddItem={()=> {dispatch(cartItem.addToCart(itemData?.item))}}
+                  onRemoveItem={()=> {dispatch(cartItem.removeFromCart(itemData?.item?.productId))}}
+                />
+              }
+            />
+          </View>
+          )}
       </View>
     </View>
   );

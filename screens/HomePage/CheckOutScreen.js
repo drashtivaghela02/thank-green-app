@@ -1,76 +1,101 @@
 import { AntDesign, Feather, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { ScrollView, TouchableOpacity } from "react-native";
+import { FlatList, ScrollView, TouchableOpacity } from "react-native";
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import CustomHeader from "../../Components/UI/CustomHeader";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
+import CartProduct from "../../Components/UI/CartProduct";
+import * as cartItem from '../../store/actions/Cart'
 
 const CheckOutScreen = props => {
-
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-    // const cartTotalAmount = useSelector(state => state.cart.totalAmount);
-  const cartItems = useSelector(state => {
-      // console.log(state.cart.items)
-        const transformedCartItems = [];
-        for (const key in state.cart.items) {
-            transformedCartItems.push({
-                productId : key,
-                productTitle : state.cart.items[key].productTitle,
-                productPrice : state.cart.items[key].productPrice,
-                quantity : state.cart.items[key].quantity,
-                sum : state.cart.items[key].sum 
-            });
-        }
-      console.log(transformedCartItems)
-        return transformedCartItems; //.sort((a,b) => a.productId > b.productId ? 1 : -1);
+  // const cartTotalAmount = useSelector(state => state.cart.totalAmount);
+  const cartItems = useSelector(state => state.cart.items)
+  console.log("redux item:  ufhsi",cartItems)
+  const transformedCartItems = [];
+  for (const key in cartItems) {
+    transformedCartItems.push({ 
+      productId: key,
+      productData: cartItems[key].productData,
+      productPrice: cartItems[key].productPrice,
+      quantity: cartItems[key].quantity,
+      sum: cartItems[key].sum
     });
+  }
+  console.log("cart products :", transformedCartItems)
+  // return transformedCartItems; //.sort((a,b) => a.productId > b.productId ? 1 : -1);
+
 
 
   return (
     <View style={styles.container}>
       <CustomHeader label='Cart' press={() => props.navigation.goBack()} />
+      <ScrollView contentContainerStyle={{
+        // flex:1,
+        flexGrow: 1
+        // minHeight: Dimensions.get('window').height * 0.763
+      }}>
+        <View style={styles.body}>
+          <View>
+            <Text>Products</Text>
+            <FlatList
+              data={transformedCartItems}
+              keyExtractor={(item) => item?.productId}
+              renderItem={itemData =>
+                <CartProduct
+                  param={itemData?.item}
+                  // onSelect={onProductSelectHandler}
+                  onRemoveItem={()=> {dispatch(cartItem.removeFromCart(itemData?.item?.productId))}}
+                  onDeleteItem={() => { dispatch(cartItem.deleteFromCart(itemData?.item?.productId)) }}
+                />
+              }
+              scrollEnabled={false}
+            />
 
-      <ScrollView contentContainerStyle={styles.body}>
-        {/* <View style={{}}> */}
-          <View style={{
-            elevation: 8,
-            borderRadius: 10,
-            backgroundColor: 'white',
-            // height: 130,
-            width: '100%',
-            padding: 10,
-          overflow: 'hidden',
-            gap: 10
-            // alignSelf: 'flex-end',
-          }}>
-
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between',  }}>
-              <Text>Sub Total</Text>
-              <Text>$00.00</Text>
-            </View>
-
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text>Deliver Charges</Text>
-              <Text>$00.00</Text>
-            </View>
-
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Total Amount</Text>
-              <Text style={{ fontWeight: 'bold', fontSize: 18 }}>$00.00</Text>
-            </View>
           </View>
-        {/* </View> */}
+          <View>
 
-        <View style={{paddingHorizontal: 10}}>
-          <TouchableOpacity style={styles.verify} onPress={() => { console.log('Pressed'); }}>
-            <Text style={styles.verifyButton}>CHECKOUT</Text>
-          </TouchableOpacity>
+            <View style={{
+              elevation: 8,
+              borderRadius: 5,
+              backgroundColor: 'white',
+              // height: 130,
+              width: '100%',
+              padding: 15,
+              overflow: 'hidden',
+              gap: 20
+              // alignSelf: 'flex-end',
+            }}>
 
-          <TouchableOpacity style={styles.verify1} onPress={() => { console.log('Pressed'); }}>
-            <Text style={styles.verifyButton1}>Continue Shopping</Text>
-          </TouchableOpacity>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
+                <Text>Sub Total</Text>
+                <Text>$00.00</Text>
+              </View>
 
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text>Deliver Charges</Text>
+                <Text>$00.00</Text>
+              </View>
+
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Total Amount</Text>
+                <Text style={{ fontWeight: 'bold', fontSize: 20 }}>$00.00</Text>
+              </View>
+            </View>
+
+            <View style={{ paddingHorizontal: 10, paddingTop: 20 }}>
+              <TouchableOpacity style={styles.verify} onPress={() => { console.log('Pressed'); }}>
+                <Text style={styles.verifyButton}>CHECKOUT</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.verify1} onPress={() => { console.log('Pressed'); }}>
+                <Text style={styles.verifyButton1}>Continue Shopping</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
         </View>
       </ScrollView>
 
@@ -100,10 +125,10 @@ const styles = StyleSheet.create({
     // alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: '#f1f0f5',
+    backgroundColor: 'white',
     // width: '100%'
     // marginTop: 20,
-    // marginBottom: 30
+    paddingBottom: 0
   },
   bodyText: {
     textAlign: 'center',
