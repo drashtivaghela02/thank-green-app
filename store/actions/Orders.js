@@ -1,5 +1,6 @@
 const GET_ORDER_INFO = 'GET_ORDER_INFO';
 const GET_ORDER_DETAILS_INFO = 'GET_ORDER_DETAILS_INFO';
+const POST_ORDER = 'POST_ORDER';
 const RATE_ORDER = 'RATE_ORDER';
 const CANCEL_ORDER = 'CANCEL_ORDER';
 const TRACK_ORDER = 'TRACK_ORDER';
@@ -52,6 +53,38 @@ console.log("aabuisfhqhfea;jsd;j",orderId, accessToken);
       return resData;
     } catch (error) {
       console.error("Get orders details error", error);
+    }
+  };
+};
+
+
+export const postOrder = (value, accessToken) => {
+
+  return async dispatch => {
+    try {
+      const response = await fetch('https://thankgreen.onrender.com/api/checkout',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + accessToken,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            products: value,
+        })
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Failed to post order');
+      }
+      const resData = await response.json();
+      // console.log("Rate orders resData", resData);
+      dispatch({ type: POST_ORDER });
+      return resData;
+    } catch (error) {
+      console.error("Rate orders error", error);
+      // Optionally dispatch an action to update the state with the error
+      dispatch({ type: POST_ORDER, error: error.message });
     }
   };
 };

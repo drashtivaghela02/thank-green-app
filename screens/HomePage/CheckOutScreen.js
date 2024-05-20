@@ -1,104 +1,125 @@
 import { AntDesign, Feather, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { FlatList, ScrollView, TouchableOpacity } from "react-native";
+import { SectionList, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import CustomHeader from "../../Components/UI/CustomHeader";
 import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CartProduct from "../../Components/UI/CartProduct";
 import * as cartItem from '../../store/actions/Cart'
+import * as orderAction from '../../store/actions/Orders';
 
 const CheckOutScreen = props => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  // const cartTotalAmount = useSelector(state => state.cart.totalAmount);
-  const cartItems = useSelector(state => state.cart.items)
-  console.log("redux item:  ufhsi",cartItems)
+  const [orderData, setOrderdata] = useState([]);
+  const accessToken = useSelector(state => state?.auth?.accessToken)
+
+  const cartItems = useSelector(state => state?.cart?.items)
+  console.log("redux item:  ufhsi", cartItems)
+
+  const SummaryData = [];
   const transformedCartItems = [];
   for (const key in cartItems) {
-    transformedCartItems.push({ 
-      productId: key,
-      productData: cartItems[key].productData,
-      productPrice: cartItems[key].productPrice,
+    SummaryData.push({
+      id: key,
       quantity: cartItems[key].quantity,
-      sum: cartItems[key].sum
+      productQuantity_id: cartItems[key].productData.quantity_variants[0].quantity_variant_id
+    })
+
+    transformedCartItems.push({
+      productId: key,
+      subcategory_name: cartItems[key]?.productData?.subcategory_name,
+      productData: cartItems[key]?.productData,
+      productPrice: cartItems[key]?.productPrice,
+      quantity: cartItems[key]?.quantity,
     });
   }
-  console.log("cart products :", transformedCartItems)
-  // return transformedCartItems; //.sort((a,b) => a.productId > b.productId ? 1 : -1);
 
+  // Group items by subcategory_name
+  const groupedItems = transformedCartItems.reduce((sections, item) => {
+    const section = sections.find(sec => sec.title === item.subcategory_name);
+    if (section) {
+      section.data.push(item);
+    } else {
+      sections.push({ title: item.subcategory_name, data: [item] });
+    }
+    return sections;
+  }, []);
 
+  console.log("cart products :", SummaryData)
+  
+  const loadData = useEffect(() => {
+    setIsLoading(true);
+    dispatch(orderAction.postOrder(SummaryData, accessToken))
+      .then((response) => {
+        setOrderdata(response?.data);
+        setIsLoading(false);
+        console.log("sgdagfv xzv=> ", response?.data)
+      })
+      .catch(error => {
+        setIsLoading(false);
+        console.error("Error fetching user information:", error);
+      });
+  }, [accessToken, dispatch])
 
   return (
     <View style={styles.container}>
       <CustomHeader label='Cart' press={() => props.navigation.goBack()} />
+      {isLoading && <ActivityIndicator />}
       <ScrollView contentContainerStyle={{
-        // flex:1,
         flexGrow: 1
-        // minHeight: Dimensions.get('window').height * 0.763
       }}>
         <View style={styles.body}>
           <View>
-            <Text>Products</Text>
-            <FlatList
-              data={transformedCartItems}
+            <SectionList
+              sections={groupedItems}
               keyExtractor={(item) => item?.productId}
-              renderItem={itemData =>
+              renderItem={({ item }) => (
                 <CartProduct
-                  param={itemData?.item}
-                  // onSelect={onProductSelectHandler}
-                  onRemoveItem={()=> {dispatch(cartItem.removeFromCart(itemData?.item?.productId))}}
-                  onDeleteItem={() => { dispatch(cartItem.deleteFromCart(itemData?.item?.productId)) }}
+                  param={item}
+                  onRemoveItem={() => {
+                    dispatch(cartItem.removeFromCart(item?.productId)) 
+                    loadData
+                  }}
+                  onDeleteItem={() => {
+                    dispatch(cartItem.deleteFromCart(item?.productId))
+                    loadData
+                   }}
                 />
-              }
+              )}
+              renderSectionHeader={({ section: { title } }) => (
+                <Text style={styles.sectionHeader}>{title}</Text>
+              )}
               scrollEnabled={false}
             />
-
           </View>
           <View>
-
-            <View style={{
-              elevation: 8,
-              borderRadius: 5,
-              backgroundColor: 'white',
-              // height: 130,
-              width: '100%',
-              padding: 15,
-              overflow: 'hidden',
-              gap: 20
-              // alignSelf: 'flex-end',
-            }}>
-
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
+            <View style={styles.summaryContainer}>
+              <View style={styles.summaryRow}>
                 <Text>Sub Total</Text>
-                <Text>$00.00</Text>
+                <Text>${orderData ? orderData?.sub_total : '00.00'}</Text>
               </View>
-
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <View style={styles.summaryRow}>
                 <Text>Deliver Charges</Text>
-                <Text>$00.00</Text>
+                <Text>${orderData ? orderData?.delivery_charges : '00.00'}</Text>
               </View>
-
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Total Amount</Text>
-                <Text style={{ fontWeight: 'bold', fontSize: 20 }}>$00.00</Text>
+              <View style={styles.summaryRow}>
+                <Text style={styles.totalLabel}>Total Amount</Text>
+                <Text style={styles.totalAmount}>${orderData ? orderData?.total : '00.00' }</Text>
               </View>
             </View>
-
-            <View style={{ paddingHorizontal: 10, paddingTop: 20 }}>
-              <TouchableOpacity style={styles.verify} onPress={() => { console.log('Pressed'); }}>
+            <View style={styles.buttonsContainer}>
+              <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('Checkout',{ OrderData: orderData, SummaryData: SummaryData}) }}>
                 <Text style={styles.verifyButton}>CHECKOUT</Text>
               </TouchableOpacity>
-
               <TouchableOpacity style={styles.verify1} onPress={() => { console.log('Pressed'); }}>
                 <Text style={styles.verifyButton1}>Continue Shopping</Text>
               </TouchableOpacity>
             </View>
-
           </View>
         </View>
       </ScrollView>
-
     </View>
   );
 }
@@ -108,38 +129,47 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-  header: {
-    paddingTop: 40,
-    paddingHorizontal: 20,
-    height: Dimensions.get('window').height * 0.17
-  },
-  heading: {
-    fontWeight: '500',
-    fontSize: 30,
-
-    color: 'white',
-  },
   body: {
     flex: 1,
     justifyContent: 'space-between',
-    // alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    // paddingHorizontal: 20,
+    // paddingVertical: 10,
     backgroundColor: 'white',
-    // width: '100%'
-    // marginTop: 20,
-    paddingBottom: 0
   },
-  bodyText: {
-    textAlign: 'center',
-    fontSize: 17,
-    color: '#b4b4b4',
-    paddingVertical: 20
+  sectionHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    backgroundColor: '#f4f4f4',
+    paddingVertical: 5,
+    paddingHorizontal: 20,
+    // marginTop: 10,
   },
-
+  summaryContainer: {
+    elevation: 8,
+    borderRadius: 5,
+    backgroundColor: 'white',
+    padding: 15,
+    marginHorizontal: 20,
+    gap: 20
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  totalLabel: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  totalAmount: {
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+  buttonsContainer: {
+    paddingHorizontal: 30,
+    paddingTop: 20,
+  },
   verify: {
     marginTop: 10,
-    // marginBottom: 60,
     paddingVertical: 10,
     paddingHorizontal: 20,
     backgroundColor: '#2c843e',
@@ -150,13 +180,10 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 20,
     alignSelf: 'center',
-    fontWeight: '500'
+    fontWeight: '500',
   },
-
-
   verify1: {
     marginTop: 10,
-    // marginBottom: 60,
     paddingVertical: 10,
     paddingHorizontal: 20,
     backgroundColor: 'white',
@@ -167,7 +194,7 @@ const styles = StyleSheet.create({
     color: '#2c843e',
     fontSize: 20,
     alignSelf: 'center',
-    fontWeight: '500'
+    fontWeight: '500',
   },
 });
 

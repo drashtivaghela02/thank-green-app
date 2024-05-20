@@ -38,20 +38,20 @@ const CartProduct = (props) => {
     <View>
       <View style={styles.mainscreen}>
         <TouchableOpacity
-        onPress={() => props.onSelect(data.product_id, data)}  
+          onPress={() => props.onSelect(data.product_id, data)}
           style={{
-          ...styles.imagePreview, ...{
-            borderWidth: 2, marginRight: 10, borderRadius: 7,
-          }
-        }}>
+            ...styles.imagePreview, ...{
+              borderWidth: 2, marginRight: 10, borderRadius: 7,
+            }
+          }}>
           <Image style={styles.images} source={{ uri: data.images[0] }} />
         </TouchableOpacity>
         <View style={styles.textcontainer}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text style={{ fontSize: 16, fontWeight: '500', color: '#555' }}>
-            {data.product_title}
-          </Text>
-          <AntDesign name="delete" size={20} color="black" onPress={props.onDeleteItem} />
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Text style={{ fontSize: 16, fontWeight: '500', color: '#555' }}>
+              {data.product_title}
+            </Text>
+            <AntDesign name="delete" size={20} color="black" onPress={props.onDeleteItem} />
           </View>
           <TouchableOpacity onPress={toggleOptions} style={{ width: '100%', borderColor: '#555', borderWidth: 1, borderRadius: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 5, paddingHorizontal: 10 }}>
             <Text style={{ fontSize: 14, color: '#555' }}>{selectedOption}</Text>
@@ -60,26 +60,26 @@ const CartProduct = (props) => {
           </TouchableOpacity>
 
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <View style={{ flexDirection: 'row',gap: 10, alignItems: 'center' }}>
+            <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
               <Text style={styles.selling}>${selling}</Text>
               <Text style={styles.actual}>${actual}</Text>
             </View>
 
-           
-                <View style={[styles.Cart, { gap: 15}]}>
+
+            <View style={[styles.Cart, { gap: 15 }]}>
               <TouchableOpacity onPress={
-                 () =>{
+                () => {
                   setQty(qty + 1)
                   dispatch(cartItem.addToCart(data))
                 }}
               ><AntDesign name="pluscircleo" size={25} /></TouchableOpacity>
-                  <Text style={{ fontSize: 20, fontWeight: '500', }}>{String(qty).padStart(2, '0')}</Text>
+              <Text style={{ fontSize: 20, fontWeight: '500', }}>{String(qty).padStart(2, '0')}</Text>
               <TouchableOpacity disabled={qty === 0} onPress={() => {
                 setQty(qty - 1)
                 props.onRemoveItem
               }}><AntDesign name="minuscircleo" size={25} /></TouchableOpacity>
-                </View>
-             
+            </View>
+
           </View>
 
           {showOptions && (
@@ -93,7 +93,7 @@ const CartProduct = (props) => {
           )}
         </View>
       </View>
-      <Divider />
+
     </View>
   )
 }
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     backgroundColor: 'white',
-    // paddingHorizontal: 10,
+    paddingHorizontal: 20,
   },
   imagePreview: {
     width: 80,
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: 8,
-paddingRight: 0,
+    paddingRight: 0,
     borderRadius: 5,
     width: '50%'
   }

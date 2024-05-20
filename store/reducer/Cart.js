@@ -5,17 +5,19 @@ const initialState = {
   totalAmount: 0
 };
 class CartItem {
-  constructor(quantity, productPrice, productData, sum) {
+  constructor(quantity, quantityId, productPrice, productData, sum) {
     this.quantity = quantity;
+    this.quantityId = quantityId
     this.productPrice = productPrice,
-      this.productData = productData,
-      this.sum = sum
+    this.productData = productData,
+    this.sum = sum
   }
 }
 const cart = (state = initialState, action) => {
   switch (action.type) {
     case ADD_TO_CART:
       const addedProduct = action.product;
+      const quantityId = action.quantityId
       const prodPrice = 12;
       const prodData = addedProduct;
 
@@ -25,6 +27,7 @@ const cart = (state = initialState, action) => {
         //already have the item in the cart
         updatedOrNewCartItem = new CartItem(
           state.items[addedProduct.product_id].quantity + 1,
+          quantityId,
           prodPrice,
           prodData,
           state.items[addedProduct.product_id].sum + prodPrice
@@ -32,7 +35,7 @@ const cart = (state = initialState, action) => {
         console.log(updatedOrNewCartItem);
       }
       else {
-        updatedOrNewCartItem = new CartItem(1, prodPrice, prodData, prodPrice);
+        updatedOrNewCartItem = new CartItem(1, quantityId, prodPrice, prodData, prodPrice);
         console.log(updatedOrNewCartItem);
       }
       return {
@@ -49,6 +52,7 @@ const cart = (state = initialState, action) => {
         // need to reduce it, not erase it
         const updatedCartItem = new CartItem(
           currentQty - 1,
+          removeItem.quantityId,
           removeItem.productPrice,
           removeItem.productTitle,
           removeItem.sum - removeItem.productPrice

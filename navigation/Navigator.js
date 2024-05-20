@@ -46,6 +46,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import CustomDrawer from '../Components/Drawer/CustomDrawer';
 import ProductsListing from '../screens/Shop/ProductsListing';
 import ProductDescription from '../screens/Shop/ProductDescription';
+import CheckOut from '../screens/CheckOut/CheckOut';
 
 
 const FormStack = createStackNavigator();
@@ -72,7 +73,7 @@ const AuthNavigator = () => {
         <AuthStack.Screen name='LocationPicker' component={LocationPicker} options={{ headerShown: false }} />
         <AuthStack.Screen name='TrackOrder' component={TrackOrder} options={{ headerShown: false }} />
         <AuthStack.Screen name='ProductDescription' component={ProductDescription} options={{ headerShown: false }} />
-
+        <AuthStack.Screen name='Checkout' component={CheckOut} options={{ headerShown: false }} />
       </AuthStack.Navigator>
     </NavigationContainer>
   );
@@ -117,8 +118,6 @@ const HomeScreen = () => {
       <HomeStack.Screen name="HomeSearch" component={SearchScreen} options={{ headerShown: false }} />
       <HomeStack.Screen name='CategoryList' component={CategoryList} options={{ headerShown: false }} />
       <HomeStack.Screen name='ProductsListing' component={ProductsListing} options={{ headerShown: false }} />
-
-
     </HomeStack.Navigator>
   )
 }

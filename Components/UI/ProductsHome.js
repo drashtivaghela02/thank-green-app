@@ -13,7 +13,7 @@ const ProductsHome = (props) => {
   const data = props.param;
   const [qty, setQty] = useState(0);
   const dispatch = useDispatch();
-  
+
   let actual_price = '$' + data.quantity_variants[0].actual_price
   let selling_price = data.quantity_variants[0].selling_price
   if (!selling_price) {
@@ -26,13 +26,13 @@ const ProductsHome = (props) => {
       <TouchableOpacity style={{ flex: 1 }} onPress={() => props.onSelect(id, data)} >
         <View style={styles.container} >
           <View style={{ flex: 1 }}>
-            <Image source={{ uri: data.images }} style={styles.image} />
-            <View style={{position: 'absolute', top: 0, right: 0, padding: 5, backgroundColor:'white',borderBottomLeftRadius: 10, elevation: 6, opacity: 0.8}}>
-              {data.is_favorite === 1 ? <MaterialIcons name="favorite" size={24} color="red" /> :<MaterialIcons name="favorite-border" size={24} color="#888" />}
+            <Image source={{ uri: data.images[0] }} style={styles.image} />
+            <View style={{ position: 'absolute', top: 0, right: 0, padding: 5, backgroundColor: 'white', borderBottomLeftRadius: 10, elevation: 6, opacity: 0.8 }}>
+              {data.is_favorite === 1 ? <MaterialIcons name="favorite" size={24} color="red" /> : <MaterialIcons name="favorite-border" size={24} color="#888" />}
             </View>
           </View>
-          <View style={{width: '100%',flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5 }}>
-            <View style={{flex:1}}>
+          <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5 }}>
+            <View style={{ flex: 1 }}>
               <Text numberOfLines={1} style={styles.title}>{data.product_title}</Text>
               <Text style={styles.weight}>Net wt. {data.quantity_variants[0].quantity_variant}</Text>
             </View>
@@ -44,27 +44,27 @@ const ProductsHome = (props) => {
           </View>
         </View>
         {qty < 1
-              ? (<TouchableOpacity onPress={() => {
+          ? (<TouchableOpacity onPress={() => {
+            setQty(qty + 1)
+            dispatch(cartItem.addToCart(data))
+          }}
+            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 8, backgroundColor: '#2c843e', width: '100%', }}>
+            <MaterialCommunityIcons name="cart-variant" size={24} color='white' />
+            <Text style={{ fontSize: 17, fontWeight: '500', color: 'white' }}> Add</Text>
+          </TouchableOpacity>)
+          : (
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', padding: 8, backgroundColor: '#2c843e', width: '100%', }}>
+              <TouchableOpacity onPress={() => {
                 setQty(qty + 1)
-                props.onAddItem
-              }}
-              style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 8, backgroundColor: '#2c843e', width: '100%', }}>
-                <MaterialCommunityIcons name="cart-variant" size={24} color='white' />
-                <Text style={{fontSize: 17, fontWeight: '500', color: 'white'}}> Add</Text>
-              </TouchableOpacity>)
-              : (
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', padding: 8, backgroundColor: '#2c843e', width: '100%', }}>
-                  <TouchableOpacity onPress={() => {
-                    setQty(qty + 1)
-                    props.onAddItem
-                  }}><AntDesign name="pluscircleo" size={24} color="white" /></TouchableOpacity>
-                  <Text style={{ fontSize: 17, fontWeight: '500', color: 'white' }}>{String(qty).padStart(2, '0')}</Text>
-                  <TouchableOpacity onPress={() => {
-                    setQty(qty - 1)
-                    props.onRemoveItem
-                  }}><AntDesign name="minuscircleo" size={24} color="white" /></TouchableOpacity>
-                </View>
-              )}
+                dispatch(cartItem.addToCart(data))
+              }}><AntDesign name="pluscircleo" size={24} color="white" /></TouchableOpacity>
+              <Text style={{ fontSize: 17, fontWeight: '500', color: 'white' }}>{String(qty).padStart(2, '0')}</Text>
+              <TouchableOpacity onPress={() => {
+                setQty(qty - 1)
+                dispatch(cartItem.removeFromCart(id))
+              }}><AntDesign name="minuscircleo" size={24} color="white" /></TouchableOpacity>
+            </View>
+          )}
       </TouchableOpacity>
     </View>
   )
@@ -73,7 +73,7 @@ const ProductsHome = (props) => {
 const styles = StyleSheet.create({
   gridItem: {
     // flex: 0.5,
-    width: Dimensions.get('window').width/2 - 20,
+    width: Dimensions.get('window').width / 2 - 20,
     margin: 10,
     borderRadius: 8,
     elevation: 8,

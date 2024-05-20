@@ -11,6 +11,7 @@ import FlashMessage from 'react-native-flash-message';
 import userReducer from './store/reducer/User';
 import categoryReducer from './store/reducer/Products';
 import cart from './store/reducer/Cart';
+import { StripeProvider } from '@stripe/stripe-react-native';
 const rootReducer = combineReducers({
   auth: authReducer,
   user: userReducer,
@@ -25,16 +26,21 @@ export default function App() {
     store.dispatch(loadInitialState());
   }, []);
 
+  const STRIPE_KEY = 'pk_test_51OtpDySFzAljgqh0jL1bAOJvq5AJY5DrBpYBApU1pgCEC7Dfh04icMpLT2MgbGs3iA842eWlSq0xHyqtQwbtTQqQ003jRpIWpE'
+
   return (
     // <View style={styles.container}>
     //   <Text>Open up App.js to start working on your app!</Text>
     //   <StatusBar style="auto" />
     // </View>
     <Provider store={store} >
-      <AuthNavigator />
-      <FlashMessage position="bottom" />
+      <StripeProvider
+        publishableKey={STRIPE_KEY}
+      >
+        <AuthNavigator />
+        <FlashMessage position="bottom" />
+      </StripeProvider>
       <StatusBar style="auto" />
-
     </Provider>
   );
 }

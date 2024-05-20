@@ -27,10 +27,10 @@ const Home = props => {
     dispatch(homeAction.getHome(accessToken))
       .then((response) => {
         setIsLoading(false);
-        console.log("sgdagfv xzv=> ", response?.data?.recommendedProducts)
+        console.log("sgdagfv xzv=> ", response?.data)
         setResdata(response?.data);
         setBannerData(response?.data?.banner)
-        setCategory(response?.data?.categoryList)
+        setCategory(response?.data?.categoryFilter)
         setPastOrders(response?.data?.pastOrders)
         setRecommendedProducts(response?.data?.recommendedProducts)
 
@@ -42,10 +42,10 @@ const Home = props => {
   }, [accessToken])
 
   const onCategorySelectHandler = (id, name, subcategories) => {
-    props.navigation.navigate('CategoryList', {categoryId: id, name: name, subCategories: subcategories}) 
+    props.navigation.navigate('CategoryList', { categoryId: id, name: name, subCategories: subcategories })
   }
   const onProductSelectHandler = (id, data) => {
-    props.navigation.navigate('ProductDescription', { ProductId: id, data: data})
+    props.navigation.navigate('ProductDescription', { ProductId: id, data: data })
   }
 
   const renderItem = ({ item }) => {
@@ -78,7 +78,7 @@ const Home = props => {
               <Feather name="search" size={18} color="black" style={{ marginLeft: 1 }} />
               <Text style={{ fontSize: 17 }}>Search</Text>
             </TouchableOpacity>
-            <AntDesign name="bars" size={28} color="white"onPress={() => { props.navigation.navigate('Filters') }}  />
+            <AntDesign name="bars" size={28} color="white" onPress={() => { props.navigation.navigate('Filters') }} />
             {/* <FontAwesome6 name="bars-staggered" size={24} color="white" onPress={() => { props.navigation.goBack() }} /> */}
           </View>
         </View>
@@ -93,9 +93,9 @@ const Home = props => {
             sliderWidth={Dimensions.get("window").width}
             itemWidth={Dimensions.get("window").width}
             width={Dimensions.get("window").width}
-
           />
         </View>
+
         <View>
           <Text style={styles.categoryList}>Categories</Text>
           <FlatList
@@ -109,6 +109,7 @@ const Home = props => {
               />}
           />
         </View>
+
         <View>
           <Text style={styles.categoryList}>Past Orders</Text>
           <FlatList
@@ -120,8 +121,8 @@ const Home = props => {
               <ProductsHome
                 param={itemData.item}
                 onSelect={onProductSelectHandler}
-                onRemoveItem={()=> {dispatch(cartItem.removeFromCart(itemData?.item?.productId))}}
-
+                onAddItem={() => { dispatch(cartItem.addToCart(itemData?.item)) }}
+                onRemoveItem={() => { dispatch(cartItem.removeFromCart(itemData?.item?.productId)) }}
               />}
           />
         </View>
@@ -136,8 +137,8 @@ const Home = props => {
               <ProductsHome
                 param={itemData.item}
                 onSelect={onProductSelectHandler}
-                onRemoveItem={()=> {dispatch(cartItem.removeFromCart(itemData?.item?.productId))}}
-
+                onAddItem={() => { dispatch(cartItem.addToCart(itemData?.item)) }}
+                onRemoveItem={() => { dispatch(cartItem.removeFromCart(itemData?.item?.productId)) }}
               />}
           />
         </View>

@@ -43,7 +43,7 @@ const Products = (props) => {
               borderWidth: 2, marginHorizontal: 10, borderRadius: 7,
             }
           }}>
-          <Image style={styles.images} source={{ uri: data.images }} />
+          <Image style={styles.images} source={{ uri: data.images[0] }} />
         </TouchableOpacity>
         <View style={styles.textcontainer}>
           <Text style={{ fontSize: 16, fontWeight: '500', color: '#555' }}>
