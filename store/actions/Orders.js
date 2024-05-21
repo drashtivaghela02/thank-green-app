@@ -59,7 +59,7 @@ console.log("aabuisfhqhfea;jsd;j",orderId, accessToken);
 
 
 export const postOrder = (value, accessToken) => {
-
+console.log("Post orders value",value)
   return async dispatch => {
     try {
       const response = await fetch('https://thankgreen.onrender.com/api/checkout',
@@ -70,19 +70,19 @@ export const postOrder = (value, accessToken) => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            products: value,
+            products: value
         })
         }
       );
-      if (!response.ok) {
-        throw new Error('Failed to post order');
-      }
+      // if (!response.ok) {
+      //   throw new Error('Failed to post order');
+      // }
       const resData = await response.json();
-      // console.log("Rate orders resData", resData);
+      console.log("Post orders resData", resData);
       dispatch({ type: POST_ORDER });
       return resData;
     } catch (error) {
-      console.error("Rate orders error", error);
+      console.error("Post orders error", error);
       // Optionally dispatch an action to update the state with the error
       dispatch({ type: POST_ORDER, error: error.message });
     }

@@ -17,7 +17,7 @@ const cart = (state = initialState, action) => {
   switch (action.type) {
     case ADD_TO_CART:
       const addedProduct = action.product;
-      const quantityId = action.quantityId
+      const quantityId = addedProduct.quantityId
       const prodPrice = 12;
       const prodData = addedProduct;
 
@@ -46,18 +46,20 @@ const cart = (state = initialState, action) => {
 
     case REMOVE_ITEM:
       const removeItem = state.items[action.pid];
+      console.log("sjdfjeoijdiojfaj",removeItem)
       const currentQty = removeItem.quantity;
       let updatedCartItems;
       if (currentQty > 1) {
         // need to reduce it, not erase it
-        const updatedCartItem = new CartItem(
-          currentQty - 1,
-          removeItem.quantityId,
-          removeItem.productPrice,
-          removeItem.productTitle,
-          removeItem.sum - removeItem.productPrice
+        const updatedCartItem = new CartItem( 
+          state.items[action.pid].quantity - 1,
+          state.items[action.pid].quantityId,
+          state.items[action.pid].productPrice,
+          state.items[action.pid].productData,
+          state.items[action.pid].sum - state.items[action.pid].productPrice
         );
         updatedCartItems = { ...state.items, [action.pid]: updatedCartItem };
+        console.log("state after deacreasing quantity: ",state)
       } else {
         updatedCartItems = { ...state.items };
         delete updatedCartItems[action.pid];

@@ -8,35 +8,37 @@ import { useEffect, useState } from "react";
 import CartProduct from "../../Components/UI/CartProduct";
 import * as cartItem from '../../store/actions/Cart'
 import * as orderAction from '../../store/actions/Orders';
+import { useIsFocused } from "@react-navigation/native";
+import { debounce } from 'lodash';
 
 const CheckOutScreen = props => {
+  const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  const [orderData, setOrderdata] = useState([]);
+  const [orderData, setOrderData] = useState([]);
   const accessToken = useSelector(state => state?.auth?.accessToken)
-
   const cartItems = useSelector(state => state?.cart?.items)
-  console.log("redux item:  ufhsi", cartItems)
 
-  const SummaryData = [];
-  const transformedCartItems = [];
-  for (const key in cartItems) {
-    SummaryData.push({
-      id: key,
-      quantity: cartItems[key].quantity,
-      productQuantity_id: cartItems[key].productData.quantity_variants[0].quantity_variant_id
-    })
+  const calculateSummaryData = (cartItems) => {
+    const summaryData = [];
+    for (const key in cartItems) {
+      summaryData.push({
+        id: key,
+        quantity: cartItems[key].quantity,
+        productQuantity_id: cartItems[key].productData.quantity_variants[0].quantity_variant_id
+      });
+    }
+    return summaryData;
+  };
 
-    transformedCartItems.push({
-      productId: key,
-      subcategory_name: cartItems[key]?.productData?.subcategory_name,
-      productData: cartItems[key]?.productData,
-      productPrice: cartItems[key]?.productPrice,
-      quantity: cartItems[key]?.quantity,
-    });
-  }
+  const transformedCartItems = Object.keys(cartItems).map(key => ({
+    productId: key,
+    subcategory_name: cartItems[key]?.productData?.subcategory_name,
+    productData: cartItems[key]?.productData,
+    productPrice: cartItems[key]?.productPrice,
+    quantity: cartItems[key]?.quantity,
+  }));
 
-  // Group items by subcategory_name
   const groupedItems = transformedCartItems.reduce((sections, item) => {
     const section = sections.find(sec => sec.title === item.subcategory_name);
     if (section) {
@@ -47,29 +49,33 @@ const CheckOutScreen = props => {
     return sections;
   }, []);
 
-  console.log("cart products :", SummaryData)
-  
-  const loadData = useEffect(() => {
+  const fetchData = (summaryData) => {
     setIsLoading(true);
-    dispatch(orderAction.postOrder(SummaryData, accessToken))
+    dispatch(orderAction.postOrder(summaryData, accessToken))
       .then((response) => {
-        setOrderdata(response?.data);
+        setOrderData(response?.data);
         setIsLoading(false);
-        console.log("sgdagfv xzv=> ", response?.data)
       })
       .catch(error => {
         setIsLoading(false);
         console.error("Error fetching user information:", error);
       });
-  }, [accessToken, dispatch])
+  }
+
+  const debouncedFetchData = debounce((summaryData) => {
+    fetchData(summaryData);
+  }, 1);
+
+  useEffect(() => {
+    const summaryData = calculateSummaryData(cartItems);
+    debouncedFetchData(summaryData);
+  }, [cartItems]);
 
   return (
     <View style={styles.container}>
       <CustomHeader label='Cart' press={() => props.navigation.goBack()} />
-      {isLoading && <ActivityIndicator />}
-      <ScrollView contentContainerStyle={{
-        flexGrow: 1
-      }}>
+      {/* {isLoading && <ActivityIndicator />} */}
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.body}>
           <View>
             <SectionList
@@ -78,14 +84,17 @@ const CheckOutScreen = props => {
               renderItem={({ item }) => (
                 <CartProduct
                   param={item}
+                  onAddItem={(qty) => {
+                    console.log("qtyqtyqty",qty)
+                    dispatch(cartItem.addToCart(item?.productData));
+                  }}
                   onRemoveItem={() => {
-                    dispatch(cartItem.removeFromCart(item?.productId)) 
-                    loadData
+                    dispatch(cartItem.removeFromCart(item?.productId));
                   }}
                   onDeleteItem={() => {
-                    dispatch(cartItem.deleteFromCart(item?.productId))
-                    loadData
-                   }}
+                    dispatch(cartItem.deleteFromCart(item?.productId));
+                  }}
+                  isFocused={isFocused}
                 />
               )}
               renderSectionHeader={({ section: { title } }) => (
@@ -110,7 +119,7 @@ const CheckOutScreen = props => {
               </View>
             </View>
             <View style={styles.buttonsContainer}>
-              <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('Checkout',{ OrderData: orderData, SummaryData: SummaryData}) }}>
+              <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('Checkout',{ OrderData: orderData, SummaryData: calculateSummaryData(cartItems) }) }}>
                 <Text style={styles.verifyButton}>CHECKOUT</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.verify1} onPress={() => { console.log('Pressed'); }}>
@@ -132,8 +141,6 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     justifyContent: 'space-between',
-    // paddingHorizontal: 20,
-    // paddingVertical: 10,
     backgroundColor: 'white',
   },
   sectionHeader: {
@@ -142,7 +149,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#f4f4f4',
     paddingVertical: 5,
     paddingHorizontal: 20,
-    // marginTop: 10,
   },
   summaryContainer: {
     elevation: 8,

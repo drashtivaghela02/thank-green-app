@@ -12,20 +12,25 @@ import * as cartItem from '../../store/actions/Cart'
 const CartProduct = (props) => {
   const dispatch = useDispatch();
 
-  const ProductData = props.param;
-  console.log("etwtuoafevy7na8ohyf7ar0n7", ProductData)
-  const data = props.param.productData;
-  const [selectedOption, setSelectedOption] = useState(props.param.productData.quantity_variants[0].quantity_variant); // Assuming the first size as the initial value
-  const [actual, setActuals] = useState(props.param.productData.quantity_variants[0].actual_price)
-  const [selling, setSelling] = useState(props.param.productData.quantity_variants[0].selling_price)
-  const [qty, setQty] = useState(ProductData.quantity);
-  const [showOptions, setShowOptions] = useState(false);
+  const ProductData = props?.param ?? {};
+  const data = ProductData?.productData ?? {};
+  const quantityVariants = data?.quantity_variants ?? [];
+
+  // console.log("etwtuoafevy7na8ohyf7ar0n7", data?.quantity_variants[0]?.quantity_variant)
+const [quantityID, setQuantityID] = useState(quantityVariants[0]?.quantity_variant_id ?? '')
+
+const [selectedOption, setSelectedOption] = useState(quantityVariants[0]?.quantity_variant ?? '')
+  const [actual, setActuals] = useState(quantityVariants[0]?.actual_price ?? 0)
+  const [selling, setSelling] = useState(quantityVariants[0]?.selling_price ?? 0)
+  const [qty, setQty] = useState(ProductData?.quantity ?? 1)
+  const [showOptions, setShowOptions] = useState(false)
 
   const toggleOptions = () => {
     setShowOptions(!showOptions);
   };
 
-  const handleOptionSelect = (quantity_variant, selling, actual) => {
+  const handleOptionSelect = (quantity_ID, quantity_variant, selling, actual) => {
+    setQuantityID(quantityID);
     setSelectedOption(quantity_variant);
     setActuals(actual);
     setSelling(selling);
@@ -44,12 +49,12 @@ const CartProduct = (props) => {
               borderWidth: 2, marginRight: 10, borderRadius: 7,
             }
           }}>
-          <Image style={styles.images} source={{ uri: data.images[0] }} />
+          <Image style={styles.images} source={{ uri: data?.images?.[0] }} />
         </TouchableOpacity>
         <View style={styles.textcontainer}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <Text style={{ fontSize: 16, fontWeight: '500', color: '#555' }}>
-              {data.product_title}
+              {data?.product_title}
             </Text>
             <AntDesign name="delete" size={20} color="black" onPress={props.onDeleteItem} />
           </View>
@@ -70,13 +75,16 @@ const CartProduct = (props) => {
               <TouchableOpacity onPress={
                 () => {
                   setQty(qty + 1)
-                  dispatch(cartItem.addToCart(data))
+                  props.onAddItem(qty +1)
+                  // dispatch(cartItem.addToCart(data))
                 }}
               ><AntDesign name="pluscircleo" size={25} /></TouchableOpacity>
               <Text style={{ fontSize: 20, fontWeight: '500', }}>{String(qty).padStart(2, '0')}</Text>
-              <TouchableOpacity disabled={qty === 0} onPress={() => {
+              <TouchableOpacity disabled={qty === 1} onPress={() => {
                 setQty(qty - 1)
-                props.onRemoveItem
+                props.onRemoveItem()
+                // dispatch(cartItem.removeFromCart(ProductData.productId)) 
+
               }}><AntDesign name="minuscircleo" size={25} /></TouchableOpacity>
             </View>
 
@@ -85,7 +93,10 @@ const CartProduct = (props) => {
           {showOptions && (
             <View style={styles.optionsContainer}>
               {data.quantity_variants.map((option, index) => (
-                <TouchableOpacity key={index} onPress={() => handleOptionSelect(option?.quantity_variant, option?.selling_price, option?.actual_price)}>
+                <TouchableOpacity key={index} onPress={() =>{
+                  handleOptionSelect(option?.quantity_variant_id, option?.quantity_variant, option?.selling_price, option?.actual_price)
+                  props.onQuantityChange()
+                }}>
                   <Text>{option?.quantity_variant}</Text>
                 </TouchableOpacity>
               ))}

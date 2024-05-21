@@ -127,7 +127,7 @@ const Home = props => {
           />
         </View>
         <View>
-          <Text style={styles.categoryList}>Reccomended Products</Text>
+          <Text style={styles.categoryList}>Recomended Products</Text>
           <FlatList
             data={recommendedProducts}
             keyExtractor={(item) => item.product_id}

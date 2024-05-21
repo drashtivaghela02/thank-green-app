@@ -8,6 +8,7 @@ export const addToCart = product => {
 }
 
 export const removeFromCart = productID => {
+    console.log("helkloasfoia",productID)
     return {type : REMOVE_ITEM, pid : productID}
 }
 

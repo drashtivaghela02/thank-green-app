@@ -12,6 +12,8 @@ import userReducer from './store/reducer/User';
 import categoryReducer from './store/reducer/Products';
 import cart from './store/reducer/Cart';
 import { StripeProvider } from '@stripe/stripe-react-native';
+import logger from 'redux-logger';
+
 const rootReducer = combineReducers({
   auth: authReducer,
   user: userReducer,
@@ -19,7 +21,7 @@ const rootReducer = combineReducers({
   cart: cart
 });
 
-const store = createStore(rootReducer, applyMiddleware(thunk, saveStateMiddleware));
+const store = createStore(rootReducer, applyMiddleware(thunk, saveStateMiddleware,logger));
 export default function App() {
 
   useEffect(() => {
