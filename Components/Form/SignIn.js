@@ -21,8 +21,8 @@ const SignIn = (props) => {
     const Validation = Yup.object({
         emailOrContact: Yup.string()
             .test(
-                '*is-email-or-phone',
-                '*Invalid email or phone number',
+                'is-email-or-phone',
+                'Invalid email or phone number',
                 value => {
                     // Check if it's an email
                     if (/\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/.test(value)) {
@@ -37,12 +37,12 @@ const SignIn = (props) => {
             )
             .required('Email or Contact number is Required'),
         password: Yup.string()
-            .min(6, '*Must be at least 6 characters')
-            .matches(/(?=.*[0-9])/, '*Password must contain a number.')
-            .matches(/(?=.*[a-z])/, '*Password must contain a lowercase letter.')
-            .matches(/(?=.*[A-Z])/, '*Password must contain an uppercase letter.')
-            // .matches(/(?=.*[!@#$%^&*])/, '*Password must contain a Symbol')
-            .required('*Password is Required'),
+            .min(6, 'Must be at least 6 characters')
+            .matches(/(?=.*[0-9])/, 'Password must contain a number.')
+            .matches(/(?=.*[a-z])/, 'Password must contain a lowercase letter.')
+            .matches(/(?=.*[A-Z])/, 'Password must contain an uppercase letter.')
+            // .matches(/(?=.*[!@#$%^&*])/, 'Password must contain a Symbol')
+            .required('Password is Required'),
     });
     // console.log(validationSchema)
 

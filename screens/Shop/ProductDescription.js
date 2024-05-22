@@ -13,13 +13,18 @@ import { Pagination } from "react-native-snap-carousel";
 const ProductDescription = props => {
   const ProductId = props.route.params.ProductId ? props.route.params.ProductId : '';
   // const data = props.route.params.data ? props.route.params.data : [];
-  console.log("hello", ProductId)
+  const cartItems = useSelector(state => state?.cart?.items)
 
+  console.log("hello", cartItems)
+  if (cartItems[ProductId]) {
+  console.log(cartItem[quantityVarientId])
+}
   const accessToken = useSelector(state => state.auth.accessToken)
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
 
   const [data, setResdata] = useState(null);
+  const [quantityVarientId, setQuantityVarientId] = useState(data?.quantity_variants[0]?.quantity_variant_id ?? '')
   const [selectedOption, setSelectedOption] = useState(data?.quantity_variants[0]?.quantity_variant ?? ''); // Assuming the first size as the initial value
   const [isFavourite, setIsFavourite] = useState(data?.is_favorite != null ? data?.is_favorite : 0)
   const [actual, setActuals] = useState(data?.quantity_variants[0]?.actual_price ?? 0)
@@ -32,10 +37,16 @@ const ProductDescription = props => {
     setShowOptions(!showOptions);
   };
 
-  const handleOptionSelect = (quantity_variant, selling, actual) => {
-    setSelectedOption(quantity_variant);
-    setActuals(actual);
-    setSelling(selling);
+  const handleOptionSelect = (quantityVId, quantity_variant, selling, actual) => {
+    for (let variant of data?.quantity_variants) {
+      if (variant.quantity_variant_id === quantityVId) {
+          console.log("VArients idasdfajfnl.zn ", variant);
+      }
+  }
+    setQuantityVarientId(quantityVId)
+    setSelectedOption(variant.quantity_variant);
+    setActuals(variant.actual_price);
+    setSelling(variant.selling_price);
     setShowOptions(false); // Close the selection list after selecting an option
     // dispatch(addToCart(selling))
   };
@@ -45,6 +56,7 @@ const ProductDescription = props => {
       .then((response) => {
         setIsLoading(false);
         setResdata(response?.data[0]);
+        setQuantityVarientId(response?.data[0].quantity_variants[0]?.quantity_variant_id)
         setSelectedOption(response?.data[0].quantity_variants[0]?.quantity_variant);
         setActuals(response?.data[0].quantity_variants[0]?.actual_price);
         setSelling(response?.data[0].quantity_variants[0]?.selling_price);
@@ -101,7 +113,7 @@ const ProductDescription = props => {
           </View>
         </View>
         
-        <View style={{ backgroundColor: 'white',overflow:'hidden', paddingHorizontal: 20, paddingTop: 25 , borderTopLeftRadius: 40, borderTopRightRadius: 40 , shadowColor: 'black',top:-26, elevation: 5}}>
+        <View style={{ backgroundColor: 'white',overflow:'hidden',marginTop:-27, paddingHorizontal: 20, paddingTop: 25, borderTopLeftRadius: 40, borderTopRightRadius: 40 , shadowColor: 'black', elevation: 5}}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15 }}>
             <View>
               <Text style={styles.title}>{data?.product_title ?? ''}</Text>
@@ -121,7 +133,8 @@ const ProductDescription = props => {
               <TouchableOpacity onPress={
                 () =>{
                   setQty(qty + 1)
-                  dispatch(cartItem.addToCart(data))
+                  console.log("add to cart", quantityVarientId)
+                  dispatch(cartItem.addToCart(data, quantityVarientId))
                 }
 
               }><AntDesign name="pluscircleo" size={24} color="#666" /></TouchableOpacity>
@@ -135,14 +148,17 @@ const ProductDescription = props => {
 
             <Text style={{ fontSize: 20, fontWeight: '500', marginBottom: 5 }}>Size</Text>
             <TouchableOpacity onPress={toggleOptions} style={{ width: '100%', borderColor: '#f0f0f0', backgroundColor: '#f0f0f0', borderWidth: 1, borderRadius: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 10, paddingHorizontal: 10 }}>
-              <Text style={{ fontSize: 14, color: '#555' }}>{selectedOption}</Text>
+              <Text style={{ fontSize: 14, color: '#555' }}>{
+                selectedOption ?? 
+                'no-data'
+                }</Text>
               <AntDesign name='down' size={16} color="#888" />
 
             </TouchableOpacity>
             {showOptions && (
               <View style={styles.optionsContainer}>
                 {data?.quantity_variants.map((option, index) => (
-                  <TouchableOpacity key={index} onPress={() => handleOptionSelect(option?.quantity_variant, option?.selling_price, option?.actual_price)}>
+                  <TouchableOpacity key={index} onPress={() => handleOptionSelect( option?.quantity_variant_id, option?.quantity_variant, option?.selling_price, option?.actual_price)}>
                     <Text>{option?.quantity_variant}</Text>
                   </TouchableOpacity>
                 ))}
@@ -181,7 +197,10 @@ const ProductDescription = props => {
                 elevation: 8,
                 overflow: 'hidden'
               }]}
-              onPress={() => dispatch(cartItem.addToCart(data))}
+              onPress={() => {
+                console.log("add to cart", quantityVarientId)
+                dispatch(cartItem.addToCart(data, quantityVarientId))
+              }}
             >
               <MaterialCommunityIcons name="cart-variant" size={24} color='white' />
               <Text style={{ fontSize: 17, fontWeight: '500', color: 'white', marginLeft: 5 }}> Add to Cart</Text>
@@ -216,6 +235,7 @@ const styles = StyleSheet.create({
   body: {
     flexGrow: 1,
     justifyContent: 'flex-start',
+    backgroundColor:"red"
     // alignItems: 'center',
     // paddingHorizontal: 30,
   },

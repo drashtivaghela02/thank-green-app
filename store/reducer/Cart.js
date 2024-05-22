@@ -17,12 +17,12 @@ const cart = (state = initialState, action) => {
   switch (action.type) {
     case ADD_TO_CART:
       const addedProduct = action.product;
-      const quantityId = addedProduct.quantityId
+      const quantityId = action.quantityID
       const prodPrice = 12;
       const prodData = addedProduct;
 
       let updatedOrNewCartItem;
-
+console.log("actio of cart items",action)
       if (state.items[addedProduct.product_id]) {
         //already have the item in the cart
         updatedOrNewCartItem = new CartItem(
@@ -41,7 +41,7 @@ const cart = (state = initialState, action) => {
       return {
         ...state,
         items: { ...state.items, [addedProduct.product_id]: updatedOrNewCartItem },
-        // totalAmount : state.totalAmount + prodPrice
+        totalAmount : state.totalAmount + prodPrice
       }
 
     case REMOVE_ITEM:

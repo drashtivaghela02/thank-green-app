@@ -63,24 +63,26 @@ const MyAccount = props => {
         })
     }
     const EditImageHandler = async () => {
-        try {
+        // try {
             const result = await launchCameraAsync({
                 allowsEditing: true,
                 aspect: [4, 4],
                 quality: 0.5,
             })
-            if (!result.cancelled) {
+            console.log("Image result",result)
+            if (result.canceled) {
+                // throw new Error('Image picking cancelled')
+                Alert.alert("Alert!", 'Image picking cancelled');
+                // console.log('Image picking cancelled');
+            } else {
                 // setImage(result.assets[0].uri);
                 handleImagePicked(result.assets[0].uri);
-            } else {
-                Alert.alert("Alert!", 'Image picking cancelled');
-                console.log('Image picking cancelled');
-            }
-        }
-        catch (err) {
-            Alert.alert("Alert", err)
-
-        }
+            } 
+        // }
+        // catch (err) {
+            // Alert.alert("Alert", err)
+// console.error("Image picking error",err)
+        // }
     };
 
     const handleLogout = () => {
