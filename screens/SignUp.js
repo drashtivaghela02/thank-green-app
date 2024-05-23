@@ -32,7 +32,7 @@ const SignUp = props => {
             .required('Name is Required'),
         phoneNumber: Yup.string()
             .required('Please Enter a valid number')
-            .matches(/^[0-9]*$/, 'Phone Number must contain number.'),
+            .matches(/^[0-9]*$/, 'Phone Number must be in number.'),
         email: Yup.string()
             .matches(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, ' Email address is not valid')
             .required('Email is Required'),

@@ -2,7 +2,7 @@ import { Image, Text } from "react-native"
 import { StyleSheet, TouchableOpacity, View } from "react-native"
 
 const SubCategoryListing = (props) => {
-  console.log(props.param)
+  console.log("Sub category",props.param)
   const id = props.param.subcategory_id;
   const subCategoryName = props.param.subcategory_name
   const data = props.param

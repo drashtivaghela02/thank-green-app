@@ -26,6 +26,7 @@ export default function App() {
 
   useEffect(() => {
     store.dispatch(loadInitialState());
+    store.dispatch(loadInitialState());
   }, []);
 
   const STRIPE_KEY = 'pk_test_51OtpDySFzAljgqh0jL1bAOJvq5AJY5DrBpYBApU1pgCEC7Dfh04icMpLT2MgbGs3iA842eWlSq0xHyqtQwbtTQqQ003jRpIWpE'

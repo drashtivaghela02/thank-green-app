@@ -4,6 +4,7 @@ const POST_ORDER = 'POST_ORDER';
 const RATE_ORDER = 'RATE_ORDER';
 const CANCEL_ORDER = 'CANCEL_ORDER';
 const TRACK_ORDER = 'TRACK_ORDER';
+const REPORT_ISSUE = 'REPORT_ISSUE';
 
 export const getOrderInfo = (accessToken) => {
 
@@ -154,6 +155,38 @@ export const cancelOrder = (value, accessToken) => {
     }
   };
 };
+
+export const reportIssue = (value, accessToken) => {
+
+  return async dispatch => {
+    try {
+      const response = await fetch('https://thankgreen.onrender.com/api/report-issue',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + accessToken,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            orderId: value.orderId,
+            issue: value.reason,
+        })
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Failed to report issue');
+      }
+      const resData = await response.json();
+      // console.log("Rate orders resData", resData);
+      dispatch({ type: REPORT_ISSUE, data: resData });
+      return resData;
+    } catch (error) {
+      console.error("Report issue error", error);
+      // Optionally dispatch an action to update the state with the error
+    }
+  };
+};
+
 
 export const trackInfo = (orderId, accessToken) => {
 

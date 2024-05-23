@@ -24,10 +24,11 @@ const Home = props => {
 
   useEffect(() => {
     setIsLoading(true);
+    console.log(accessToken)
     dispatch(homeAction.getHome(accessToken))
       .then((response) => {
         setIsLoading(false);
-        console.log("sgdagfv xzv=> ", response?.data)
+        console.log("sgdagfv xzv=> ", response?.data?.categoryFilter)
         setResdata(response?.data);
         setBannerData(response?.data?.banner)
         setCategory(response?.data?.categoryFilter)
@@ -42,7 +43,8 @@ const Home = props => {
   }, [accessToken])
 
   const onCategorySelectHandler = (id, name, subcategories) => {
-    props.navigation.navigate('CategoryList', { categoryId: id, name: name, subCategories: subcategories })
+    // console.log("touched", id)
+   props.navigation.navigate('CategoryList', {categoryId: id, name: name, subCategories: subcategories}) 
   }
   const onProductSelectHandler = (id, data) => {
     props.navigation.navigate('ProductDescription', { ProductId: id, data: data })

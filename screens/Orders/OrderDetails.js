@@ -166,7 +166,7 @@ const OrderDetails = (props) => {
 
             <View>
               {details.order_status === "delivered" &&
-                <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('ReportIssue'); }}>
+                <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('ReportIssue', { Id: details.order_number }); }}>
                   <Text style={styles.verifyButton}>REPORT ISSUE</Text>
                 </TouchableOpacity>
               }

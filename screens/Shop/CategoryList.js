@@ -1,7 +1,7 @@
 import { AntDesign, Feather, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { FlatList, TouchableOpacity } from "react-native";
+import { FlatList, ScrollView, TouchableOpacity } from "react-native";
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as productAction from '../../store/actions/Products';
@@ -12,7 +12,7 @@ const CategoryList = props => {
   const categoryId = props.route.params.categoryId;
   const name = props.route.params.name;
   const subCategories = props.route.params.subCategories;
-  // console.log("hello", categoryId, name)
+  console.log("hello", props.route.params)
 
   const accessToken = useSelector(state => state.auth.accessToken)
   const dispatch = useDispatch();
@@ -60,7 +60,7 @@ const CategoryList = props => {
         </View>
       </LinearGradient>
 
-      <View style={styles.body}>
+      <ScrollView contentContainerStyle={styles.body} nestedScrollEnabled={true} >
         <Image source={require('../../assets/FoodCategory.png')} style={styles.image} />
 
         <View style={{ width: '100%', padding: 20 }}>
@@ -87,7 +87,7 @@ const CategoryList = props => {
               />}
           />
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   body: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
     // paddingHorizontal: 30,

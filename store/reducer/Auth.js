@@ -5,29 +5,33 @@ import {
   RESENDOTP,
   SIGNUP,
   VERIFYOTP,
-  CHANGE_PASSWORD
+  CHANGE_PASSWORD,
+  LOAD_STATE,
+  SIGNOUT
 } from '../actions/Auth';
 
 const initialState = {
-  signUpData: null, // Initial state for signed up data
-  otpVerificationStatus: null, // Initial state for OTP verification status
+  signUpData: null, 
+  otpVerificationStatus: null, 
   status:null,
-  msg: null,
-  statusCode: null,
   accessToken: null,
   refreshToken: null,
-  userId: null,
+
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
+    case LOAD_STATE:
+      return {
+        ...state,
+        ...action.state.auth // Merge the loaded state into the current state
+      };
     case LOGINEMAIL:
       console.log("heya",action)
       return {
         ...state,
         accessToken: action.accessToken,
         refreshToken: action.refreshToken,
-        password: action.password,
         status: action.status,
       };
     case LOGINCONTACT:
@@ -35,7 +39,6 @@ export default (state = initialState, action) => {
         ...state,
         accessToken: action.accessToken,
         refreshToken: action.refreshToken,
-        password: action.password,
         status: action.status,
       };
     case SIGNUP:
@@ -58,6 +61,14 @@ export default (state = initialState, action) => {
       return {
         ...state,
         password: action.password,
+      } 
+    case SIGNOUT: 
+      return {
+        signUpData: null, 
+        otpVerificationStatus: null, 
+        status:null,
+        accessToken: null,
+        refreshToken: null,
       }
     default:
       return state;

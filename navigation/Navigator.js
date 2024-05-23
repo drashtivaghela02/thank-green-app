@@ -47,6 +47,7 @@ import CustomDrawer from '../Components/Drawer/CustomDrawer';
 import ProductsListing from '../screens/Shop/ProductsListing';
 import ProductDescription from '../screens/Shop/ProductDescription';
 import CheckOut from '../screens/CheckOut/CheckOut';
+import { useSelector } from 'react-redux';
 
 
 const FormStack = createStackNavigator();
@@ -60,15 +61,24 @@ const FormNavigator = () => {
 
 const AuthStack = createStackNavigator();
 const AuthNavigator = () => {
+  const authState = useSelector(state => state.auth.accessToken);
+  const accessToken = useSelector((state) => state.accessToken);
+  console.log("navigator", authState)
   return (
     <NavigationContainer>
       <AuthStack.Navigator>
-        <AuthStack.Screen name="FormNavigator" component={FormNavigator} options={{ headerShown: false }} />
+        {authState
+          ?
+          <AuthStack.Screen name="Home" component={DrawerNavigator} options={{ headerShown: false }} />
+          :
+          (
+          <><AuthStack.Screen name="FormNavigator" component={FormNavigator} options={{ headerShown: false }} />
         <AuthStack.Screen name="VerificationCode" component={VerificationCode} options={{ headerShown: false }} />
-        <AuthStack.Screen name="Home" component={DrawerNavigator} options={{ headerShown: false }} />
-        <AuthStack.Screen name='ReferAFriends' component={ReferAFriendScreen} options={{ headerShown: false, }} />
         <AuthStack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
-        <AuthStack.Screen name="ForgetPassword" component={ForgetPassword} options={{ headerShown: false }} />
+              <AuthStack.Screen name="ForgetPassword" component={ForgetPassword} options={{ headerShown: false }} />
+              </>)
+        }
+        <AuthStack.Screen name='ReferAFriends' component={ReferAFriendScreen} options={{ headerShown: false, }} />
         <AuthStack.Screen name="Map" component={Map} options={{ headerShown: false }} />
         <AuthStack.Screen name='LocationPicker' component={LocationPicker} options={{ headerShown: false }} />
         <AuthStack.Screen name='TrackOrder' component={TrackOrder} options={{ headerShown: false }} />
@@ -96,7 +106,7 @@ const DrawerNavigator = () => {
     <Drawer.Navigator
       initialRouteName="DashBoard"
       screenOptions={{
-        swipeEnabled : false,
+        swipeEnabled: false,
         drawerStyle: {
           width: Dimensions.get('window').width * 0.85,
         },
@@ -141,7 +151,7 @@ const ShopScreens = () => {
       <ShopCategory.Screen name='ProductsListing' component={ProductsListing} options={{ headerShown: false }} />
       {/* <ShopCategory.Screen name='ProductDescription' component={ProductDescription} options={{ headerShown: false }} /> */}
       <ShopCategory.Screen name='Filters' component={FilterScreen} options={{ headerShown: false }} />
-      
+
     </ShopCategory.Navigator>
   )
 }

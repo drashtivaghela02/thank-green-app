@@ -6,6 +6,8 @@ export const LOGINCONTACT = 'LOGINCONTACT';
 export const VERIFYOTP = 'VERIFYOTP';
 export const RESENDOTP = 'RESENDOTP';
 export const CHANGE_PASSWORD = 'CHANGE_PASSWORD';
+export const LOAD_STATE = 'LOAD_STATE';
+export const SIGNOUT = 'SIGNOUT';
 
 export const signup = (values) => {
 
@@ -208,3 +210,24 @@ export const changePassword = (value, accessToken) => {
     }
   };
 };
+
+
+
+
+export const loadInitialState = () => {
+  return async (dispatch) => {
+    try {
+      const serializedState = await AsyncStorage.getItem('reduxState');
+      if (serializedState !== null) {
+        const state = JSON.parse(serializedState);
+        dispatch({ type: LOAD_STATE, state });
+      }
+    } catch (error) {
+      console.error('Error loading state from AsyncStorage:', error);
+    }
+  };
+};
+
+export const signOut = () => {
+  return {type : SIGNOUT};
+}
