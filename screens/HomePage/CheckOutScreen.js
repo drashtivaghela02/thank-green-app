@@ -22,21 +22,23 @@ const CheckOutScreen = props => {
   const calculateSummaryData = (cartItems) => {
     const summaryData = [];
     for (const key in cartItems) {
+      console.log(cartItems)
+      console.log("CArtItemsafdiowsfioajofji",cartItems)
       summaryData.push({
-        id: key,
+        id: cartItems[key].productData.product_id,
         quantity: cartItems[key].quantity,
-        productQuantity_id: cartItems[key].productData.quantity_variants[0].quantity_variant_id
+        productQuantity_id: cartItems[key].quantityId
       });
     }
     return summaryData;
   };
-
   const transformedCartItems = Object.keys(cartItems).map(key => ({
     productId: key,
     subcategory_name: cartItems[key]?.productData?.subcategory_name,
     productData: cartItems[key]?.productData,
     productPrice: cartItems[key]?.productPrice,
     quantity: cartItems[key]?.quantity,
+    quantityId: cartItems[key]?.quantityId
   }));
 
   const groupedItems = transformedCartItems.reduce((sections, item) => {
@@ -48,6 +50,8 @@ const CheckOutScreen = props => {
     }
     return sections;
   }, []);
+
+  console.log("grouped data",groupedItems[0].data[0])
 
   const fetchData = (summaryData) => {
     setIsLoading(true);
@@ -86,7 +90,7 @@ const CheckOutScreen = props => {
                   param={item}
                   onAddItem={(qty) => {
                     console.log("qtyqtyqty",qty)
-                    dispatch(cartItem.addToCart(item?.productData));
+                    dispatch(cartItem.addToCart(item?.productData,item?.quantityId ));
                   }}
                   onRemoveItem={() => {
                     dispatch(cartItem.removeFromCart(item?.productId));

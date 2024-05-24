@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as productAction from '../../store/actions/Products';
 import Products from "../../Components/UI/Products";
 import * as cartItem from '../../store/actions/Cart'
+import CartIcon from "../../Components/UI/CartIcon";
 
 
 const ProductsListing = props => {
@@ -48,7 +49,7 @@ const ProductsListing = props => {
         <View style={styles.header}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <AntDesign name="arrowleft" size={28} color='white' onPress={() => { props.navigation.goBack() }} />
-            <MaterialCommunityIcons name="cart-variant" size={28} color="white" />
+            <CartIcon press={() => { props.navigation.navigate('CheckOut') }} />
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, }}>
             <Text numberOfLines={1} style={styles.heading}>{name}</Text>

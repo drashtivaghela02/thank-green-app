@@ -9,6 +9,8 @@ import Products from "../../Components/UI/Products";
 import Carousel from "react-native-reanimated-carousel";
 import * as cartItem from '../../store/actions/Cart'
 import { Pagination } from "react-native-snap-carousel";
+import CartIcon from "../../Components/UI/CartIcon";
+import Colors from "../../Constant/Colors";
 
 const ProductDescription = props => {
   const ProductId = props.route.params.ProductId ? props.route.params.ProductId : '';
@@ -16,13 +18,10 @@ const ProductDescription = props => {
   const cartItems = useSelector(state => state?.cart?.items)
 
   console.log("hello", cartItems)
-  if (cartItems[ProductId]) {
-  console.log(cartItem[quantityVarientId])
-}
   const accessToken = useSelector(state => state.auth.accessToken)
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-
+  
   const [data, setResdata] = useState(null);
   const [quantityVarientId, setQuantityVarientId] = useState(data?.quantity_variants[0]?.quantity_variant_id ?? '')
   const [selectedOption, setSelectedOption] = useState(data?.quantity_variants[0]?.quantity_variant ?? ''); // Assuming the first size as the initial value
@@ -32,21 +31,24 @@ const ProductDescription = props => {
   const [qty, setQty] = useState(1);
   const [showOptions, setShowOptions] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);  
-  console.log('data.quantity_variants?data ',)
   const toggleOptions = () => {
     setShowOptions(!showOptions);
   };
-
-  const handleOptionSelect = (quantityVId, quantity_variant, selling, actual) => {
+  
+  if (cartItems[ProductId]) {
+    const quantityId = cartItem[ProductId]
+  console.log("Product etxists in car",cartItem[ProductId])
+}
+  const handleOptionSelect = (quantityVId) => {
     for (let variant of data?.quantity_variants) {
       if (variant.quantity_variant_id === quantityVId) {
           console.log("VArients idasdfajfnl.zn ", variant);
+          setQuantityVarientId(quantityVId)
+          setSelectedOption(variant.quantity_variant);
+          setActuals(variant.actual_price);
+          setSelling(variant.selling_price);
       }
   }
-    setQuantityVarientId(quantityVId)
-    setSelectedOption(variant.quantity_variant);
-    setActuals(variant.actual_price);
-    setSelling(variant.selling_price);
     setShowOptions(false); // Close the selection list after selecting an option
     // dispatch(addToCart(selling))
   };
@@ -69,14 +71,11 @@ const ProductDescription = props => {
       });
   }, [accessToken])
 
-  // const onProductSelectHandler = (id) => {
-  //   props.navigation.navigate('ProductDescription', { ProductId: id })
-  // }
 
   if (isLoading) {
     return (
-      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size={"large"} />
+      <View style={{ flex:1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size={50} color={Colors.green} />
       </View>
     )
   }
@@ -108,7 +107,8 @@ const ProductDescription = props => {
           <View style={styles.header}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
               <AntDesign name="arrowleft" size={28} color='white' style={{ elevation: 5, shadowColor: 'black' }} onPress={() => { props.navigation.goBack() }} />
-              <MaterialCommunityIcons name="cart-variant" size={28} color="white" onPress={() => { props.navigation.navigate('CheckOut') }} />
+              <CartIcon press ={() => { props.navigation.navigate('CheckOut') }} />
+              
             </View>
           </View>
         </View>
@@ -158,7 +158,7 @@ const ProductDescription = props => {
             {showOptions && (
               <View style={styles.optionsContainer}>
                 {data?.quantity_variants.map((option, index) => (
-                  <TouchableOpacity key={index} onPress={() => handleOptionSelect( option?.quantity_variant_id, option?.quantity_variant, option?.selling_price, option?.actual_price)}>
+                  <TouchableOpacity key={index} onPress={() => handleOptionSelect( option?.quantity_variant_id)}>
                     <Text>{option?.quantity_variant}</Text>
                   </TouchableOpacity>
                 ))}

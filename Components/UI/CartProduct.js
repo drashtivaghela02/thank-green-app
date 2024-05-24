@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Image } from "react-native";
 import { StyleSheet } from "react-native";
@@ -16,24 +16,31 @@ const CartProduct = (props) => {
   const data = ProductData?.productData ?? {};
   const quantityVariants = data?.quantity_variants ?? [];
 
-  // console.log("etwtuoafevy7na8ohyf7ar0n7", data?.quantity_variants[0]?.quantity_variant)
-const [quantityID, setQuantityID] = useState(quantityVariants[0]?.quantity_variant_id ?? '')
-
+  console.log("etwtuoafevy7na8ohyf7ar0n7", ProductData)
+  const [quantityVarientId, setQuantityVarientId] = useState(quantityVariants[0]?.quantity_variant_id ?? '')
 const [selectedOption, setSelectedOption] = useState(quantityVariants[0]?.quantity_variant ?? '')
   const [actual, setActuals] = useState(quantityVariants[0]?.actual_price ?? 0)
   const [selling, setSelling] = useState(quantityVariants[0]?.selling_price ?? 0)
-  const [qty, setQty] = useState(ProductData?.quantity ?? 1)
+  const [qty, setQty] = useState(ProductData?.quantity)
   const [showOptions, setShowOptions] = useState(false)
 
   const toggleOptions = () => {
     setShowOptions(!showOptions);
   };
-
-  const handleOptionSelect = (quantity_ID, quantity_variant, selling, actual) => {
-    setQuantityID(quantityID);
-    setSelectedOption(quantity_variant);
-    setActuals(actual);
-    setSelling(selling);
+  useEffect(() => {
+    if(ProductData?.quantityId){
+  handleOptionSelect(ProductData?.quantityId)}
+})
+  const handleOptionSelect = (quantityVId) => {
+    for (let variant of data?.quantity_variants) {
+      if (variant.quantity_variant_id === quantityVId) {
+          console.log("VArients idasdfajfnl.zn ", variant);
+          setQuantityVarientId(quantityVId)
+          setSelectedOption(variant.quantity_variant);
+          setActuals(variant.actual_price);
+          setSelling(variant.selling_price);
+      }
+  }
     setShowOptions(false); // Close the selection list after selecting an option
     // dispatch(addToCart(selling))
   };
@@ -93,10 +100,7 @@ const [selectedOption, setSelectedOption] = useState(quantityVariants[0]?.quanti
           {showOptions && (
             <View style={styles.optionsContainer}>
               {data.quantity_variants.map((option, index) => (
-                <TouchableOpacity key={index} onPress={() =>{
-                  handleOptionSelect(option?.quantity_variant_id, option?.quantity_variant, option?.selling_price, option?.actual_price)
-                  props.onQuantityChange()
-                }}>
+                <TouchableOpacity key={index} onPress={() =>{handleOptionSelect( option?.quantity_variant_id)}}>
                   <Text>{option?.quantity_variant}</Text>
                 </TouchableOpacity>
               ))}

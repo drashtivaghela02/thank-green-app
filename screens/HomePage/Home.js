@@ -11,6 +11,7 @@ import Carousel from "react-native-reanimated-carousel";
 import { Image } from "react-native";
 import ProductsHome from "../../Components/UI/ProductsHome";
 import * as cartItem from '../../store/actions/Cart'
+import CartIcon from "../../Components/UI/CartIcon";
 
 const Home = props => {
   const accessToken = useSelector(state => state.auth.accessToken)
@@ -71,7 +72,7 @@ const Home = props => {
               <Text numberOfLines={1} style={styles.heading}>Culture Tea Bar, Broad...</Text>
             </View>
             <Ionicons name="notifications-outline" size={28} color="white" onPress={() => { props.navigation.navigate('Notifications') }} />
-            <MaterialCommunityIcons name="cart-variant" size={28} color='white' onPress={() => { props.navigation.navigate('CheckOut') }} />
+            <CartIcon press={() => { props.navigation.navigate('CheckOut') }} />
           </View>
           <View style={styles.container2}>
             <TouchableOpacity

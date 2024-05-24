@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -47,7 +47,9 @@ import CustomDrawer from '../Components/Drawer/CustomDrawer';
 import ProductsListing from '../screens/Shop/ProductsListing';
 import ProductDescription from '../screens/Shop/ProductDescription';
 import CheckOut from '../screens/CheckOut/CheckOut';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { loadInitialState } from '../store/actions/Auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const FormStack = createStackNavigator();
@@ -61,9 +63,31 @@ const FormNavigator = () => {
 
 const AuthStack = createStackNavigator();
 const AuthNavigator = () => {
+  
   const authState = useSelector(state => state.auth.accessToken);
-  const accessToken = useSelector((state) => state.accessToken);
-  console.log("navigator", authState)
+  // const accessToken = useSelector((state) => state.accessToken);
+  // console.log("navigator", authState)
+
+  const dispatch = useDispatch();
+  const accessToken = useSelector(state => state.auth.accessToken);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch data from AsyncStorage
+        const storedAccessToken = await AsyncStorage.getItem('reduxState');
+        // If data is found, update redux state
+        if (storedAccessToken) {
+          dispatch(loadInitialState(storedAccessToken));
+          console.log("navigator",storedAccessToken.auth.accessToken)
+        }
+      } catch (error) {
+        console.error('Error fetching data from AsyncStorage:', error);
+      }
+    };
+
+    fetchData(); // Call the function when component mounts
+  }, []);
   return (
     <NavigationContainer>
       <AuthStack.Navigator>
@@ -76,6 +100,8 @@ const AuthNavigator = () => {
         <AuthStack.Screen name="VerificationCode" component={VerificationCode} options={{ headerShown: false }} />
         <AuthStack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
               <AuthStack.Screen name="ForgetPassword" component={ForgetPassword} options={{ headerShown: false }} />
+          <AuthStack.Screen name="Home" component={DrawerNavigator} options={{ headerShown: false }} />
+
               </>)
         }
         <AuthStack.Screen name='ReferAFriends' component={ReferAFriendScreen} options={{ headerShown: false, }} />

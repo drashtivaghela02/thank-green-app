@@ -9,49 +9,52 @@ class CartItem {
     this.quantity = quantity;
     this.quantityId = quantityId
     this.productPrice = productPrice,
-    this.productData = productData,
-    this.sum = sum
+      this.productData = productData,
+      this.sum = sum
   }
 }
 const cart = (state = initialState, action) => {
   switch (action.type) {
     case ADD_TO_CART:
       const addedProduct = action.product;
-      const quantityId = action.quantityID
+      const quantityId = action.quantityID;
       const prodPrice = 12;
       const prodData = addedProduct;
 
+      // Generate cartItemId
+      const cartItemId = `${addedProduct.product_id}-${quantityId}`;
+
       let updatedOrNewCartItem;
-console.log("actio of cart items",action)
-      if (state.items[addedProduct.product_id]) {
-        //already have the item in the cart
+
+      if (state.items[cartItemId]) {
+        // If an item with the same cart item ID exists, update its quantity and sum
         updatedOrNewCartItem = new CartItem(
-          state.items[addedProduct.product_id].quantity + 1,
+          state.items[cartItemId].quantity + 1,
           quantityId,
           prodPrice,
           prodData,
-          state.items[addedProduct.product_id].sum + prodPrice
+          state.items[cartItemId].sum + prodPrice
         );
-        console.log(updatedOrNewCartItem);
-      }
-      else {
+      } else {
+        // If no item with the same cart item ID exists, add it as a new item
         updatedOrNewCartItem = new CartItem(1, quantityId, prodPrice, prodData, prodPrice);
-        console.log(updatedOrNewCartItem);
       }
+
       return {
         ...state,
-        items: { ...state.items, [addedProduct.product_id]: updatedOrNewCartItem },
-        totalAmount : state.totalAmount + prodPrice
-      }
+        items: { ...state.items, [cartItemId]: updatedOrNewCartItem },
+        totalAmount: state.totalAmount + prodPrice
+      };
+
 
     case REMOVE_ITEM:
       const removeItem = state.items[action.pid];
-      console.log("sjdfjeoijdiojfaj",removeItem)
+      console.log("sjdfjeoijdiojfaj", removeItem)
       const currentQty = removeItem.quantity;
       let updatedCartItems;
       if (currentQty > 1) {
         // need to reduce it, not erase it
-        const updatedCartItem = new CartItem( 
+        const updatedCartItem = new CartItem(
           state.items[action.pid].quantity - 1,
           state.items[action.pid].quantityId,
           state.items[action.pid].productPrice,
@@ -59,7 +62,7 @@ console.log("actio of cart items",action)
           state.items[action.pid].sum - state.items[action.pid].productPrice
         );
         updatedCartItems = { ...state.items, [action.pid]: updatedCartItem };
-        console.log("state after deacreasing quantity: ",state)
+        console.log("state after deacreasing quantity: ", state)
       } else {
         updatedCartItems = { ...state.items };
         delete updatedCartItems[action.pid];

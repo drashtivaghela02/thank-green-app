@@ -6,6 +6,7 @@ import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as productAction from '../../store/actions/Products';
 import SubCategoryListing from "../../Components/UI/SubCategoryListing";
+import CartIcon from "../../Components/UI/CartIcon";
 
 
 const CategoryList = props => {
@@ -50,7 +51,7 @@ const CategoryList = props => {
             <AntDesign name="arrowleft" size={28} color='white' onPress={() => { props.navigation.goBack() }} />
             <View style={{ flexDirection: 'row', marginHorizontal: 2, gap: 12 }}>
               <Feather name="search" size={28} color="white" />
-              <MaterialCommunityIcons name="cart-variant" size={28} color="white" />
+            <CartIcon press={() => { props.navigation.navigate('CheckOut') }} />
             </View>
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, }}>
