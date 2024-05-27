@@ -20,9 +20,9 @@ const cart = (state = initialState, action) => {
       const quantityId = action.quantityID;
       const prodPrice = 12;
       const prodData = addedProduct;
-
+console.log(`${addedProduct.product_id}-${action.quantityID}`)
       // Generate cartItemId
-      const cartItemId = `${addedProduct.product_id}-${quantityId}`;
+      const cartItemId = `${addedProduct.product_id}-${action.quantityID}`;
 
       let updatedOrNewCartItem;
 
@@ -49,8 +49,8 @@ const cart = (state = initialState, action) => {
 
     case REMOVE_ITEM:
       const removeItem = state.items[action.pid];
-      console.log("sjdfjeoijdiojfaj", removeItem)
       const currentQty = removeItem.quantity;
+      console.log("sjdfjeoijdiojfaj", currentQty)
       let updatedCartItems;
       if (currentQty > 1) {
         // need to reduce it, not erase it

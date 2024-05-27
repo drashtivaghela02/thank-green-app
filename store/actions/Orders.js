@@ -75,9 +75,6 @@ console.log("Post orders value",value)
         })
         }
       );
-      // if (!response.ok) {
-      //   throw new Error('Failed to post order');
-      // }
       const resData = await response.json();
       console.log("Post orders resData", resData);
       dispatch({ type: POST_ORDER });
@@ -90,7 +87,37 @@ console.log("Post orders value",value)
   };
 };
 
-
+export const postFinalOrder = (value, accessToken) => {
+  console.log("Post orders value",value)
+    return async dispatch => {
+      try {
+        const response = await fetch('https://thankgreen.onrender.com/api/checkout',
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer ' + accessToken,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              address_id: value.address_id,
+              delivery_on: value.delivery_on,
+              payment_method: value.payment_method,
+              products: value.products
+          })
+          }
+        );
+        const resData = await response.json();
+        console.log("Post orders resData", resData);
+        dispatch({ type: POST_ORDER });
+        return resData;
+      } catch (error) {
+        console.error("Post orders error", error);
+        // Optionally dispatch an action to update the state with the error
+        dispatch({ type: POST_ORDER, error: error.message });
+      }
+    };
+};
+  
 export const rateOrder = (value, accessToken) => {
 
   return async dispatch => {

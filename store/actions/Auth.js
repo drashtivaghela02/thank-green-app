@@ -8,7 +8,7 @@ export const RESENDOTP = 'RESENDOTP';
 export const CHANGE_PASSWORD = 'CHANGE_PASSWORD';
 export const LOAD_STATE = 'LOAD_STATE';
 export const SIGNOUT = 'SIGNOUT';
-
+export const SET_LOADING = 'SET_LOADING';
 export const signup = (values) => {
 
   return async dispatch => {
@@ -222,6 +222,7 @@ export const loadInitialState = () => {
         const state = JSON.parse(serializedState);
         dispatch({ type: LOAD_STATE, state });
       }
+      dispatch({ type: SET_LOADING, payload: false });
     } catch (error) {
       console.error('Error loading state from AsyncStorage:', error);
     }

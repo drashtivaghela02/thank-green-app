@@ -119,13 +119,12 @@ const Home = props => {
             data={pastOrders}
             keyExtractor={(item) => item.product_id}
             horizontal={true}
-            style={{ paddingHorizontal: 10 }}
+            style={{ paddingHorizontal: 10}}
             renderItem={itemData =>
               <ProductsHome
                 param={itemData.item}
                 onSelect={onProductSelectHandler}
-                onAddItem={() => { dispatch(cartItem.addToCart(itemData?.item)) }}
-                onRemoveItem={() => { dispatch(cartItem.removeFromCart(itemData?.item?.productId)) }}
+                onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0].quantity_variant_id}`)) }}
               />}
           />
         </View>
@@ -140,8 +139,7 @@ const Home = props => {
               <ProductsHome
                 param={itemData.item}
                 onSelect={onProductSelectHandler}
-                onAddItem={() => { dispatch(cartItem.addToCart(itemData?.item)) }}
-                onRemoveItem={() => { dispatch(cartItem.removeFromCart(itemData?.item?.productId)) }}
+                onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.productId}-${itemData?.item?.quantity_variants[0]?.quantity_variant_id}`)) }}
               />}
           />
         </View>

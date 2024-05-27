@@ -7,7 +7,8 @@ import {
   VERIFYOTP,
   CHANGE_PASSWORD,
   LOAD_STATE,
-  SIGNOUT
+  SIGNOUT,
+  SET_LOADING
 } from '../actions/Auth';
 
 const initialState = {
@@ -16,7 +17,7 @@ const initialState = {
   status:null,
   accessToken: null,
   refreshToken: null,
-
+  isLoading: true,
 };
 
 export default (state = initialState, action) => {
@@ -24,8 +25,11 @@ export default (state = initialState, action) => {
     case LOAD_STATE:
       return {
         ...state,
-        ...action.state.auth // Merge the loaded state into the current state
+        ...action.state.auth,
+        isLoading: false,
       };
+    case SET_LOADING: 
+      return { ...state, isLoading: action.payload };
     case LOGINEMAIL:
       console.log("heya",action)
       return {
@@ -86,10 +90,12 @@ export const loadInitialState = () => {
       if (serializedState !== null) {
         const state = JSON.parse(serializedState);
         console.log('Data in async storage: ',state);
-        dispatch({ type: 'LOAD_STATE', state });
+        dispatch({ type: 'LOAD_STATE', state: state });
       }
       else {
         console.log('Data not found in async storage')
+        dispatch({ type: 'LOAD_STATE', state: initialState });
+
       }
     } catch (error) {
       console.error('Error loading state from AsyncStorage:', error);

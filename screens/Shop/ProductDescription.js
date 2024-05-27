@@ -21,60 +21,63 @@ const ProductDescription = props => {
   const accessToken = useSelector(state => state.auth.accessToken)
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  
   const [data, setResdata] = useState(null);
+  const [cartItemId, setCartitemId] = useState(`${ProductId}-${data?.quantity_variants[0]?.quantity_variant_id}`)
   const [quantityVarientId, setQuantityVarientId] = useState(data?.quantity_variants[0]?.quantity_variant_id ?? '')
   const [selectedOption, setSelectedOption] = useState(data?.quantity_variants[0]?.quantity_variant ?? ''); // Assuming the first size as the initial value
   const [isFavourite, setIsFavourite] = useState(data?.is_favorite != null ? data?.is_favorite : 0)
   const [actual, setActuals] = useState(data?.quantity_variants[0]?.actual_price ?? 0)
   const [selling, setSelling] = useState(data?.quantity_variants[0]?.selling_price ?? 0)
-  const [qty, setQty] = useState(1);
+  const [qty, setQty] = useState(cartItems[cartItemId]?.quantity ?? 1);
   const [showOptions, setShowOptions] = useState(false);
-  const [activeSlide, setActiveSlide] = useState(0);  
+  const [activeSlide, setActiveSlide] = useState(0);
   const toggleOptions = () => {
     setShowOptions(!showOptions);
   };
-  
-  if (cartItems[ProductId]) {
-    const quantityId = cartItem[ProductId]
-  console.log("Product etxists in car",cartItem[ProductId])
-}
-  const handleOptionSelect = (quantityVId) => {
-    for (let variant of data?.quantity_variants) {
-      if (variant.quantity_variant_id === quantityVId) {
-          console.log("VArients idasdfajfnl.zn ", variant);
-          setQuantityVarientId(quantityVId)
-          setSelectedOption(variant.quantity_variant);
-          setActuals(variant.actual_price);
-          setSelling(variant.selling_price);
-      }
-  }
-    setShowOptions(false); // Close the selection list after selecting an option
-    // dispatch(addToCart(selling))
-  };
+
+
   useEffect(() => {
     setIsLoading(true);
     dispatch(productAction.getProducts(ProductId, accessToken))
-      .then((response) => {
-        setIsLoading(false);
-        setResdata(response?.data[0]);
-        setQuantityVarientId(response?.data[0].quantity_variants[0]?.quantity_variant_id)
-        setSelectedOption(response?.data[0].quantity_variants[0]?.quantity_variant);
-        setActuals(response?.data[0].quantity_variants[0]?.actual_price);
-        setSelling(response?.data[0].quantity_variants[0]?.selling_price);
-        setIsFavourite(response?.data[0]?.is_favorite)
-        console.log("product description=> ", response?.data[0])
-      })
-      .catch(error => {
-        setIsLoading(false);
-        console.error("Error fetching user information:", error);
-      });
-  }, [accessToken])
-
+    .then((response) => {
+      setIsLoading(false);
+      setResdata(response?.data[0]);
+      setQuantityVarientId(response?.data[0].quantity_variants[0]?.quantity_variant_id)
+      setCartitemId(`${ProductId}-${response?.data[0].quantity_variants[0]?.quantity_variant_id}`)
+      setSelectedOption(response?.data[0].quantity_variants[0]?.quantity_variant);
+      setActuals(response?.data[0].quantity_variants[0]?.actual_price);
+      setSelling(response?.data[0].quantity_variants[0]?.selling_price);
+      setIsFavourite(response?.data[0]?.is_favorite)
+      setQty(cartItems[`${ProductId}-${data?.quantity_variants[0]?.quantity_variant_id}`].quantity)
+      console.log("product description=> ", response?.data[0])
+    })
+    .catch(error => {
+      setIsLoading(false);
+      console.error("Error fetching user information:", error);
+    });
+  }, [accessToken, qty])
+  
+  const handleOptionSelect = (quantityVId) => {
+    for (let variant of data?.quantity_variants) {
+      if (variant.quantity_variant_id === quantityVId) {
+        setQuantityVarientId(quantityVId)
+        setCartitemId(`${ProductId}-${quantityVId}`)
+        setSelectedOption(variant.quantity_variant);
+        setActuals(variant.actual_price);
+        setSelling(variant.selling_price);
+      }
+    }
+    setShowOptions(false);
+  };
+  
+  if (cartItems[cartItemId]) {
+    console.log("cart item exists", cartItems[cartItemId].quantity)
+    // setQty(cartItems[cartItemId].quantity)
+  }
 
   if (isLoading) {
     return (
-      <View style={{ flex:1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size={50} color={Colors.green} />
       </View>
     )
@@ -92,28 +95,27 @@ const ProductDescription = props => {
             sliderWidth={Dimensions.get("window").width}
             itemWidth={Dimensions.get("window").width}
             width={Dimensions.get("window").width}
-            onSnapToItem={(index) => setActiveSlide(index)} 
-            
+            onSnapToItem={(index) => setActiveSlide(index)}
           />
           <Pagination
-            dotsLength={data?.images?.length ?? 0} 
-            activeDotIndex={activeSlide} 
-            containerStyle={{ backgroundColor: 'transparent', position: 'absolute', bottom: 10, width: '100%' }} 
-            dotStyle={{ width: 15, height: 8, borderRadius: 5, backgroundColor: 'rgba(255, 255, 255, 0.92)' }} 
-            inactiveDotStyle={{ width: 10, height: 10, borderRadius: 5, backgroundColor: 'rgba(255, 255, 255, 0.92)' }} 
-            inactiveDotOpacity={0.4} 
-            inactiveDotScale={0.6} 
+            dotsLength={data?.images?.length ?? 0}
+            activeDotIndex={activeSlide}
+            containerStyle={{ backgroundColor: 'transparent', position: 'absolute', bottom: 10, width: '100%' }}
+            dotStyle={{ width: 15, height: 8, borderRadius: 5, backgroundColor: 'rgba(255, 255, 255, 0.92)' }}
+            inactiveDotStyle={{ width: 10, height: 10, borderRadius: 5, backgroundColor: 'rgba(255, 255, 255, 0.92)' }}
+            inactiveDotOpacity={0.4}
+            inactiveDotScale={0.6}
           />
           <View style={styles.header}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
               <AntDesign name="arrowleft" size={28} color='white' style={{ elevation: 5, shadowColor: 'black' }} onPress={() => { props.navigation.goBack() }} />
-              <CartIcon press ={() => { props.navigation.navigate('CheckOut') }} />
-              
+              <CartIcon press={() => { props.navigation.navigate('CheckOut') }} />
+
             </View>
           </View>
         </View>
-        
-        <View style={{ backgroundColor: 'white',overflow:'hidden',marginTop:-27, paddingHorizontal: 20, paddingTop: 25, borderTopLeftRadius: 40, borderTopRightRadius: 40 , shadowColor: 'black', elevation: 5}}>
+
+        <View style={{ backgroundColor: 'white', overflow: 'hidden', marginTop: -27, paddingHorizontal: 20, paddingTop: 25, borderTopLeftRadius: 40, borderTopRightRadius: 40, shadowColor: 'black', elevation: 5 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15 }}>
             <View>
               <Text style={styles.title}>{data?.product_title ?? ''}</Text>
@@ -126,22 +128,26 @@ const ProductDescription = props => {
           </View>
 
           <Text style={{ fontSize: 14, color: '#666', }}>{data?.product_description ?? ''}</Text>
-          
+
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5, alignItems: 'center' }}>
             <Text style={{ fontSize: 20, fontWeight: '500' }}>Quantity</Text>
             <View style={[styles.Cart, { justifyContent: 'space-between', alignItems: 'center' }]}>
-              <TouchableOpacity onPress={
-                () =>{
+              <TouchableOpacity
+                disabled={!cartItems[cartItemId]}
+                onPress={() => {
                   setQty(qty + 1)
-                  console.log("add to cart", quantityVarientId)
                   dispatch(cartItem.addToCart(data, quantityVarientId))
-                }
-
-              }><AntDesign name="pluscircleo" size={24} color="#666" /></TouchableOpacity>
-              <Text style={{ fontSize: 18, fontWeight: '500', color: '#666' }}>{String(qty).padStart(2, '0')}</Text>
-              <TouchableOpacity disabled={qty === 1} onPress={() => {setQty(qty - 1)}}><AntDesign name="minuscircleo" size={24} color="#666" /></TouchableOpacity>
+                }}>
+                <AntDesign name="pluscircleo" size={24} color="#666" />
+              </TouchableOpacity>
+              <Text style={{ fontSize: 18, fontWeight: '500', color: cartItems[cartItemId] ? Colors.green : '#666'  }}>{cartItems[cartItemId] ? String(cartItems[cartItemId].quantity).padStart(2,'0') :String(qty).padStart(2, '0')}</Text>
+              <TouchableOpacity disabled={qty === 1}
+                onPress={() => {
+                  setQty(qty - 1)
+                  dispatch(cartItem.removeFromCart(`${ProductId}-${quantityVarientId}`))
+                }}><AntDesign name="minuscircleo" size={24} color="#666" /></TouchableOpacity>
             </View>
-          </View> 
+          </View>
 
 
           <View style={{ marginBottom: 15 }}>
@@ -149,29 +155,29 @@ const ProductDescription = props => {
             <Text style={{ fontSize: 20, fontWeight: '500', marginBottom: 5 }}>Size</Text>
             <TouchableOpacity onPress={toggleOptions} style={{ width: '100%', borderColor: '#f0f0f0', backgroundColor: '#f0f0f0', borderWidth: 1, borderRadius: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 10, paddingHorizontal: 10 }}>
               <Text style={{ fontSize: 14, color: '#555' }}>{
-                selectedOption ?? 
+                selectedOption ??
                 'no-data'
-                }</Text>
+              }</Text>
               <AntDesign name='down' size={16} color="#888" />
 
             </TouchableOpacity>
             {showOptions && (
               <View style={styles.optionsContainer}>
                 {data?.quantity_variants.map((option, index) => (
-                  <TouchableOpacity key={index} onPress={() => handleOptionSelect( option?.quantity_variant_id)}>
+                  <TouchableOpacity key={index} onPress={() => handleOptionSelect(option?.quantity_variant_id)}>
                     <Text>{option?.quantity_variant}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
             )}
           </View>
-          
+
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
             <MaterialCommunityIcons name="truck-minus-outline" size={24} color="black" />
             <Text style={{ color: '#2c843e' }}> Free Delivery on purchase above $10</Text>
           </View>
 
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' , paddingVertical: 10, marginBottom: 25}}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, marginBottom: 25 }}>
             <View style={{
               borderRadius: 8,
               elevation: 5,
@@ -197,13 +203,12 @@ const ProductDescription = props => {
                 elevation: 8,
                 overflow: 'hidden'
               }]}
-              onPress={() => {
-                console.log("add to cart", quantityVarientId)
-                dispatch(cartItem.addToCart(data, quantityVarientId))
+              onPress={() => {cartItems[cartItemId] ? props.navigation.navigate('CheckOut')
+                : dispatch(cartItem.addToCart(data, quantityVarientId))
               }}
             >
               <MaterialCommunityIcons name="cart-variant" size={24} color='white' />
-              <Text style={{ fontSize: 17, fontWeight: '500', color: 'white', marginLeft: 5 }}> Add to Cart</Text>
+              <Text style={{ fontSize: 17, fontWeight: '500', color: 'white', marginLeft: 5 }}>{cartItems[cartItemId] ? ' Go to Cart' : ' Add to Cart'}</Text>
             </TouchableOpacity>
           </View>
 
@@ -235,7 +240,7 @@ const styles = StyleSheet.create({
   body: {
     flexGrow: 1,
     justifyContent: 'flex-start',
-    backgroundColor:"red"
+    backgroundColor: "white"
     // alignItems: 'center',
     // paddingHorizontal: 30,
   },

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Image } from "react-native";
 import { StyleSheet } from "react-native";
@@ -6,10 +6,18 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { Divider } from "react-native-paper";
 import { addToCart } from '../../store/actions/Cart';
 import * as cartItem from '../../store/actions/Cart'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 const Products = (props) => {
+  const cartItems = useSelector(state => state?.cart?.items)
+
+  const data = props.param;
+
+  const [quantityVarientId, setQuantityVarientId] = useState(props.param?.quantity_variants[0]?.quantity_variant_id ?? '')
+  const [cartItemId, setCartitemId] = useState(`${data.product_id}-${data?.quantity_variants[0]?.quantity_variant_id}`)
+
+
   const [selectedOption, setSelectedOption] = useState(props.param.quantity_variants[0].quantity_variant); // Assuming the first size as the initial value
   const [actual, setActuals] = useState(props.param.quantity_variants[0].actual_price)
   const [selling, setSelling] = useState(props.param.quantity_variants[0].selling_price)
@@ -22,15 +30,28 @@ const Products = (props) => {
     setShowOptions(!showOptions);
   };
 
-  const handleOptionSelect = (quantity_variant, selling, actual) => {
-    setSelectedOption(quantity_variant);
-    setActuals(actual);
-    setSelling(selling);
+  const handleOptionSelect = (quantityVId) => {
+    for (let variant of data?.quantity_variants) {
+      if (variant.quantity_variant_id === quantityVId) {
+        // console.log("VArients idasdfajfnl.zn ", variant);
+        setQuantityVarientId(quantityVId)
+        setSelectedOption(variant.quantity_variant);
+        setActuals(variant.actual_price);
+        setSelling(variant.selling_price);
+        setCartitemId(`${data.product_id}-${quantityVId}`)
+      }
+    }
     setShowOptions(false); // Close the selection list after selecting an option
     // dispatch(addToCart(selling))
   };
-
-  const data = props.param;
+  useEffect(() => {
+    if (cartItems[`${props.param.product_id}-${quantityVarientId}`]) {
+      setQty(cartItems[`${props.param.product_id}-${quantityVarientId}`]?.quantity)
+    }
+    else {
+      console.log("hiiiezlkjflz");
+    }
+  })
   // console.log("etwtuoafevy7na8ohyf7ar0n7",data.images)
 
   return (
@@ -64,7 +85,7 @@ const Products = (props) => {
             {qty < 1
               ? (<TouchableOpacity onPress={() => {
                 setQty(qty + 1)
-                dispatch(cartItem.addToCart(data))
+                dispatch(cartItem.addToCart(data, quantityVarientId))
               }}
                 style={styles.Cart}>
                 <MaterialCommunityIcons name="cart-variant" size={24} color='white' />
@@ -74,12 +95,13 @@ const Products = (props) => {
                 <View style={[styles.Cart, { justifyContent: 'space-between' }]}>
                   <TouchableOpacity onPress={() => {
                     setQty(qty + 1)
-                    dispatch(cartItem.addToCart(data))
+                    console.log("product lisisting quantity", quantityVarientId)
+                    dispatch(cartItem.addToCart(data, quantityVarientId))
                   }}><AntDesign name="pluscircleo" size={24} color="white" /></TouchableOpacity>
-                  <Text style={{ fontSize: 17, fontWeight: '500', color: 'white' }}>{String(qty).padStart(2, '0')}</Text>
+                  <Text style={{ fontSize: 17, fontWeight: '500', color: 'white' }}>{cartItems[cartItemId]? cartItems[cartItemId].quantity : String(qty).padStart(2, '0')}</Text>
                   <TouchableOpacity onPress={() => {
                     setQty(qty - 1)
-                    props.onRemoveItem
+                    props.onRemoveItem()
                   }}><AntDesign name="minuscircleo" size={24} color="white" /></TouchableOpacity>
                 </View>
               )}
@@ -88,7 +110,7 @@ const Products = (props) => {
           {showOptions && (
             <View style={styles.optionsContainer}>
               {data.quantity_variants.map((option, index) => (
-                <TouchableOpacity key={index} onPress={() => handleOptionSelect(option?.quantity_variant, option?.selling_price, option?.actual_price)}>
+                <TouchableOpacity key={index} onPress={() => handleOptionSelect(option?.quantity_variant_id)}>
                   <Text>{option?.quantity_variant}</Text>
                 </TouchableOpacity>
               ))}

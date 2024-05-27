@@ -16,9 +16,9 @@ const CartProduct = (props) => {
   const data = ProductData?.productData ?? {};
   const quantityVariants = data?.quantity_variants ?? [];
 
-  console.log("etwtuoafevy7na8ohyf7ar0n7", ProductData)
+  console.log("Checkout page products", ProductData.quantity)
   const [quantityVarientId, setQuantityVarientId] = useState(quantityVariants[0]?.quantity_variant_id ?? '')
-const [selectedOption, setSelectedOption] = useState(quantityVariants[0]?.quantity_variant ?? '')
+  const [selectedOption, setSelectedOption] = useState(quantityVariants[0]?.quantity_variant ?? '')
   const [actual, setActuals] = useState(quantityVariants[0]?.actual_price ?? 0)
   const [selling, setSelling] = useState(quantityVariants[0]?.selling_price ?? 0)
   const [qty, setQty] = useState(ProductData?.quantity)
@@ -28,19 +28,21 @@ const [selectedOption, setSelectedOption] = useState(quantityVariants[0]?.quanti
     setShowOptions(!showOptions);
   };
   useEffect(() => {
-    if(ProductData?.quantityId){
-  handleOptionSelect(ProductData?.quantityId)}
-})
+    if (ProductData?.quantityId) {
+      handleOptionSelect(ProductData?.quantityId)
+    }
+    setQty(ProductData?.quantity)
+  })
   const handleOptionSelect = (quantityVId) => {
     for (let variant of data?.quantity_variants) {
       if (variant.quantity_variant_id === quantityVId) {
-          console.log("VArients idasdfajfnl.zn ", variant);
-          setQuantityVarientId(quantityVId)
-          setSelectedOption(variant.quantity_variant);
-          setActuals(variant.actual_price);
-          setSelling(variant.selling_price);
+        // console.log("VArients idasdfajfnl.zn ", variant);
+        setQuantityVarientId(quantityVId)
+        setSelectedOption(variant.quantity_variant);
+        setActuals(variant.actual_price);
+        setSelling(variant.selling_price);
       }
-  }
+    }
     setShowOptions(false); // Close the selection list after selecting an option
     // dispatch(addToCart(selling))
   };
@@ -65,9 +67,11 @@ const [selectedOption, setSelectedOption] = useState(quantityVariants[0]?.quanti
             </Text>
             <AntDesign name="delete" size={20} color="black" onPress={props.onDeleteItem} />
           </View>
-          <TouchableOpacity onPress={toggleOptions} style={{ width: '100%', borderColor: '#555', borderWidth: 1, borderRadius: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 5, paddingHorizontal: 10 }}>
+          <TouchableOpacity
+            // onPress={toggleOptions}
+            style={{ width: '100%', borderColor: '#555', borderWidth: 1, borderRadius: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 5, paddingHorizontal: 10 }}>
             <Text style={{ fontSize: 14, color: '#555' }}>{selectedOption}</Text>
-            <AntDesign name='down' size={16} color="#888" />
+            {/* <AntDesign name='down' size={16} color="#888" /> */}
 
           </TouchableOpacity>
 
@@ -79,20 +83,21 @@ const [selectedOption, setSelectedOption] = useState(quantityVariants[0]?.quanti
 
 
             <View style={[styles.Cart, { gap: 15 }]}>
-              <TouchableOpacity onPress={
-                () => {
+              <TouchableOpacity
+                onPress={() => {
                   setQty(qty + 1)
-                  props.onAddItem(qty +1)
-                  // dispatch(cartItem.addToCart(data))
-                }}
-              ><AntDesign name="pluscircleo" size={25} /></TouchableOpacity>
+                  props.onAddItem()
+                }} >
+                <AntDesign name="pluscircleo" size={25} /></TouchableOpacity>
               <Text style={{ fontSize: 20, fontWeight: '500', }}>{String(qty).padStart(2, '0')}</Text>
-              <TouchableOpacity disabled={qty === 1} onPress={() => {
-                setQty(qty - 1)
-                props.onRemoveItem()
-                // dispatch(cartItem.removeFromCart(ProductData.productId)) 
-
-              }}><AntDesign name="minuscircleo" size={25} /></TouchableOpacity>
+              <TouchableOpacity
+                disabled={qty <= 1}
+                onPress={() => {
+                  setQty(qty - 1)
+                  props.onRemoveItem()
+                }}>
+                <AntDesign name="minuscircleo" size={25} />
+              </TouchableOpacity>
             </View>
 
           </View>
@@ -100,7 +105,7 @@ const [selectedOption, setSelectedOption] = useState(quantityVariants[0]?.quanti
           {showOptions && (
             <View style={styles.optionsContainer}>
               {data.quantity_variants.map((option, index) => (
-                <TouchableOpacity key={index} onPress={() =>{handleOptionSelect( option?.quantity_variant_id)}}>
+                <TouchableOpacity key={index} onPress={() => { handleOptionSelect(option?.quantity_variant_id) }}>
                   <Text>{option?.quantity_variant}</Text>
                 </TouchableOpacity>
               ))}

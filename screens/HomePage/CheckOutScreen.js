@@ -19,11 +19,12 @@ const CheckOutScreen = props => {
   const accessToken = useSelector(state => state?.auth?.accessToken)
   const cartItems = useSelector(state => state?.cart?.items)
 
+  console.log("Cart Items: ..", cartItems)
   const calculateSummaryData = (cartItems) => {
     const summaryData = [];
     for (const key in cartItems) {
       console.log(cartItems)
-      console.log("CArtItemsafdiowsfioajofji",cartItems)
+      console.log("CArtItemsafdiowsfioajofji", cartItems)
       summaryData.push({
         id: cartItems[key].productData.product_id,
         quantity: cartItems[key].quantity,
@@ -41,7 +42,7 @@ const CheckOutScreen = props => {
     quantityId: cartItems[key]?.quantityId
   }));
 
-  const groupedItems = transformedCartItems.reduce((sections, item) => {
+  const groupedItems = transformedCartItems && transformedCartItems.reduce((sections, item) => {
     const section = sections.find(sec => sec.title === item.subcategory_name);
     if (section) {
       section.data.push(item);
@@ -51,7 +52,7 @@ const CheckOutScreen = props => {
     return sections;
   }, []);
 
-  console.log("grouped data",groupedItems[0].data[0])
+  // console.log("grouped data",groupedItems[0].data[0])
 
   const fetchData = (summaryData) => {
     setIsLoading(true);
@@ -75,10 +76,24 @@ const CheckOutScreen = props => {
     debouncedFetchData(summaryData);
   }, [cartItems]);
 
+  if (isLoading) {
+    <View>
+      <ActivityIndicator />
+    </View>
+  }
+  if (cartItems.length === 0 || Object.keys(cartItems).length === 0) {
+    return (
+      <View style={styles.container}>
+        <CustomHeader label='Cart' press={() => props.navigation.goBack()} />
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>Your cart is empty, add products..</Text>
+        </View>
+      </View>)
+  }
+
   return (
     <View style={styles.container}>
       <CustomHeader label='Cart' press={() => props.navigation.goBack()} />
-      {/* {isLoading && <ActivityIndicator />} */}
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.body}>
           <View>
@@ -88,9 +103,8 @@ const CheckOutScreen = props => {
               renderItem={({ item }) => (
                 <CartProduct
                   param={item}
-                  onAddItem={(qty) => {
-                    console.log("qtyqtyqty",qty)
-                    dispatch(cartItem.addToCart(item?.productData,item?.quantityId ));
+                  onAddItem={() => {
+                    dispatch(cartItem.addToCart(item?.productData, item?.quantityId));
                   }}
                   onRemoveItem={() => {
                     dispatch(cartItem.removeFromCart(item?.productId));
@@ -119,14 +133,14 @@ const CheckOutScreen = props => {
               </View>
               <View style={styles.summaryRow}>
                 <Text style={styles.totalLabel}>Total Amount</Text>
-                <Text style={styles.totalAmount}>${orderData ? orderData?.total : '00.00' }</Text>
+                <Text style={styles.totalAmount}>${orderData ? orderData?.total : '00.00'}</Text>
               </View>
             </View>
             <View style={styles.buttonsContainer}>
-              <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('Checkout',{ OrderData: orderData, SummaryData: calculateSummaryData(cartItems) }) }}>
+              <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('PlaceOrder', { OrderData: orderData, SummaryData: calculateSummaryData(cartItems) }) }}>
                 <Text style={styles.verifyButton}>CHECKOUT</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.verify1} onPress={() => { console.log('Pressed'); }}>
+              <TouchableOpacity style={styles.verify1} onPress={() => { props.navigation.goBack(); }}>
                 <Text style={styles.verifyButton1}>Continue Shopping</Text>
               </TouchableOpacity>
             </View>
@@ -206,6 +220,14 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     fontWeight: '500',
   },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  emptyText: {
+    fontSize: 18,
+  }
 });
 
 export default CheckOutScreen;

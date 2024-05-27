@@ -19,7 +19,7 @@ const CustomDrawer = props => {
   const [resData, setResdata] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
-  const [showDetails, setShowDetails] = useState(Array(resData.length).fill(false));
+  const [showDetails, setShowDetails] = useState(Array(resData?.length).fill(false));
 
   useEffect(() => {
     setIsLoading(true);
@@ -66,9 +66,9 @@ const CustomDrawer = props => {
           </View>
         </LinearGradient>
 
-        {resData.map((item, index) =>
+        {resData?.map((item, index) =>
           <View key={index}>
-            <TouchableOpacity >
+            {/* <TouchableOpacity > */}
               <View style={styles.mainscreen}>
                 <View style={{ ...styles.imagePreview, ...{ borderWidth: 1, marginHorizontal: 10, borderRadius: 7, } }}>
                   <Image style={styles.image} source={{ uri: item.category_image }} />
@@ -76,9 +76,8 @@ const CustomDrawer = props => {
                 <View style={styles.textcontainer}>
                   <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: '500' }}>
                     {item.category_name}
-                  </Text>
-                  <AntDesign name={showDetails[index] ? 'up' : 'down'} size={16} color="#a6a6aa"
-                    onPress={() => {
+                </Text>
+                <TouchableOpacity hitSlop={10} onPress={() => {
                       console.log(showDetails[index])
                       setSelectedCategory(item.category_id)
                       setShowDetails(prevState => {
@@ -89,10 +88,14 @@ const CustomDrawer = props => {
                           console.log("i Value ajsaf;jsjcdskfp'mkp", prevState)
                         return newState;
                       });
-                    }} />
+                    }} >
+                  <AntDesign name={showDetails[index] ? 'up' : 'down'} size={16} color="#a6a6aa"
+                    />
+
+                </TouchableOpacity>
                 </View>
               </View>
-            </TouchableOpacity>
+            {/* </TouchableOpacity> */}
 
             {showDetails[index] && item.category_id === selectedCategory && item.subcategories && (
               <View style={styles.subcategoryContainer}>

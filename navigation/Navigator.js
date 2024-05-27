@@ -5,7 +5,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { NavigationContainer } from '@react-navigation/native';
 import { FontAwesome, MaterialIcons, MaterialCommunityIcons, Fontisto, AntDesign, Feather, Entypo } from '@expo/vector-icons';
 
-import { Dimensions, Image, SafeAreaView, Text, View } from 'react-native';
+import { ActivityIndicator, Dimensions, Image, SafeAreaView, Text, View } from 'react-native';
 import CustomHeader from '../Components/UI/CustomHeader';
 
 import SignIn from '../Components/Form/SignIn'
@@ -46,10 +46,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import CustomDrawer from '../Components/Drawer/CustomDrawer';
 import ProductsListing from '../screens/Shop/ProductsListing';
 import ProductDescription from '../screens/Shop/ProductDescription';
-import CheckOut from '../screens/CheckOut/CheckOut';
+import PlaceOrder from '../screens/CheckOut/PlaceOrder';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadInitialState } from '../store/actions/Auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CheckOutIntent from '../screens/CheckOut/CheckOutIntent';
 
 
 const FormStack = createStackNavigator();
@@ -63,8 +64,10 @@ const FormNavigator = () => {
 
 const AuthStack = createStackNavigator();
 const AuthNavigator = () => {
-  
+
   const authState = useSelector(state => state.auth.accessToken);
+  const isLoading = useSelector(state => state.auth.isLoading);
+
   // const accessToken = useSelector((state) => state.accessToken);
   // console.log("navigator", authState)
 
@@ -79,7 +82,7 @@ const AuthNavigator = () => {
         // If data is found, update redux state
         if (storedAccessToken) {
           dispatch(loadInitialState(storedAccessToken));
-          console.log("navigator",storedAccessToken.auth.accessToken)
+          console.log("navigator", storedAccessToken.auth.accessToken)
         }
       } catch (error) {
         console.error('Error fetching data from AsyncStorage:', error);
@@ -88,28 +91,36 @@ const AuthNavigator = () => {
 
     fetchData(); // Call the function when component mounts
   }, []);
+
+  if (isLoading) {
+    return (<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator size={50} color={Colors.green} />
+    </View>);
+  }
+
   return (
     <NavigationContainer>
       <AuthStack.Navigator>
-        {authState
+        {(authState)
           ?
           <AuthStack.Screen name="Home" component={DrawerNavigator} options={{ headerShown: false }} />
           :
           (
-          <><AuthStack.Screen name="FormNavigator" component={FormNavigator} options={{ headerShown: false }} />
-        <AuthStack.Screen name="VerificationCode" component={VerificationCode} options={{ headerShown: false }} />
-        <AuthStack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
+            <><AuthStack.Screen name="FormNavigator" component={FormNavigator} options={{ headerShown: false }} />
+              <AuthStack.Screen name="VerificationCode" component={VerificationCode} options={{ headerShown: false }} />
+              <AuthStack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
               <AuthStack.Screen name="ForgetPassword" component={ForgetPassword} options={{ headerShown: false }} />
-          <AuthStack.Screen name="Home" component={DrawerNavigator} options={{ headerShown: false }} />
-
-              </>)
+              <AuthStack.Screen name="Home" component={DrawerNavigator} options={{ headerShown: false }} />
+            </>)
         }
         <AuthStack.Screen name='ReferAFriends' component={ReferAFriendScreen} options={{ headerShown: false, }} />
         <AuthStack.Screen name="Map" component={Map} options={{ headerShown: false }} />
         <AuthStack.Screen name='LocationPicker' component={LocationPicker} options={{ headerShown: false }} />
         <AuthStack.Screen name='TrackOrder' component={TrackOrder} options={{ headerShown: false }} />
         <AuthStack.Screen name='ProductDescription' component={ProductDescription} options={{ headerShown: false }} />
-        <AuthStack.Screen name='Checkout' component={CheckOut} options={{ headerShown: false }} />
+        <AuthStack.Screen name='PlaceOrder' component={PlaceOrder} options={{ headerShown: false }} />
+        <AuthStack.Screen name='CheckOutIntent' component={CheckOutIntent} options={{ headerShown: false }} />
+
       </AuthStack.Navigator>
     </NavigationContainer>
   );

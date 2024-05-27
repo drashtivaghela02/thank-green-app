@@ -1,25 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AntDesign, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { Dimensions, StyleSheet, TouchableOpacity } from "react-native";
 import { Image } from "react-native";
 import { Text } from "react-native";
 import { View } from "react-native";
 import * as cartItem from '../../store/actions/Cart'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const ProductsHome = (props) => {
-
+  const cartItems = useSelector(state => state?.cart?.items)
   const id = props.param.product_id;
   const data = props.param;
   const [qty, setQty] = useState(0);
   const dispatch = useDispatch();
-
+  console.log("Home product data", data)
   let actual_price = '$' + data.quantity_variants[0].actual_price
   let selling_price = data.quantity_variants[0].selling_price
   if (!selling_price) {
     selling_price = data.quantity_variants[0].actual_price
     actual_price = ''
   }
+
+  useEffect(() => {
+    if (cartItems[`${id}-${data.quantity_variants[0].quantity_variant_id}`]) {
+      setQty(cartItems[`${id}-${data.quantity_variants[0].quantity_variant_id}`]?.quantity)
+    }
+    else {
+      console.log("hiiiezlkjflz");
+    }
+  })
 
   return (
     <View style={styles.gridItem}>
@@ -44,25 +53,31 @@ const ProductsHome = (props) => {
           </View>
         </View>
         {qty < 1
-          ? (<TouchableOpacity onPress={() => {
-            setQty(qty + 1)
-            dispatch(cartItem.addToCart(data))
-          }}
-            style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 8, backgroundColor: '#2c843e', width: '100%', }}>
-            <MaterialCommunityIcons name="cart-variant" size={24} color='white' />
-            <Text style={{ fontSize: 17, fontWeight: '500', color: 'white' }}> Add</Text>
-          </TouchableOpacity>)
-          : (
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', padding: 8, backgroundColor: '#2c843e', width: '100%', }}>
+          ? (
+            <TouchableOpacity
+              onPress={() => {
+                setQty(qty + 1)
+                dispatch(cartItem.addToCart(data, data?.quantity_variants[0]?.quantity_variant_id))
+              }}
+              style={styles.qtyContainer1}>
+              <MaterialCommunityIcons name="cart-variant" size={24} color='white' />
+              <Text style={{ fontSize: 17, fontWeight: '500', color: 'white' }}> Add</Text>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.qtyContainer2}>
               <TouchableOpacity onPress={() => {
                 setQty(qty + 1)
-                dispatch(cartItem.addToCart(data))
-              }}><AntDesign name="pluscircleo" size={24} color="white" /></TouchableOpacity>
-              <Text style={{ fontSize: 17, fontWeight: '500', color: 'white' }}>{String(qty).padStart(2, '0')}</Text>
+                dispatch(cartItem.addToCart(data, data?.quantity_variants[0]?.quantity_variant_id))
+              }}>
+                <AntDesign name="pluscircleo" size={24} color="white" />
+              </TouchableOpacity>
+              <Text style={styles.qtyText}>{String(qty).padStart(2, '0')}</Text>
               <TouchableOpacity onPress={() => {
                 setQty(qty - 1)
-                dispatch(cartItem.removeFromCart(id))
-              }}><AntDesign name="minuscircleo" size={24} color="white" /></TouchableOpacity>
+                props.onRemoveItem()
+              }}>
+                <AntDesign name="minuscircleo" size={24} color="white" />
+              </TouchableOpacity>
             </View>
           )}
       </TouchableOpacity>
@@ -72,12 +87,11 @@ const ProductsHome = (props) => {
 
 const styles = StyleSheet.create({
   gridItem: {
-    // flex: 0.5,
     width: Dimensions.get('window').width / 2 - 20,
-    margin: 10,
+    marginVertical: 10,
+    marginRight: 20,
     borderRadius: 8,
     elevation: 8,
-    // borderRadius: 10,
     backgroundColor: 'white',
     height: 200,
     overflow: 'hidden',
@@ -109,7 +123,10 @@ const styles = StyleSheet.create({
   selling: {
     fontSize: 16,
     fontWeight: '700'
-  }
+  },
+  qtyContainer1: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 8, backgroundColor: '#2c843e', width: '100%', },
+  qtyContainer2: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', padding: 8, backgroundColor: '#2c843e', width: '100%', },
+  qtyText: { fontSize: 17, fontWeight: '500', color: 'white' }
 })
 
 export default ProductsHome;

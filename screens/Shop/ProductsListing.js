@@ -76,8 +76,7 @@ const ProductsListing = props => {
                 <Products
                   param={itemData.item}
                   onSelect={onProductSelectHandler}
-                  onAddItem={()=> {dispatch(cartItem.addToCart(itemData?.item))}}
-                  onRemoveItem={()=> {dispatch(cartItem.removeFromCart(itemData?.item?.productId))}}
+                  onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0].quantity_variant_id}`)) }}
                 />
               }
             />
