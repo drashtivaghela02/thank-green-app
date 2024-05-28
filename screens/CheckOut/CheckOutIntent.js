@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Button, Platform} from 'react-native';
+import {View, Button, Platform, Dimensions} from 'react-native';
 import {CardField, useConfirmPayment} from '@stripe/stripe-react-native';
 
 function CheckOutIntent() {
@@ -55,7 +55,7 @@ function CheckOutIntent() {
           textColor: '#000000',
         }}
         style={{
-          width: '100%',
+          width: Dimensions.get('window').width,
           height: 50,
           marginVertical: 30,
         }}

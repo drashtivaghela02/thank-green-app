@@ -51,6 +51,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loadInitialState } from '../store/actions/Auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CheckOutIntent from '../screens/CheckOut/CheckOutIntent';
+import CustomIntent from '../screens/CheckOut/CustomIntent';
+import DeliveryTimeScreen from '../screens/CheckOut/DeliveryTimeScreen';
 
 
 const FormStack = createStackNavigator();
@@ -120,6 +122,9 @@ const AuthNavigator = () => {
         <AuthStack.Screen name='ProductDescription' component={ProductDescription} options={{ headerShown: false }} />
         <AuthStack.Screen name='PlaceOrder' component={PlaceOrder} options={{ headerShown: false }} />
         <AuthStack.Screen name='CheckOutIntent' component={CheckOutIntent} options={{ headerShown: false }} />
+        <AuthStack.Screen name='CustomIntent' component={CustomIntent} options={{ headerShown: false }} />
+        <AuthStack.Screen name='DeliveryTimeScreen' component={DeliveryTimeScreen} options={{ headerShown: false }} />
+
 
       </AuthStack.Navigator>
     </NavigationContainer>
