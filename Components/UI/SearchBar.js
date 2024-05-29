@@ -6,21 +6,13 @@ import { Text } from "react-native";
 const SearchBar = ({ clicked, searchPhrase, setSearchPhrase, setClicked }) => {
   return (
     <View style={styles.container}>
-      <View
-        style={
-          clicked
-            ? styles.searchBar__clicked
-            : styles.searchBar__unclicked
-        }
-      >
-        {/* search Icon */}
+      <View  style={ clicked ? styles.searchBar__clicked  : styles.searchBar__unclicked } >
         <Feather
           name="search"
           size={20}
           color="black"
           style={{ marginLeft: 1 }}
         />
-        {/* Input field */}
         <TextInput
           style={styles.input}
           placeholder="Search"
@@ -32,7 +24,7 @@ const SearchBar = ({ clicked, searchPhrase, setSearchPhrase, setClicked }) => {
         />
 
         {clicked && (
-          <View style={{ flexDirection: 'row', gap: 10 }}>
+          <View style={{ flexDirection: 'row', gap: 5 }}>
             <Entypo name="cross" size={20} color="black" style={{ padding: 1 }} onPress={() => {
               setSearchPhrase("")
             }} />
@@ -57,17 +49,17 @@ export default SearchBar;
 // styles
 const styles = StyleSheet.create({
   container: {
-    margin: 15,
+    // margin: 10,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    width: "100%",
+    width: "85%",
 
   },
   searchBar__unclicked: {
     padding: 10,
     flexDirection: "row",
-    width: "95%",
+    width: "100%",
     backgroundColor: "#f1f0f5",
     borderRadius: 15,
     alignItems: "center",
@@ -75,7 +67,7 @@ const styles = StyleSheet.create({
   searchBar__clicked: {
     padding: 10,
     flexDirection: "row",
-    width: "95%",
+    width: "100%",
     backgroundColor: "#f1f0f5",
     borderRadius: 15,
     alignItems: "center",
@@ -84,7 +76,7 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 20,
     marginLeft: 10,
-    width: "65%",
+    width: "59%",
   },
   btnSecondary: {
     flexDirection: 'row',

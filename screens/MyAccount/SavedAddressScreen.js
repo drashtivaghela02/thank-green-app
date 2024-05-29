@@ -4,31 +4,31 @@ import { FlatList } from "react-native-gesture-handler";
 import AddressCard from "../../Components/UI/AddressCard";
 import { useDispatch, useSelector } from 'react-redux';
 import * as userAction from '../../store/actions/User';
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ActivityIndicator } from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
 
 const SavedAddressScreen = props => {
   const isFocused = useIsFocused();
 
-  const [isLoading, setIsLoading] = React.useState(false); // Set an initial value
-  const [address, setAddress] = React.useState([]); // State to hold past orders
+  const [isLoading, setIsLoading] = useState(false); 
+  const [address, setAddress] = useState([]); 
   const accessToken = useSelector(state => state.auth.accessToken);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setIsLoading(true); // Set loading state to true before fetching data
+    setIsLoading(true); 
     dispatch(userAction.getAddress(accessToken))
       .then((response) => {
-        setIsLoading(false); // Set loading state to false after fetching data
-        setAddress(response.data); // Set fetched data to state
+        setIsLoading(false); 
+        setAddress(response.data);
         console.log(response.data);
       })
       .catch(error => {
-        setIsLoading(false); // Set loading state to false in case of error
+        setIsLoading(false);
         Alert.alert("Error fetching user information:", error);
       });
-  }, [accessToken, isFocused]);
+  }, [accessToken, isFocused, props.route.params]);
 
   console.log("address ==>", address);
 
@@ -36,9 +36,6 @@ const SavedAddressScreen = props => {
     console.log("id in main screen", id, data)
     props.navigation.navigate('LocationPicker', {id: id, addressData: data})
   }
-
-
-
 
   let productPreview;
 
@@ -54,9 +51,9 @@ const SavedAddressScreen = props => {
   else {
     productPreview = (
       <FlatList
-        data={address} // Passing curent order as data
+        data={address} 
         showsVerticalScrollIndicator={false}
-        keyExtractor={item => item.id} // Adjust keyExtractor as per your data structure
+        keyExtractor={item => item.id} 
         renderItem={itemData =>
           <AddressCard
             param={itemData.item}

@@ -14,9 +14,8 @@ const Products = (props) => {
 
   const data = props.param;
 
-  const [quantityVarientId, setQuantityVarientId] = useState(props.param?.quantity_variants[0]?.quantity_variant_id)
+  const [quantityVarientId, setQuantityVarientId] = useState(props.param?.quantity_variants[0]?.quantity_variant_id ?? '')
   const [cartItemId, setCartitemId] = useState(`${data.product_id}-${data?.quantity_variants[0]?.quantity_variant_id}`)
-
 
   const [selectedOption, setSelectedOption] = useState(props.param.quantity_variants[0].quantity_variant); // Assuming the first size as the initial value
   const [actual, setActuals] = useState(props.param.quantity_variants[0].actual_price)
@@ -26,24 +25,8 @@ const Products = (props) => {
 
   const dispatch = useDispatch();
 
-  const toggleOptions = () => {
-    setShowOptions(!showOptions);
-  };
 
-  const handleOptionSelect = (quantityVId) => {
-    for (let variant of data?.quantity_variants) {
-      if (variant.quantity_variant_id === quantityVId) {
-        // console.log("VArients idasdfajfnl.zn ", variant);
-        setQuantityVarientId(quantityVId)
-        setSelectedOption(variant.quantity_variant);
-        setActuals(variant.actual_price);
-        setSelling(variant.selling_price);
-        setCartitemId(`${data.product_id}-${quantityVId}`)
-      }
-    }
-    setShowOptions(false); // Close the selection list after selecting an option
-    // dispatch(addToCart(selling))
-  };
+
   useEffect(() => {
     if (cartItems[`${props.param.product_id}-${quantityVarientId}`]) {
       setQty(cartItems[`${props.param.product_id}-${quantityVarientId}`]?.quantity)
@@ -56,68 +39,33 @@ const Products = (props) => {
 
   return (
     <View>
-      <View style={styles.mainscreen}>
-        <TouchableOpacity
+      <TouchableOpacity
           onPress={() => props.onSelect(data.product_id, data)}
+        style={styles.mainscreen}>
+        <TouchableOpacity
+          // onPress={() => props.onSelect(data.product_id, data)}
           style={{
             ...styles.imagePreview, ...{
               borderWidth: 2, marginHorizontal: 10, borderRadius: 7,
             }
           }}>
-          <Image style={styles.images} source={{ uri: data.images[0] }} />
+          <Image style={styles.images} source={{ uri: data.images }} />
         </TouchableOpacity>
         <View style={styles.textcontainer}>
           <Text style={{ fontSize: 16, fontWeight: '500', color: '#555' }}>
             {data.product_title}
           </Text>
-          <TouchableOpacity onPress={toggleOptions} style={{ width: '100%', borderColor: '#555', borderWidth: 1, borderRadius: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 5, paddingHorizontal: 10 }}>
-            <Text style={{ fontSize: 14, color: '#555' }}>{selectedOption}</Text>
-            <AntDesign name='down' size={16} color="#888" />
-
-          </TouchableOpacity>
+          <View style={{ width: '100%', borderColor: '#555', borderWidth: 1, borderRadius: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 5, paddingHorizontal: 10 }}>
+            <Text style={{ fontSize: 14, color: '#555' }}>Net wt. {selectedOption}</Text>
+          </View>
 
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <View>
-              <Text style={styles.actual}>${actual}</Text>
               <Text style={styles.selling}>${selling}</Text>
             </View>
-
-            {qty < 1
-              ? (<TouchableOpacity onPress={() => {
-                setQty(qty + 1)
-                dispatch(cartItem.addToCart(data, quantityVarientId))
-              }}
-                style={styles.Cart}>
-                <MaterialCommunityIcons name="cart-variant" size={24} color='white' />
-                <Text style={{ fontSize: 17, fontWeight: '500', color: 'white', marginLeft: 5 }}> Add</Text>
-              </TouchableOpacity>)
-              : (
-                <View style={[styles.Cart, { justifyContent: 'space-between' }]}>
-                  <TouchableOpacity onPress={() => {
-                    setQty(qty + 1)
-                    console.log("product lisisting quantity", quantityVarientId)
-                    dispatch(cartItem.addToCart(data, quantityVarientId))
-                  }}><AntDesign name="pluscircleo" size={24} color="white" /></TouchableOpacity>
-                  <Text style={{ fontSize: 17, fontWeight: '500', color: 'white' }}>{cartItems[cartItemId]? cartItems[cartItemId].quantity : String(qty).padStart(2, '0')}</Text>
-                  <TouchableOpacity onPress={() => {
-                    setQty(qty - 1)
-                    props.onRemoveItem()
-                  }}><AntDesign name="minuscircleo" size={24} color="white" /></TouchableOpacity>
-                </View>
-              )}
           </View>
-
-          {showOptions && (
-            <View style={styles.optionsContainer}>
-              {data.quantity_variants.map((option, index) => (
-                <TouchableOpacity key={index} onPress={() => handleOptionSelect(option?.quantity_variant_id)}>
-                  <Text>{option?.quantity_variant}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
         </View>
-      </View>
+      </TouchableOpacity>
       <Divider />
     </View>
   )
@@ -159,7 +107,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'line-through',
   },
   selling: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700'
   },
   optionsContainer: {

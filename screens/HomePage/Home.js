@@ -29,9 +29,9 @@ const Home = props => {
     dispatch(homeAction.getHome(accessToken))
       .then((response) => {
         setIsLoading(false);
-        console.log("sgdagfv xzv=> ", response?.data?.categoryFilter)
+        console.log("Home PAge=> ", response?.data?.banner[0]?.banners)
         setResdata(response?.data);
-        setBannerData(response?.data?.banner)
+        setBannerData(response?.data?.banner[0]?.banners)
         setCategory(response?.data?.categoryFilter)
         setPastOrders(response?.data?.pastOrders)
         setRecommendedProducts(response?.data?.recommendedProducts)
@@ -43,9 +43,9 @@ const Home = props => {
       });
   }, [accessToken])
 
-  const onCategorySelectHandler = (id, name, subcategories) => {
-    // console.log("touched", id)
-   props.navigation.navigate('CategoryList', {categoryId: id, name: name, subCategories: subcategories}) 
+  const onCategorySelectHandler = (id, name) => {
+    console.log("touched", id)
+   props.navigation.navigate('CategoryProducts', {categoryId: id, name: name}) 
   }
   const onProductSelectHandler = (id, data) => {
     props.navigation.navigate('ProductDescription', { ProductId: id, data: data })
@@ -53,7 +53,7 @@ const Home = props => {
 
   const renderItem = ({ item }) => {
     return (
-      <Image source={{ uri: item.banner_image }} style={styles.image} />
+      <Image source={{ uri: item.image }} style={styles.image} />
     );
   };
 
@@ -128,7 +128,7 @@ const Home = props => {
               />}
           />
         </View>
-        <View>
+        {/* <View>
           <Text style={styles.categoryList}>Recomended Products</Text>
           <FlatList
             data={recommendedProducts}
@@ -142,7 +142,7 @@ const Home = props => {
                 onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.productId}-${itemData?.item?.quantity_variants[0]?.quantity_variant_id}`)) }}
               />}
           />
-        </View>
+        </View> */}
       </ScrollView>
     </View>
   )

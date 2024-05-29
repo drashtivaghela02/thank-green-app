@@ -14,12 +14,12 @@ const ProductsHome = (props) => {
   const [qty, setQty] = useState(0);
   const dispatch = useDispatch();
   console.log("Home product data", data)
-  let actual_price = '$' + data.quantity_variants[0].actual_price
-  let selling_price = data.quantity_variants[0].selling_price
-  if (!selling_price) {
-    selling_price = data.quantity_variants[0].actual_price
-    actual_price = ''
-  }
+  let actual_price = '$' + data.quantity_variants[0].actual_price ?? 0
+  let selling_price = data.quantity_variants[0].selling_price ?? 0
+  // if (!selling_price) {
+  //   selling_price = data.quantity_variants[0].actual_price
+  //   actual_price = ''
+  // }
 
   useEffect(() => {
     if (cartItems[`${id}-${data.quantity_variants[0].quantity_variant_id}`]) {

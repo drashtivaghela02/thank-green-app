@@ -53,6 +53,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CheckOutIntent from '../screens/CheckOut/CheckOutIntent';
 import CustomIntent from '../screens/CheckOut/CustomIntent';
 import DeliveryTimeScreen from '../screens/CheckOut/DeliveryTimeScreen';
+import CategoryProducts from '../screens/Shop/CategoryProducts';
 
 
 const FormStack = createStackNavigator();
@@ -170,6 +171,8 @@ const HomeScreen = () => {
       <HomeStack.Screen name="HomeSearch" component={SearchScreen} options={{ headerShown: false }} />
       <HomeStack.Screen name='CategoryList' component={CategoryList} options={{ headerShown: false }} />
       <HomeStack.Screen name='ProductsListing' component={ProductsListing} options={{ headerShown: false }} />
+      <HomeStack.Screen name='CategoryProducts' component={CategoryProducts} options={{ headerShown: false }} />
+
     </HomeStack.Navigator>
   )
 }

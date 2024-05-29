@@ -10,7 +10,7 @@ import * as cartItem from '../../store/actions/Cart'
 import CartIcon from "../../Components/UI/CartIcon";
 
 
-const ProductsListing = props => {
+const CategoryProducts = props => {
   const SubCategoryId = props.route.params.SubCatId;
   const name = props.route.params.SubCatName;
   console.log("hello", SubCategoryId, name)
@@ -23,7 +23,7 @@ const ProductsListing = props => {
 
   useEffect(() => {
     setIsLoading(true);
-    dispatch(productAction.getProductsFromSubCat(SubCategoryId, accessToken))
+    dispatch(productAction.getProductsFromCategory(SubCategoryId, accessToken))
       .then((response) => {
         setResdata(response?.data?.products);
         setIsLoading(false);
@@ -127,4 +127,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ProductsListing;
+export default CategoryProducts;

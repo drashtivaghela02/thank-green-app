@@ -5,8 +5,9 @@ import { Divider } from 'react-native-paper';
 const CategoryFood = (param) => {
     console.log("sfhsulkahfoiahfo;aif;ojOJAdfi", param)
     const data = param.param
-    const id = param.param.category_id
-    const name = param.param.category_name
+    const id = param.search ? param.param.id :param.param.category_id
+    const name = param.search ? param.param.name : param.param.category_name
+    const image = param.search ? param.param.image : param.param.category_image
     const subcategories = param.param.subcategories
 
 
@@ -19,10 +20,10 @@ const CategoryFood = (param) => {
                         // borderColor: bordercolor ? bordercolor : 'black'
                     }
                 }}>
-                <Image style={styles.image} source={{uri : data.category_image}} />
+                <Image style={styles.image} source={{uri : image}} />
             </View>
             <View style={styles.textcontainer}>
-                <Text style={{ fontSize: 19, fontWeight: '500' }}>
+                <Text style={{ fontSize: 19, fontWeight: '500', width: '85%' }} numberOfLines={1}>
                     {name}
                 </Text>
                 <MaterialCommunityIcons style={styles.sideicon} size={26} name='arrow-right' color='#CCCCCC' />

@@ -21,8 +21,11 @@ const PlaceOrder = (props) => {
   const [value, setValue] = useState('card');
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const accessToken = useSelector(state => state.auth.accessToken);
+  const [time, setTime] = useState('');
+  const [date, setDate] = useState('');
+  const [APIDate, setAPIDate] = useState('');
   const dispatch = useDispatch();
-  
+
   const { initPaymentSheet, presentPaymentSheet, confirmPaymentSheetPayment } = usePaymentSheet();
   const [loadingPaymentSheet, setLoadingPaymentSheet] = useState(false);
 
@@ -44,7 +47,7 @@ const PlaceOrder = (props) => {
   };
 
   const initializePaymentSheet = async (data) => {
-    const { paymentIntent_client_secret} = data;
+    const { paymentIntent_client_secret } = data;
     const { error } = await initPaymentSheet({
       merchantDisplayName: "Example, Inc.",
       // customerId: order_id,
@@ -56,28 +59,39 @@ const PlaceOrder = (props) => {
     });
 
     if (!error) {
-  console.log("Payment sheet initialized successfully.");
-  const { error: presentError } = await presentPaymentSheet();
-  if (presentError) {
-    if (presentError.code === "Canceled") {
-      console.warn("Payment flow canceled by the user.");
-      // Display a user-friendly message or handle the cancellation appropriately
-      Alert.alert("Payment Canceled", "You have canceled the payment process.");
+      console.log("Payment sheet initialized successfully.");
+      const { error: presentError } = await presentPaymentSheet();
+      if (presentError) {
+        if (presentError.code === "Canceled") {
+          console.warn("Payment flow canceled by the user.");
+          // Display a user-friendly message or handle the cancellation appropriately
+          Alert.alert("Payment Canceled", "You have canceled the payment process.");
+        } else {
+          console.error("Error presenting payment sheet:", presentError);
+          Alert.alert(`Error presenting payment sheet: ${presentError.message}`);
+        }
+      } else {
+        console.log("Payment was successful.");
+        Alert.alert("Success", "Payment was successful");
+      }
     } else {
-      console.error("Error presenting payment sheet:", presentError);
-      Alert.alert(`Error presenting payment sheet: ${presentError.message}`);
+      console.error("Error initializing payment sheet:", error);
+      Alert.alert(`Error initializing payment sheet: ${error.message}`);
     }
-  } else {
-    console.log("Payment was successful.");
-    Alert.alert("Success", "Payment was successful");
-  }
-} else {
-  console.error("Error initializing payment sheet:", error);
-  Alert.alert(`Error initializing payment sheet: ${error.message}`);
-}
 
 
   };
+
+  const pickOnDeliveryTimeHandler = () => {
+    props.navigation.navigate('DeliveryTimeScreen', {
+      onGoBack: (time, date) => {
+        setTime(time);
+        setDate(`${date.split(' ')[3]} ${date.split(' ')[1]} ${date.split(' ')[2]}`);
+        setAPIDate(`${date.split(' ')[7]} ${time.split(' ')[2]}`)
+        console.log(`${date.split(' ')[7]} ${time.split(' ')[2]}`);
+      },
+    });
+  }
 
   const handlePlaceOrder = () => {
     if (selectedAddressId === null) {
@@ -90,10 +104,15 @@ const PlaceOrder = (props) => {
       return;
     }
 
+    if (APIDate === null) {
+      Alert.alert('', 'Please select a Delivery Time.');
+      return;
+    }
+
     const values = {
       address_id: selectedAddressId,
       products: SummaryData,
-      delivery_on: '2024-06-29 09:30:00',
+      delivery_on: APIDate,
       payment_method: value
     };
 
@@ -108,10 +127,10 @@ const PlaceOrder = (props) => {
           Alert.alert('Error', 'Failed to place order');
         }
       })
-      // .catch(error => {
-      //   setIsLoading(false);
-      //   Alert.alert("Error placing order:", error.message);
-      // });
+    // .catch(error => {
+    //   setIsLoading(false);
+    //   Alert.alert("Error placing order:", error.message);
+    // });
   };
 
   return (
@@ -137,9 +156,20 @@ const PlaceOrder = (props) => {
 
           <View>
             <Text style={styles.headingTitle}>Schedule Delivery</Text>
-            <TouchableOpacity style={styles.paymentOption} onPress={() => props.navigation.navigate("DeliveryTimeScreen")}>
-            <EvilIcons name="calendar" size={45} color="black" />
-              <Text style={styles.codTitle}>Date Time</Text></TouchableOpacity>
+            <TouchableOpacity style={styles.paymentOption}
+              onPress={pickOnDeliveryTimeHandler
+                // () => props.navigation.navigate("DeliveryTimeScreen")
+                }>
+              <EvilIcons name="calendar" size={45} color="black" />
+              <View>
+                <Text style={styles.timeTitle}>Date</Text>
+                <Text>{date}</Text>
+              </View>
+              <View>
+                <Text>Time</Text>
+                <Text>{time}</Text>
+              </View>
+            </TouchableOpacity>
           </View>
 
           <View>
@@ -182,7 +212,7 @@ const PlaceOrder = (props) => {
           </View>
 
           <TouchableOpacity style={styles.verify} onPress={handlePlaceOrder}>
-            {isLoading ? <ActivityIndicator /> : <Text style={styles.verifyButton}>PLACE ORDER</Text>}
+            {isLoading ? <ActivityIndicator color='white' size={26} /> : <Text style={styles.verifyButton}>PLACE ORDER</Text>}
           </TouchableOpacity>
         </View>
       </View>
@@ -251,7 +281,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     backgroundColor: '#2c843e',
-    borderRadius: 5,
+    borderRadius: 10,
     width: '100%',
   },
   verifyButton: {
@@ -271,6 +301,9 @@ const styles = StyleSheet.create({
     margin: 5,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10
+    gap: 20
+  },
+  timeTitle: {
+
   }
 });

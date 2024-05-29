@@ -41,15 +41,15 @@ const ProductDescription = props => {
     dispatch(productAction.getProducts(ProductId, accessToken))
     .then((response) => {
       setIsLoading(false);
-      setResdata(response?.data[0]);
-      setQuantityVarientId(response?.data[0].quantity_variants[0]?.quantity_variant_id)
-      setCartitemId(`${ProductId}-${response?.data[0].quantity_variants[0]?.quantity_variant_id}`)
-      setSelectedOption(response?.data[0].quantity_variants[0]?.quantity_variant);
-      setActuals(response?.data[0].quantity_variants[0]?.actual_price);
-      setSelling(response?.data[0].quantity_variants[0]?.selling_price);
-      setIsFavourite(response?.data[0]?.is_favorite)
+      setResdata(response?.data?.product[0]);
+      setQuantityVarientId(response?.data?.product[0].quantity_variants[0]?.quantity_variant_id)
+      setCartitemId(`${ProductId}-${response?.data?.product[0].quantity_variants[0]?.quantity_variant_id}`)
+      setSelectedOption(response?.data?.product[0].quantity_variants[0]?.quantity_variant);
+      setActuals(response?.data?.product[0].quantity_variants[0]?.actual_price);
+      setSelling(response?.data?.product[0].quantity_variants[0]?.selling_price);
+      setIsFavourite(response?.data?.product[0]?.is_favorite)
       setQty(cartItems[`${ProductId}-${data?.quantity_variants[0]?.quantity_variant_id}`].quantity)
-      console.log("product description=> ", response?.data[0])
+      console.log("product description=> ", response?.data?.product[0])
     })
     .catch(error => {
       setIsLoading(false);

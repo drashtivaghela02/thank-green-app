@@ -26,8 +26,8 @@ const CustomDrawer = props => {
     dispatch(productAction.getCategory(accessToken))
       .then((response) => {
         setIsLoading(false);
-        console.log("sgdagfv xzv=> ", response?.data)
-        setResdata(response?.data);
+        console.log("sgdagfv xzv=> ", response?.data?.categoryList)
+        setResdata(response?.data?.categoryList);
         setShowDetails(Array(response?.data.length).fill(false));
       })
       .catch(error => {

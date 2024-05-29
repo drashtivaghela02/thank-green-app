@@ -27,8 +27,8 @@ const ShopCategoryScreen = props => {
     dispatch(productAction.getCategory(accessToken))
       .then((response) => {
         setIsLoading(false);
-        console.log("sgdagfv xzv=> ", response?.data)
-        setResdata(response?.data);
+        console.log("sgdagfv xzv=> ", response?.data?.categoryList)
+        setResdata(response?.data?.categoryList);
       })
       .catch(error => {
         setIsLoading(false);
@@ -76,10 +76,11 @@ const ShopCategoryScreen = props => {
 
           <View
             style={{
-              height: Dimensions.get('screen').height,
+              // height: Dimensions.get('screen').height,
               width: Dimensions.get('window').width,
               backgroundColor: '#f1f0f5',
               gap: 5,
+              // paddingHorizontal:10
             }}
           // contentContainerStyle={styles.categoryScreen}
           >
@@ -137,7 +138,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingHorizontal: 10,
+    // paddingHorizontal: 10,
     paddingTop: 10
   },
   logoContainer: {
