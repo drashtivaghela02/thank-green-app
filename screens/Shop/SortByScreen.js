@@ -1,24 +1,31 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useContext, useRef, useState } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RadioButton } from 'react-native-paper';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import { FilterContext } from './FilterContext';
+import { useDispatch } from 'react-redux';
+import * as filter from '../../store/actions/Products'
 
-const SortByScreen = () => {
+
+const SortByScreen = ({ route }) => {
+  const { resData } = route.params;
+  const deliveryTime = resData?.deliveryTimeFilter[0]?.delivery_time
+  const dispatch = useDispatch();
+
   const sheetRef = useRef(null);
   const [value, setValue] = useState('');
   const [delivery, setDelivery] = useState('-Select Time-');
-  const handleLogout = () => {
-    // Add logout logic here
-    props.navigation.navigate('FormNavigator');
-    console.log('logout');
-    // Close the bottom sheet
-    sheetRef.current.close();
-  };
+  const [sortValue, setSortValue] = useState('ASC');
+  console.log("delivery time", delivery, sortValue)
 
   return (
     <View>
-      <RadioButton.Group onValueChange={newValue => setValue(newValue)} value={value} >
+      <RadioButton.Group
+        onValueChange={newValue => {
+          setValue(newValue)
+          // dispatch(filter.SortBy({deliveryTimeFilter: delivery}))
+        }} value={value} >
         <View style={styles.radio_button}>
           <RadioButton value="first" color='#2c843e' />
           <Text>Delivery Time</Text>
@@ -28,12 +35,22 @@ const SortByScreen = () => {
             <Text style={[styles.deliveryText, value === 'first' ? styles.selectedDeliveryText : null]}>{delivery}</Text>
           </TouchableOpacity>
         }
+      </RadioButton.Group>
+
+      <Text style={styles.sheetHeader}>Sort By Price</Text>
+      <RadioButton.Group
+        onValueChange={newValue => {
+          setSortValue(newValue)
+          dispatch(filter.SortBy({ deliveryTimeFilter: delivery, priceOrderFilter: newValue }))
+        }
+
+        } value={sortValue} >
         <View style={styles.radio_button}>
-          <RadioButton value="second" color='#2c843e' />
+          <RadioButton value="ASC" color='#2c843e' />
           <Text>Price - Low to High</Text>
         </View>
         <View style={styles.radio_button}>
-          <RadioButton value="third" color='#2c843e' />
+          <RadioButton value="DESC" color='#2c843e' />
           <Text>Price - High to Low</Text>
         </View>
       </RadioButton.Group>
@@ -42,34 +59,34 @@ const SortByScreen = () => {
         ref={sheetRef}
         customStyles={{ container: styles.sheet }}
         height={320}
-        draggable={true}
-        dragOnContent={true}
+        // draggable={true}
+        // dragOnContent={true}
         closeDuration={350}
       >
         <View style={styles.sheetContent}>
-          <Text style ={styles.sheetHeader}>Delivery Time</Text>
-          <RadioButton.Group onValueChange={newValue => {
-            setDelivery(newValue)
-            sheetRef.current.close();
-          }} value={delivery} >
-            <View style={styles.radio_button}>
-              <RadioButton value="07:00 AM to 09:30 AM" color='#2c843e' />
-              <Text style={styles.sheetItems}>07:00 AM to 09:30 AM</Text>
-            </View>
+          <Text style={styles.sheetHeader}>Delivery Time</Text>
+          <ScrollView>
 
-            <View style={styles.radio_button}>
-              <RadioButton value="09:30 AM to 11:00 AM" color='#2c843e' />
-              <Text style={styles.sheetItems}>09:30 AM to 11:00 AM</Text>
-            </View>
-            <View style={styles.radio_button}>
-              <RadioButton value="11:00 AM to 07:30 AM" color='#2c843e' />
-              <Text style={styles.sheetItems}>11:00 AM to 07:30 AM</Text>
-            </View>
-            <View style={styles.radio_button}>
-              <RadioButton value="07:30 AM to 10:00 AM" color='#2c843e' />
-              <Text style={styles.sheetItems}>07:30 AM to 10:00 AM</Text>
-            </View>
-          </RadioButton.Group>
+            <RadioButton.Group
+              onValueChange={newValue => {
+                setDelivery(newValue)
+                dispatch(filter.SortBy({ deliveryTimeFilter: newValue, priceOrderFilter: sortValue }))
+                sheetRef.current.close();
+              }}
+              value={delivery} >
+              <View style={styles.radio_button}>
+                <RadioButton value="" color='#2c843e' status='checked' disabled />
+                <Text style={styles.sheetItems}>-Select Time-</Text>
+              </View>
+              {deliveryTime.map((item, index) => (
+                <View style={styles.radio_button} key={index}>
+                  <RadioButton value={item} color='#2c843e' />
+                  <Text style={styles.sheetItems}>{item}</Text>
+                </View>
+              ))}
+
+            </RadioButton.Group>
+          </ScrollView>
         </View>
       </RBSheet>
     </View>
@@ -82,7 +99,9 @@ const styles = StyleSheet.create({
   radio_button: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10
+    padding: 10,
+    paddingTop: 10,
+    paddingBottom: 0
   },
   deliveryText: {
     margin: 10,
@@ -103,11 +122,10 @@ const styles = StyleSheet.create({
   sheet: {
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
-    // padding: 10
-},
-sheetContent: {
+  },
+  sheetContent: {
     padding: 10,
-    // alignItems: 'stretch',
+    paddingBottom: 40
   },
   sheetHeader: {
     fontSize: 19,

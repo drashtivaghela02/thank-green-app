@@ -9,7 +9,7 @@ import authReducer, { loadInitialState, saveStateMiddleware } from './store/redu
 import { useEffect } from 'react';
 import FlashMessage from 'react-native-flash-message';
 import userReducer from './store/reducer/User';
-import categoryReducer from './store/reducer/Products';
+import productReducer from './store/reducer/Products';
 import cart from './store/reducer/Cart';
 import { StripeProvider } from '@stripe/stripe-react-native';
 import logger from 'redux-logger';
@@ -17,7 +17,7 @@ import logger from 'redux-logger';
 const rootReducer = combineReducers({
   auth: authReducer,
   user: userReducer,
-  product: categoryReducer,
+  product: productReducer,
   cart: cart
 });
 

@@ -13,15 +13,15 @@ const SearchScreen = (props) => {
   const dispatch = useDispatch();
   const accessToken = useSelector(state => state.auth.accessToken)
   const [isLoading, setIsLoading] = useState(false)
-  const [searchPhrase, setSearchPhrase] = useState("");
+  const [searchPhrase, setSearchPhrase] = useState("veget");
   const [clicked, setClicked] = useState(false);
   const [searchCategoryList, setSearchCategoryList] = useState([]);
   const [searchProductList, setSearchProductList] = useState([]);
   const [searchSubCategoryList, setSearchSubCategoryList] = useState([]);
- 
+
   const onCategorySelectHandler = (id, name) => {
     console.log("touched", id)
-   props.navigation.navigate('CategoryProducts', {categoryId: id, name: name}) 
+    props.navigation.navigate('CategoryProducts', { categoryId: id, name: name })
   }
   const onSubCategorySelectHandler = (id, subCategoryName) => {
     console.log("touched", id)
@@ -31,12 +31,41 @@ const SearchScreen = (props) => {
   const onProductSelectHandler = (id, data) => {
     props.navigation.navigate('ProductDescription', { ProductId: id, data: data })
   }
+
+  const filterHandler = () => {
+    props.navigation.navigate('Filters', {
+      onGoBack: (sorted) => {
+        sorted.searchText = 'fr'
+        console.log("search data ", sorted)
+
+        setIsLoading(true);
+        dispatch(productAction.showFilter(sorted, accessToken))
+          .then((response) => {
+            console.log("filter 2 => ", sorted);
+
+            console.log("filter 2 => ", response?.data);
+            setSearchCategoryList('No category found')
+            setSearchSubCategoryList('No subcategory found')
+            setSearchProductList(response?.data?.filterProducts)
+            setIsLoading(false);
+          })
+          .catch((error) => {
+            setIsLoading(false);
+            console.error("Error fetching user information:", error);
+          });
+
+      },
+    });
+
+
+  }
+
+
   let i = 0
   useEffect(() => {
     setIsLoading(true);
     console.log(searchPhrase, i)
-    i = i + 1;
-    dispatch(productAction.search('veget', accessToken))
+    dispatch(productAction.search(searchPhrase, accessToken))
       .then((response) => {
         console.log("search products data a=> ", response?.data)
         setSearchCategoryList(response?.data?.searchCategoryList)
@@ -46,8 +75,10 @@ const SearchScreen = (props) => {
         // setResdata(response?.data);
       })
   }, [searchPhrase])
+
+
   let category;
-  if (searchCategoryList?.length !== 0) {
+  if (searchCategoryList !== 'No category found') {
     category = <FlatList
       data={searchCategoryList}
       keyExtractor={(item) => item.id}
@@ -55,13 +86,13 @@ const SearchScreen = (props) => {
         <CategoryFood
           param={itemData?.item}
           search
-        onSelect={onCategorySelectHandler}
+          onSelect={onCategorySelectHandler}
         />
       }
     />
   }
   let subcategory;
-  if (searchSubCategoryList?.length !== 0) {
+  if (searchSubCategoryList !== "No subcategory found") {
     subcategory = <FlatList
       data={searchSubCategoryList}
       keyExtractor={(item) => item.id}
@@ -70,24 +101,26 @@ const SearchScreen = (props) => {
           param={itemData?.item}
           search
           subcat
-        onSelect={onSubCategorySelectHandler}
+          onSelect={onSubCategorySelectHandler}
         />
       }
     />
   }
   let products;
-  if(searchProductList !=="No products found"){
- products = <FlatList
-    data={searchProductList}
-    keyExtractor={(item) => item.product_id}
-    renderItem={itemData =>
-      <SearchProducts
-        param={itemData.item}
-        onSelect={onProductSelectHandler}
+  if (searchProductList !== "No products found") {
+    products = <FlatList
+      data={searchProductList}
+      keyExtractor={(item) => item.product_id}
+      renderItem={itemData =>
+        <SearchProducts
+          param={itemData.item}
+          onSelect={onProductSelectHandler}
         // onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0].quantity_variant_id}`)) }}
-      />
-    }
-  />}
+        />
+      }
+    />
+  }
+
   return (
     <View style={{ backgroundColor: 'white' }}>
       <CustomHeader label="Search" press={() => props.navigation.goBack()} />
@@ -102,7 +135,10 @@ const SearchScreen = (props) => {
           size={28}
           color="white"
           style={{ backgroundColor: '#2c843e', padding: 5, borderRadius: 5 }}
-          onPress={() => { props.navigation.navigate('Filters') }} />
+          onPress={
+            filterHandler
+            // () => { props.navigation.navigate('Filters') }
+          } />
         {/* <FontAwesome6 name="bars-staggered" size={24} color="white" onPress={() => { props.navigation.goBack() }} /> */}
       </View>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -123,13 +159,13 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingHorizontal: 20,
     backgroundColor: 'white',
-    width: Dimensions.get('window').width*1,
+    width: Dimensions.get('window').width * 1,
 
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: Dimensions.get('window').width*1,
+    width: Dimensions.get('window').width * 1,
     backgroundColor: 'white',
     paddingHorizontal: 8,
     paddingVertical: 10,

@@ -1,49 +1,40 @@
-import { GET_CATEGORY } from '../actions/Products';
+import { FILTER_BY, SORT_BY } from '../actions/Products';
 
-
-// Define your initial state
 const initialState = {
-    categories: [],
-    subCategories: [],
-    products: [],
-    error: null
+    deliveryTimeFilter: [],
+    priceOrderFilter: [],
+    categoryFilter: [],
+    priceFilter: [],
 };
-
-
-// Define your reducer function
-const categoryReducer = (state = initialState, action) => {
+0
+const productReducer = (state = initialState, action) => {
     switch (action.type) {
-        // case 'GET_CATEGORY':
-        //     return {
-        //         ...state,
-        //         categories: action.payload.categories,
-        //         error: null
-        //     };
-
-
-        // case 'GET_SUB_CATEGORY':
-        //     return {
-        //         ...state,
-        //         subCategories: action.payload.categories,
-        //         error: null
-        //     };
-        case 'GET_PRODUCTS':
+        case SORT_BY:
+            console.log("Reduc data for sort", action)
+            const deliveryTime = action.SortBy.deliveryTimeFilter ? action.SortBy.deliveryTimeFilter  : ''
+            const priceOrder = action.SortBy.priceOrderFilter
             return {
                 ...state,
-                products: action.payload.products,
-                error: null
-            };
-        case 'GET_CATEGORY_ERROR':
+                deliveryTimeFilter: deliveryTime,
+                priceOrderFilter: priceOrder
+            }
+        case FILTER_BY:
+            console.log("Reduc data for filter", action)
+
+            const category = action.FilterBy.categoryFilter
+            const price = action.FilterBy.priceFilter
             return {
                 ...state,
-                error: action.payload.error
-            };
-        default:
+                categoryFilter: category,
+                priceFilter: price
+            }
+        default: console.log("Unrecognized action:", action);
+
             return state;
     }
 };
 
 
-export default categoryReducer;
+export default productReducer;
 
 

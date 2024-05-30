@@ -153,7 +153,7 @@ const OrderDetails = (props) => {
               </View>
 
               <View>
-                <Text style={styles.subTitle1}>{details.payment_details.invoice_number}</Text>
+                <Text style={styles.subTitle1} numberOfLines={1}>{details.payment_details.invoice_number}</Text>
                 <Text style={styles.subTitle1}>{details.payment_details.type}</Text>
                 <Text style={styles.subTitle1}>{details.payment_details.total_quantity} items</Text>
                 <Text style={styles.subTitle1}>${details.payment_details.gross_amount.toFixed(2)}</Text>

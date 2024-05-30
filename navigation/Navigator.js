@@ -169,6 +169,7 @@ const HomeScreen = () => {
       <HomeStack.Screen name='Home' component={Home} options={{ headerShown: false }} />
       <HomeStack.Screen name="Notifications" component={NotificationScreen} options={{ headerShown: false }} />
       <HomeStack.Screen name="HomeSearch" component={SearchScreen} options={{ headerShown: false }} />
+      <HomeStack.Screen name='Filters' component={FilterScreen} options={{ headerShown: false }} />
       <HomeStack.Screen name='CategoryList' component={CategoryList} options={{ headerShown: false }} />
       <HomeStack.Screen name='ProductsListing' component={ProductsListing} options={{ headerShown: false }} />
       <HomeStack.Screen name='CategoryProducts' component={CategoryProducts} options={{ headerShown: false }} />
