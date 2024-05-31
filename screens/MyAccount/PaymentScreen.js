@@ -6,33 +6,65 @@ import { useEffect } from "react";
 import { Alert } from "react-native";
 import * as userAction from '../../store/actions/User';
 import CreditCard from "../../Components/UI/CreditCard";
+import { useIsFocused } from "@react-navigation/native";
 
 
 const PaymentScreen = props => {
+  const isFocused = useIsFocused();
+
   const [isLoading, setIsLoading] = useState(false);
   const [card, setCard] = useState([]); 
   const accessToken = useSelector(state => state.auth.accessToken);
   const dispatch = useDispatch();
 
-  useEffect(() => {
+  const getCardHandler = () => {
     setIsLoading(true); 
     dispatch(userAction.getCard(accessToken))
       .then((response) => {
         setIsLoading(false); 
         setCard(response.data); 
-        // console.log(response.data);
       })
       .catch(error => {
         setIsLoading(false);
         Alert.alert("Error fetching user information:", error);
       });
-  }, [accessToken]);
+  }
+  useEffect(() => {
+    getCardHandler();
+  }, [accessToken,isFocused, props.route.params]);
 
   console.log("card ==>", card);
 
   const editcardHandler = (id, data) => {
     console.log("id in main screen", id, data)
-    props.navigation.navigate('AddNewCard', {id: id, cardData: data})
+    props.navigation.navigate('AddNewCard', { id: id, cardData: data })
+    getCardHandler();
+  }
+
+  const deleteCardHandler = (Id) => {
+    setIsLoading(true)
+      try {
+        dispatch(userAction.deleteCard(Id, accessToken))
+          .then((state) => {
+            console.log("Staet sign up =====> ", state)
+            if (state.status == 'success') {
+              setIsLoading(false)
+              Alert.alert('Success!!', state.msg)
+            }
+            else {
+              Alert.alert('Alert', state.msg || state.error || error, [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'OK', onPress: () => console.log('OK Pressed') },
+              ])
+              setIsLoading(false)
+            }
+          }
+          )
+      } catch (err) {
+        setError(err.message);
+        setIsLoading(false);
+      }
+    getCardHandler();
   }
 
 
@@ -48,13 +80,14 @@ const PaymentScreen = props => {
   } else {
     cardPreview = (
       <FlatList
-        data={card} // Passing curent order as data
+        data={card}
         showsVerticalScrollIndicator={false}
-        keyExtractor={item => item.id} // Adjust keyExtractor as per your data structure
+        keyExtractor={item => item.id} 
         renderItem={itemData =>
           <CreditCard
             param={itemData.item}
             onEdit={editcardHandler}
+            onDelete={deleteCardHandler}
           />}
       />
     )

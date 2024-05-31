@@ -15,7 +15,7 @@ import * as userAction from '../../store/actions/User';
 function LocationPicker({ navigation, route }) {
     const data = route.params ? route.params.addressData : null;
     const editedAddress = route.params ? route.params.addressData.id : null
-    
+
     const [pickedLocation, setPickedLocation] = useState(null);
     const [locationPermissionInformation, requestPermission] = useForegroundPermissions();
     const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +35,7 @@ function LocationPicker({ navigation, route }) {
                 longitude: data.longitude
             });
         }
-    }, [editedAddress]); 
+    }, [editedAddress]);
 
     useEffect(() => {
         console.log("Picked Location Updated:", pickedLocation);
@@ -80,12 +80,16 @@ function LocationPicker({ navigation, route }) {
 
     const Validation = Yup.object({
         address: Yup.string()
-            .required('*Address is Required'),
+            .required('Address is Required'),
         zip_code: Yup.number()
             .min(6, 'Invalid Indian ZIP code')
-            .required('*Zip Code is Required'),
+            .required('Zip Code is Required'),
+        city: Yup.string()
+            .required('City is Required'),
+        state: Yup.string()
+            .required('State is Required'),
         address_type: Yup.string()
-            .required('*Select Address type')
+            .required('Select Address type')
     });
 
     const SubmitHandler = (values) => {
@@ -106,7 +110,7 @@ function LocationPicker({ navigation, route }) {
 
             try {
                 dispatch(userAction.editAddress(editedAddress, values, accessToken)).then((state) => {
-                    console.log("Staet edit address =====> ", state)
+                    console.log("Staet edit address =====> ", values)
                     if (state.status == 'success') {
                         setIsLoading(false)
                         Alert.alert('Success!!', state.msg)
@@ -174,6 +178,8 @@ function LocationPicker({ navigation, route }) {
                         initialValues={{
                             address: editedAddress ? data.address : '',
                             zip_code: editedAddress ? data.zip_code : '',
+                            city: editedAddress ? data.city : '',
+                            state: editedAddress ? data.state : '',
                             address_type: editedAddress ? data.address_type : '',
                             landmark: editedAddress ? data.landmark : ''
                         }}
@@ -205,6 +211,35 @@ function LocationPicker({ navigation, route }) {
                                     {touched.zip_code && errors.zip_code ? (
                                         <Text style={styles.errorText}>{errors.zip_code}</Text>
                                     ) : null}
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', widh: '100%', }}>
+                                        <View style={{ width: '45%' }}>
+
+                                            <Text style={styles.label} >City</Text>
+                                            <TextInput
+                                                onChangeText={handleChange('city')}
+                                                onBlur={handleBlur('city')}
+                                                value={values.city}
+                                                style={styles.textInput}
+                                            />
+                                            {touched.city && errors.city ? (
+                                                <Text style={styles.errorText}>{errors.city}</Text>
+                                            ) : null}
+                                        </View>
+                                        <View style={{ width: '45%' }}>
+
+                                            <Text style={styles.label} >State</Text>
+                                            <TextInput
+                                                onChangeText={handleChange('state')}
+                                                onBlur={handleBlur('state')}
+                                                value={values.state}
+                                                style={styles.textInput}
+                                            />
+                                            {touched.state && errors.state ? (
+                                                <Text style={styles.errorText}>{errors.state}</Text>
+                                            ) : null}
+                                        </View>
+
+                                    </View>
 
                                     <Text style={styles.label} >Nearest Landmark(Optional)</Text>
                                     <TextInput
@@ -251,7 +286,7 @@ function LocationPicker({ navigation, route }) {
                                 </View>
                                 <TouchableOpacity style={styles.verify} onPress={handleSubmit}>
                                     {isLoading ?
-                                        <ActivityIndicator size={25} /> :
+                                        <ActivityIndicator size={25} color='#2c843e' /> :
                                         <Text style={styles.verifyButton}>{editedAddress ? 'EDIT ADDRESS' : 'ADD ADDRESS'}</Text>
                                     }
                                 </TouchableOpacity>
@@ -315,12 +350,12 @@ const styles = StyleSheet.create({
     sheetHeader: {
         fontWeight: '600',
         fontSize: 16,
-        paddingTop: 16
+        paddingTop: 12
     },
     radio_button: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingTop: 5
+        paddingBottom: 10
     },
     body1: {
         flex: 1,
@@ -331,14 +366,15 @@ const styles = StyleSheet.create({
     label: {
         color: '#b4b4b4',
         fontSize: 16,
-        paddingTop: 15,
+        paddingTop: 12,
         fontWeight: '400',
     },
     textInput: {
         borderBottomWidth: 1,
         borderBottomColor: '#b4b4b4',
         fontSize: 16,
-        padding: 3,
+        // padding: 3,
+
         fontWeight: '500',
     },
     verify: {

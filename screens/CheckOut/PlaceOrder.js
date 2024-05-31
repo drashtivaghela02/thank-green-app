@@ -10,6 +10,8 @@ import { RadioButton } from "react-native-paper";
 import { Image } from "react-native";
 import { usePaymentSheet } from "@stripe/stripe-react-native";
 import { EvilIcons, MaterialCommunityIcons } from "@expo/vector-icons";
+import * as cartItem from '../../store/actions/Cart'
+
 
 const PlaceOrder = (props) => {
   const orderData = props.route.params.OrderData;
@@ -79,7 +81,8 @@ const PlaceOrder = (props) => {
       Alert.alert(`Error initializing payment sheet: ${error.message}`);
     }
 
-
+    props.navigation.navigate('Home')
+    dispatch(cartItem.resetState())
   };
 
   const pickOnDeliveryTimeHandler = () => {
@@ -124,7 +127,7 @@ const PlaceOrder = (props) => {
           initializePaymentSheet(response.data);
         }
         else {
-          Alert.alert('Error', 'Failed to place order');
+          Alert.alert('Error',response.msg);
         }
       })
     // .catch(error => {

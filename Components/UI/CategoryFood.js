@@ -3,7 +3,7 @@ import React from 'react';
 import { View, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
 import { Divider } from 'react-native-paper';
 const CategoryFood = (param) => {
-    console.log("sfhsulkahfoiahfo;aif;ojOJAdfi", param)
+    console.log("sfhsulkahfoiahfo;aif;ojOJAdfi", param.param)
     const data = param.param
     const id = param.search ? param.param.id :param.param.category_id
     const name = param.search ? param.param.name : param.param.category_name

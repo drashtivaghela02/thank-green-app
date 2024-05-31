@@ -149,10 +149,9 @@ const OrderDetails = (props) => {
                 <Text style={styles.title1}>Sub Total </Text>
                 <Text style={styles.title1}>Delivery Charges </Text>
                 <Text style={styles.title2}>Total Amount </Text>
-
               </View>
 
-              <View>
+              <View style={{width: '60%'}}>
                 <Text style={styles.subTitle1} numberOfLines={1}>{details.payment_details.invoice_number}</Text>
                 <Text style={styles.subTitle1}>{details.payment_details.type}</Text>
                 <Text style={styles.subTitle1}>{details.payment_details.total_quantity} items</Text>
@@ -161,8 +160,6 @@ const OrderDetails = (props) => {
                 <Text style={styles.subTitle2}>${details.payment_details.order_amount.toFixed(2)}</Text>
               </View>
             </View>
-
-
 
             <View>
               {details.order_status === "delivered" &&
@@ -263,7 +260,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 17,
     paddingBottom: 10,
-    paddingTop: 15
+    paddingTop: 15,
   },
 
   detail: {
@@ -277,6 +274,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     // padding: 10,
     flexDirection: 'row',
+    width: '100%'
   },
   title: {
     fontWeight: '500',

@@ -46,7 +46,7 @@ export default function FilterScreen(props) {
   const [resData, setResdata] = useState([]);
   const [priceRange, setPriceRange] = useState([0, 50]);
 
-  const sortedData = useSelector(state => state.product)
+  const sortedData = useSelector(state => state?.product)
   console.log("sort data from redux", sortedData)
   const dispatch = useDispatch();
 
@@ -70,17 +70,9 @@ export default function FilterScreen(props) {
     for (const [key, val] of Object.entries(sortedData)) {
       if (val.length > 0) { 
         filteredItems[key] = val;
+        console.log("filteritem check", filteredItems, val, key)
       }
-      if (sortedData.deliveryTimeFilter) {
-        const item = sortedData.deliveryTimeFilter
-        filteredItems.deliveryTimeFilter = { start: item.split(' ')[0], end: item.split(' ')[2] }
-      }
-      if (sortedData.priceFilter) {
-        filteredItems.priceFilter = { min: sortedData.priceFilter[0], max: sortedData.priceFilter[1] }
-      }
-      else {
-        filteredItems.priceFilter = resData?.priceFilter
-      }
+      
     }
 
     props.route.params.onGoBack(filteredItems);

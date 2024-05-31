@@ -13,7 +13,7 @@ const SearchScreen = (props) => {
   const dispatch = useDispatch();
   const accessToken = useSelector(state => state.auth.accessToken)
   const [isLoading, setIsLoading] = useState(false)
-  const [searchPhrase, setSearchPhrase] = useState("veget");
+  const [searchPhrase, setSearchPhrase] = useState("");
   const [clicked, setClicked] = useState(false);
   const [searchCategoryList, setSearchCategoryList] = useState([]);
   const [searchProductList, setSearchProductList] = useState([]);
@@ -35,15 +35,15 @@ const SearchScreen = (props) => {
   const filterHandler = () => {
     props.navigation.navigate('Filters', {
       onGoBack: (sorted) => {
-        sorted.searchText = 'fr'
+        sorted.searchText = searchPhrase
         console.log("search data ", sorted)
 
         setIsLoading(true);
-        dispatch(productAction.showFilter(sorted, accessToken))
+        dispatch(productAction.applyFilter(sorted, accessToken))
           .then((response) => {
-            console.log("filter 2 => ", sorted);
+            // console.log("filter 2 => ", sorted);
 
-            console.log("filter 2 => ", response?.data);
+            console.log("filter 2in search screen  => ", response?.data);
             setSearchCategoryList('No category found')
             setSearchSubCategoryList('No subcategory found')
             setSearchProductList(response?.data?.filterProducts)
@@ -56,8 +56,6 @@ const SearchScreen = (props) => {
 
       },
     });
-
-
   }
 
 
@@ -122,7 +120,7 @@ const SearchScreen = (props) => {
   }
 
   return (
-    <View style={{ backgroundColor: 'white' }}>
+    <View style={{ backgroundColor: 'white',flex:1 }}>
       <CustomHeader label="Search" press={() => props.navigation.goBack()} />
       <View style={styles.container2}>
         <SearchBar
@@ -141,7 +139,7 @@ const SearchScreen = (props) => {
           } />
         {/* <FontAwesome6 name="bars-staggered" size={24} color="white" onPress={() => { props.navigation.goBack() }} /> */}
       </View>
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView contentContainerStyle={{ }}>
         {isLoading && <ActivityIndicator color={Colors.green} />}
         {category}
         {subcategory}

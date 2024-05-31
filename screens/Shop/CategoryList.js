@@ -10,10 +10,10 @@ import CartIcon from "../../Components/UI/CartIcon";
 
 
 const CategoryList = props => {
-  const categoryId = props.route.params.categoryId;
-  const name = props.route.params.name;
-  const subCategories = props.route.params.subCategories;
-  console.log("hello", props.route.params)
+  const categoryId = props?.route?.params?.categoryId;
+  const name = props?.route?.params?.name;
+  const subCategories = props?.route?.params?.subCategories;
+  console.log("hello", props?.route?.params)
 
   const accessToken = useSelector(state => state.auth.accessToken)
   const dispatch = useDispatch();

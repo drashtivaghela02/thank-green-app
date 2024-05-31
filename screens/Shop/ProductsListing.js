@@ -1,18 +1,19 @@
 import { AntDesign, Feather, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { FlatList, TouchableOpacity } from "react-native";
+import { ActivityIndicator, FlatList, TouchableOpacity } from "react-native";
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as productAction from '../../store/actions/Products';
 import Products from "../../Components/UI/Products";
 import * as cartItem from '../../store/actions/Cart'
 import CartIcon from "../../Components/UI/CartIcon";
+import Colors from "../../Constant/Colors";
 
 
 const ProductsListing = props => {
-  const SubCategoryId = props.route.params.SubCatId;
-  const name = props.route.params.SubCatName;
+  const SubCategoryId = props?.route?.params?.SubCatId;
+  const name = props?.route?.params?.SubCatName;
   console.log("hello", SubCategoryId, name)
 
   const accessToken = useSelector(state => state?.auth?.accessToken)
@@ -60,12 +61,12 @@ const ProductsListing = props => {
 
       <View style={styles.body}>
       {isLoading ? (
-          <View>
-            <Text>Loading...</Text>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <ActivityIndicator size={40} color ={Colors.green} />
           </View>
-        ) : resData?.length === 0 ? (
-          <View>
-            <Text>No products available for this category</Text>
+        ) : (resData?.length === 0 || resData === 'No Products found') ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <Text style={{fontSize: 16}}>No products available for this category ..</Text>
           </View>
         ) 
           : (<View style={{ flex: 1, width: '100%' }}>
@@ -76,7 +77,7 @@ const ProductsListing = props => {
                 <Products
                   param={itemData.item}
                   onSelect={onProductSelectHandler}
-                  onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0].quantity_variant_id}`)) }}
+                  onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0]?.quantity_variant_id}`)) }}
                 />
               }
             />

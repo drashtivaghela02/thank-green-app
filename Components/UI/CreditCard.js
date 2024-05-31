@@ -85,7 +85,7 @@ import { useDispatch, useSelector } from "react-redux";
                     "You want to delete card...",
                     [
                       { text: 'NO', style: 'cancel' },
-                      { text: 'YES', onPress: deleteHandler }
+                      { text: 'YES', onPress: ()=> param.onDelete(Id) }
                     ])
 
                 }} >

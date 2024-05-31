@@ -111,6 +111,8 @@ export const addNewAddress = (values, accessToken) => {
             address: values.address,
             landmark: values.landmark,
             zip_code: values.zip_code,
+            city: values.city,
+            state: values.state,
             latitude: values.latitude,
             longitude: values.longitude,
           })
@@ -130,7 +132,7 @@ export const editAddress = (id, values, accessToken) => {
 
   return async dispatch => {
     try {
-      // console.log('edit', values);
+      console.log('edit', values);
       const response = await fetch(`https://thankgreen.onrender.com/api/userprofile/update-address/${id}`,
 
         {
@@ -144,6 +146,8 @@ export const editAddress = (id, values, accessToken) => {
             address: values.address,
             landmark: values.landmark,
             zip_code: values.zip_code,
+            city: values.city,
+            state: values.state,
             latitude: values.latitude,
             longitude: values.longitude,
           })

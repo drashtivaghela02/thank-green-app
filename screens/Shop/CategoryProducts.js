@@ -8,24 +8,27 @@ import * as productAction from '../../store/actions/Products';
 import Products from "../../Components/UI/Products";
 import * as cartItem from '../../store/actions/Cart'
 import CartIcon from "../../Components/UI/CartIcon";
+import ScreenLoader from "../../Components/UI/ScreenLoader";
 
 
 const CategoryProducts = props => {
-  const SubCategoryId = props.route.params.SubCatId;
-  const name = props.route.params.SubCatName;
-  console.log("hello", SubCategoryId, name)
+  const SubCategoryId = props?.route?.params?.categoryId;
+  const name = props?.route?.params?.name;
+  console.log("hello",props)
 
   const accessToken = useSelector(state => state?.auth?.accessToken)
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
 
   const [resData, setResdata] = useState([]);
+  const [totalProducts, setTotalProducts] = useState(0);
 
   useEffect(() => {
     setIsLoading(true);
     dispatch(productAction.getProductsFromCategory(SubCategoryId, accessToken))
       .then((response) => {
         setResdata(response?.data?.products);
+        setTotalProducts(response?.data?.total_products)
         setIsLoading(false);
         console.log("sgdagfv xzv=> ", response?.data)
       })
@@ -60,10 +63,8 @@ const CategoryProducts = props => {
 
       <View style={styles.body}>
       {isLoading ? (
-          <View>
-            <Text>Loading...</Text>
-          </View>
-        ) : resData?.length === 0 ? (
+          <ScreenLoader />
+        ) : totalProducts === 0 ? (
           <View>
             <Text>No products available for this category</Text>
           </View>
@@ -71,12 +72,12 @@ const CategoryProducts = props => {
           : (<View style={{ flex: 1, width: '100%' }}>
             <FlatList
               data={resData}
-              keyExtractor={(item) => item.product_id}
+              keyExtractor={(item) => item?.product_id}
               renderItem={itemData =>
                 <Products
                   param={itemData.item}
                   onSelect={onProductSelectHandler}
-                  onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0].quantity_variant_id}`)) }}
+                  onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0]?.quantity_variant_id}`)) }}
                 />
               }
             />

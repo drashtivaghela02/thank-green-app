@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useIsFocused } from "@react-navigation/native";
 
 
-const AddressCard = (param, { navigation }) => {
+const AddressCard = (param) => {
   const isFocused = useIsFocused()
   data = param.param
   const accessToken = useSelector(state => state.auth.accessToken)
@@ -70,9 +70,12 @@ const AddressCard = (param, { navigation }) => {
             </TouchableOpacity>
 
             <Text>|</Text>
-            <TouchableOpacity onPress={() => {
-              Alert.alert("Are you sure?", "You want to delete address...", [{ text: 'cancel', style: 'cancel' }, { text: 'Ok', onPress: deleteHandler }])
 
+            <TouchableOpacity onPress={() => {
+              Alert.alert(
+                "Are you sure?",
+                "You want to delete address...",
+                [{ text: 'cancel', style: 'cancel' }, { text: 'Ok', onPress:() => param.onDelete(Id, accessToken) }])
             }} >
               {isLoading
                 ? <ActivityIndicator size={22} color="#2c843e" />

@@ -88,7 +88,7 @@ console.log("Post orders value",value)
 };
 
 export const postFinalOrder = (value, accessToken) => {
-  console.log("Post orders value",value)
+  console.log("Post final orders value",value)
     return async dispatch => {
       try {
         const response = await fetch('https://thankgreen.onrender.com/api/checkout',

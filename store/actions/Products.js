@@ -201,7 +201,7 @@ export const applyFilter = (value, accessToken) => {
 
   return async dispatch => {
     try {
-      const response = await fetch(`https://thankgreen.onrender.com//api/shop/filter?page=1`,
+      const response = await fetch(`https://thankgreen.onrender.com/api/shop/filter?page=1`,
         {
           method: 'GET',
           headers: {

@@ -70,8 +70,9 @@ const AddNewCardDetailsScreen = ({ navigation, route }) => {
           console.log("Staet edit address =====> ", state)
           if (state.status == 'success') {
             setIsLoading(false)
-            navigation.navigate('PaymentScreen')
             Alert.alert('Success!!', state.msg)
+            navigation.navigate('PaymentScreen')
+            
           }
           else {
             Alert.alert('Alert', state.msg || state.error || error, [
@@ -85,16 +86,17 @@ const AddNewCardDetailsScreen = ({ navigation, route }) => {
         setError(err.message);
         setIsLoading(false);
       }
-    } else {
+    }
+    else {
       try {
         dispatch(userAction.addNewCard(values, accessToken)).then(response => {
             if (response.status === 'error') {
               setIsLoading(false)
-              navigation.navigate('PaymentScreen')
               Alert.alert("Alert!", response.msg || error)
             }
             if (response.status === "success") {
               setIsLoading(false)
+              navigation.navigate('PaymentScreen')
               Alert.alert('Success!', response.msg)
             }
           })

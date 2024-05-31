@@ -16,7 +16,7 @@ const SavedAddressScreen = props => {
   const accessToken = useSelector(state => state.auth.accessToken);
   const dispatch = useDispatch();
 
-  useEffect(() => {
+  const getAddressHandler = () => {
     setIsLoading(true); 
     dispatch(userAction.getAddress(accessToken))
       .then((response) => {
@@ -28,13 +28,44 @@ const SavedAddressScreen = props => {
         setIsLoading(false);
         Alert.alert("Error fetching user information:", error);
       });
+}
+
+  useEffect(() => {
+    getAddressHandler()
   }, [accessToken, isFocused, props.route.params]);
 
   console.log("address ==>", address);
 
   const editAddressHandler = (id, data) => {
     console.log("id in main screen", id, data)
-    props.navigation.navigate('LocationPicker', {id: id, addressData: data})
+    props.navigation.navigate('LocationPicker', { id: id, addressData: data })
+    getAddressHandler()
+  }
+
+  const deleteAddressHandler = (Id, accessToken) => {
+    setIsLoading(true)
+    try {
+      dispatch(userAction.deleteAddress(Id, accessToken))
+        .then((state) => {
+          console.log("Staet sign up =====> ", state)
+          if (state.status == 'success') {
+            dispatch(userAction.getAddress(accessToken))
+            setIsLoading(false)
+            Alert.alert('Success!!', state.msg)
+          }
+          else {
+            Alert.alert('Alert', state.msg || state.error || error, [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ])
+            setIsLoading(false)
+          }
+        })
+    } catch (err) {
+      setError(err.message);
+      setIsLoading(false);
+    }
+    getAddressHandler()
   }
 
   let productPreview;
@@ -58,6 +89,7 @@ const SavedAddressScreen = props => {
           <AddressCard
             param={itemData.item}
             onEdit={editAddressHandler}
+            onDelete={deleteAddressHandler}
             isFocused={isFocused}
           />}
       />

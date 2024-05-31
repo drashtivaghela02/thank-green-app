@@ -1,4 +1,4 @@
-import { ADD_TO_CART, DELETE_FROM_CART, REMOVE_ITEM } from "../actions/Cart";
+import { ADD_TO_CART, DELETE_FROM_CART, REMOVE_ITEM, RESET_STATE } from "../actions/Cart";
 
 const initialState = {
   items: [],
@@ -20,7 +20,7 @@ const cart = (state = initialState, action) => {
       const quantityId = action.quantityID;
       const prodPrice = 12;
       const prodData = addedProduct;
-console.log(`${addedProduct.product_id}-${action.quantityID}`)
+      console.log(`${addedProduct.product_id}-${action.quantityID}`)
       // Generate cartItemId
       const cartItemId = `${addedProduct.product_id}-${action.quantityID}`;
 
@@ -83,7 +83,11 @@ console.log(`${addedProduct.product_id}-${action.quantityID}`)
         items: updatedCartItem,
         totalAmount: state.totalAmount - deleteItem.productPrice
       };
+    
+    case RESET_STATE:
+      return initialState;
   }
+
 
   return state;
 };

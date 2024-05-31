@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, ScrollView, ActivityIndicator } from "react-native";
 import CustomHeader from "../../Components/UI/CustomHeader";
 import { LinearGradient } from "expo-linear-gradient";
 import { AntDesign, Entypo, Feather, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
@@ -12,6 +12,7 @@ import { Image } from "react-native";
 import ProductsHome from "../../Components/UI/ProductsHome";
 import * as cartItem from '../../store/actions/Cart'
 import CartIcon from "../../Components/UI/CartIcon";
+import ScreenLoader from "../../Components/UI/ScreenLoader";
 
 const Home = props => {
   const accessToken = useSelector(state => state.auth.accessToken)
@@ -87,6 +88,8 @@ const Home = props => {
         </View>
       </LinearGradient>
 
+      {isLoading ? <ScreenLoader />
+        :
       <ScrollView contentContainerStyle={styles.body}>
 
         <View style={styles.container1}>
@@ -128,7 +131,7 @@ const Home = props => {
               />}
           />
         </View>
-        {/* <View>
+        <View>
           <Text style={styles.categoryList}>Recomended Products</Text>
           <FlatList
             data={recommendedProducts}
@@ -142,8 +145,9 @@ const Home = props => {
                 onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.productId}-${itemData?.item?.quantity_variants[0]?.quantity_variant_id}`)) }}
               />}
           />
-        </View> */}
+        </View>
       </ScrollView>
+      }
     </View>
   )
 }

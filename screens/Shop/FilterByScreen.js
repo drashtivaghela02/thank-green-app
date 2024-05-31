@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import * as filter from '../../store/actions/Products'
 
 function FilterByScreen({ route }) {
-  const { resData } = route.params;
+  const { resData } = route?.params;
   const dispatch = useDispatch();
   const [categoryData, setCategoryData] = useState(resData?.categoryFilter);
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -29,7 +29,7 @@ function FilterByScreen({ route }) {
   const renderCategoryItem = ({ item }) => (
     <CategoryFoodHome
       param={item}
-      isSelected={selectedCategories.includes(item.category_id)}
+      isSelected={selectedCategories.includes(item?.category_id)}
       onSelect={handleCategorySelect}
     />
   );
@@ -39,7 +39,7 @@ function FilterByScreen({ route }) {
       <Text style={styles.categoryList}>Categories</Text>
       <FlatList
         data={categoryData}
-        keyExtractor={(item) => item.category_id}
+        keyExtractor={(item) => item?.category_id}
         horizontal={true}
         renderItem={renderCategoryItem}
         style={{ paddingHorizontal: 10 }}

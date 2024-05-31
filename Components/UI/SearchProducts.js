@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const Products = (props) => {
   const cartItems = useSelector(state => state?.cart?.items)
-
+console.log("search products ddata",props.param)
   const data = props.param;
 
   const [quantityVarientId, setQuantityVarientId] = useState(props.param?.quantity_variants[0]?.quantity_variant_id ?? '')
@@ -20,22 +20,12 @@ const Products = (props) => {
   const [selectedOption, setSelectedOption] = useState(props.param.quantity_variants[0].quantity_variant); // Assuming the first size as the initial value
   const [actual, setActuals] = useState(props.param.quantity_variants[0].actual_price)
   const [selling, setSelling] = useState(props.param.quantity_variants[0].selling_price)
-  const [qty, setQty] = useState(0);
   const [showOptions, setShowOptions] = useState(false);
 
   const dispatch = useDispatch();
 
 
 
-  useEffect(() => {
-    if (cartItems[`${props.param.product_id}-${quantityVarientId}`]) {
-      setQty(cartItems[`${props.param.product_id}-${quantityVarientId}`]?.quantity)
-    }
-    else {
-      console.log("hiiiezlkjflz");
-    }
-  })
-  // console.log("etwtuoafevy7na8ohyf7ar0n7",data.images)
 
   return (
     <View>

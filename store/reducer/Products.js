@@ -11,7 +11,10 @@ const productReducer = (state = initialState, action) => {
     switch (action.type) {
         case SORT_BY:
             console.log("Reduc data for sort", action)
-            const deliveryTime = action.SortBy.deliveryTimeFilter ? action.SortBy.deliveryTimeFilter  : ''
+            const delivery = action.SortBy.deliveryTimeFilter ? action.SortBy.deliveryTimeFilter : ''
+            let deliveryTime = {};
+            deliveryTime.start = delivery.split(' ')[0]
+            deliveryTime.end = delivery.split(' ')[2]
             const priceOrder = action.SortBy.priceOrderFilter
             return {
                 ...state,
