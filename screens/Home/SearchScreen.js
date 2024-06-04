@@ -8,6 +8,7 @@ import * as productAction from '../../store/actions/Products';
 import CategoryFood from "../../Components/UI/CategoryFood";
 import Colors from "../../Constant/Colors";
 import SearchProducts from "../../Components/UI/SearchProducts";
+import CategoryFoodHome from "../../Components/UI/CategoryFoodHome";
 
 const SearchScreen = (props) => {
   const dispatch = useDispatch();
@@ -35,15 +36,16 @@ const SearchScreen = (props) => {
   const filterHandler = () => {
     props.navigation.navigate('Filters', {
       onGoBack: (sorted) => {
-        sorted.searchText = searchPhrase
-        console.log("search data ", sorted)
+        if(searchPhrase){
+        sorted.searchText = searchPhrase}
+        console.log("search data filter", sorted)
 
         setIsLoading(true);
         dispatch(productAction.applyFilter(sorted, accessToken))
           .then((response) => {
             // console.log("filter 2 => ", sorted);
 
-            console.log("filter 2in search screen  => ", response?.data);
+            console.log("filter 2in search screen  => ", response);
             setSearchCategoryList('No category found')
             setSearchSubCategoryList('No subcategory found')
             setSearchProductList(response?.data?.filterProducts)
@@ -77,17 +79,20 @@ const SearchScreen = (props) => {
 
   let category;
   if (searchCategoryList !== 'No category found') {
-    category = <FlatList
+    category = <View style={{marginHorizontal: 10}}>
+      <FlatList
       data={searchCategoryList}
       keyExtractor={(item) => item.id}
+      horizontal={true}
       renderItem={itemData =>
-        <CategoryFood
+        <CategoryFoodHome
           param={itemData?.item}
           search
           onSelect={onCategorySelectHandler}
         />
       }
     />
+      </View>
   }
   let subcategory;
   if (searchSubCategoryList !== "No subcategory found") {

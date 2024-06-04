@@ -23,15 +23,17 @@ const productReducer = (state = initialState, action) => {
             }
         case FILTER_BY:
             console.log("Reduc data for filter", action)
-
+            let price = {}
             const category = action.FilterBy.categoryFilter
-            const price = action.FilterBy.priceFilter
+            price.min = action.FilterBy.priceFilter[0]
+            price.max = action.FilterBy.priceFilter[1]
             return {
                 ...state,
                 categoryFilter: category,
                 priceFilter: price
             }
-        default: console.log("Unrecognized action:", action);
+        default:
+            // console.log("Unrecognized action:", action);
 
             return state;
     }

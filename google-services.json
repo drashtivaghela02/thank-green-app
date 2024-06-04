@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1002573361088",
+    "project_id": "thanks-green-app",
+    "storage_bucket": "thanks-green-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1002573361088:android:4ed41f7ad2054344526225",
+        "android_client_info": {
+          "package_name": "com.drashtivaghela02.thankgreenapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHFfXa5UpA5ydq0sVw-v8Gb_Afr7qG_EA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

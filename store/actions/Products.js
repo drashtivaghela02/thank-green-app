@@ -198,7 +198,6 @@ export const showFilter = () => {
 };
 
 export const applyFilter = (value, accessToken) => {
-
   return async dispatch => {
     try {
       const response = await fetch(`https://thankgreen.onrender.com/api/shop/filter?page=1`,
@@ -207,7 +206,7 @@ export const applyFilter = (value, accessToken) => {
           headers: {
             'Authorization': 'Bearer ' + accessToken,
           },
-          body: JSON.stringify(value)
+          body: JSON.stringify({value})
         }
       );
       const resData = await response.json();

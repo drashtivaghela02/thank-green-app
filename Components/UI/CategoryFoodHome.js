@@ -1,17 +1,19 @@
 import React from 'react';
 import { View, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
 
-const CategoryFoodHome = ({ param, isSelected, onSelect }) => {
+const CategoryFoodHome = ({ param,search ,isSelected, onSelect }) => {
   console.log("onselect home category",param)
   const data = param;
-  const id = param.category_id;
-  const name = param.category_name;
-
+  // const id = param.category_id;
+  // const name = param.category_name;
+  const id = search ? param.id : param.category_id
+  const name = search ? param.name : param.category_name
+  const image = search ? param.image : param.category_image
   return (
     <TouchableOpacity onPress={() => onSelect(id, name)}>
       <View style={styles.mainscreen}>
         <View style={[styles.imagePreview,isSelected && styles.selected]}>
-          <Image style={styles.image} source={{ uri: data.category_image }} />
+          <Image style={styles.image} source={{ uri: image }} />
         </View>
         <Text numberOfLines={1} style={styles.text}>
           {name}

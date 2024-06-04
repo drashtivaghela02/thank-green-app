@@ -23,8 +23,8 @@ const PlaceOrder = (props) => {
   const [value, setValue] = useState('card');
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const accessToken = useSelector(state => state.auth.accessToken);
-  const [time, setTime] = useState('');
-  const [date, setDate] = useState('');
+  const [time, setTime] = useState('   -');
+  const [date, setDate] = useState('   -');
   const [APIDate, setAPIDate] = useState('');
   const dispatch = useDispatch();
 

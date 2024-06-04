@@ -102,7 +102,8 @@ export const postFinalOrder = (value, accessToken) => {
               address_id: value.address_id,
               delivery_on: value.delivery_on,
               payment_method: value.payment_method,
-              products: value.products
+              products: value.products,
+              use_referral_bonus: false
           })
           }
         );
