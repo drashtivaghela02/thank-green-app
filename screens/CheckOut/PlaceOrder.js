@@ -116,7 +116,8 @@ const PlaceOrder = (props) => {
       address_id: selectedAddressId,
       products: SummaryData,
       delivery_on: APIDate,
-      payment_method: value
+      payment_method: value,
+      use_referral_bonus: false
     };
 
     setIsLoading(true);
@@ -184,7 +185,7 @@ const PlaceOrder = (props) => {
                   <Text>Card</Text>
                 </View>
                 <View style={styles.radio_button}>
-                  <RadioButton value="cod" color='#2c843e' />
+                  <RadioButton value="COD" color='#2c843e' />
                   <Text>Cash or EBT</Text>
                 </View>
               </View>

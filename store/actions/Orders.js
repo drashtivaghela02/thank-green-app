@@ -60,29 +60,25 @@ console.log("aabuisfhqhfea;jsd;j",orderId, accessToken);
 
 
 export const postOrder = (value, accessToken) => {
-console.log("Post orders value",value)
+console.log("Post orders value",value, accessToken)
   return async dispatch => {
     try {
-      const response = await fetch('https://thankgreen.onrender.com/api/checkout',
+      const response = await fetch(`https://thankgreen.onrender.com/api/order-summary?products=${JSON.stringify(value)} `,
         {
-          method: 'POST',
+          method: 'GET',
           headers: {
             'Authorization': 'Bearer ' + accessToken,
-            'Content-Type': 'application/json'
           },
-          body: JSON.stringify({
-            products: value
-        })
         }
       );
+      console.log("Post orders resData", value);
+
       const resData = await response.json();
       console.log("Post orders resData", resData);
-      dispatch({ type: POST_ORDER });
+      dispatch({ type: POST_ORDER, payload : resData });
       return resData;
     } catch (error) {
       console.error("Post orders error", error);
-      // Optionally dispatch an action to update the state with the error
-      dispatch({ type: POST_ORDER, error: error.message });
     }
   };
 };
@@ -237,8 +233,64 @@ export const trackInfo = (orderId, accessToken) => {
       return resData;
     } catch (error) {
       console.error("Get track error", error);
-      // Optionally dispatch an action to update the state with the error
-      dispatch({ type: TRACK_ORDER, error: error.message });
     }
   };
 };
+
+export const getCouponInfo = (productList, accessToken) => {
+  return async dispatch => {
+    try {
+      const response = await fetch(`https://thankgreen.onrender.com/api/coupons/?productId=${productList}`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + accessToken,
+          },
+        }
+      );
+      const resData = await response.json();
+      console.log("get Couppon info", resData);
+      return resData;
+    } catch (error) {
+      console.error("Get Couppon info error", error);
+    }
+  }
+}
+export const getCouponTnC = (couponId) => {
+  return async dispatch => {
+  try {
+    const response = await fetch(`api/coupons/t&c/${couponId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + accessToken,
+        },
+      }
+    );
+    const resData = await response.json();
+    console.log("get Couppon info", resData);
+    return resData;
+  } catch (error) {
+    console.error("Get Couppon info error", error);
+  }
+} }
+
+export const applyCoupon = (productList, couponCode) => {
+  return async dispatch => {
+    try {
+      const response = await fetch(`api/coupons/apply?products=${productList}&code=${couponCode}`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + accessToken,
+          },
+        }
+      );
+      const resData = await response.json();
+      console.log("get Couppon info", resData);
+      return resData;
+    } catch (error) {
+      console.error("Get Couppon info error", error);
+    }
+  } 
+}

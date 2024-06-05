@@ -3,7 +3,7 @@ import { Alert, Button, StyleSheet, Text, Touchable, TouchableOpacity, View, Dim
 import MapView, { Marker } from 'react-native-maps';
 import { getCurrentPositionAsync, useForegroundPermissions, PermissionStatus } from 'expo-location';
 import CustomHeader from '../UI/CustomHeader';
-import { AntDesign, Feather } from '@expo/vector-icons';
+import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ActivityIndicator, RadioButton } from "react-native-paper";
 import { Formik } from "formik";
@@ -55,7 +55,7 @@ function LocationPicker({ navigation, route }) {
         });
     }
 
-    let mapPreview = <Text>No Location Picked Yet</Text>;
+    let mapPreview = <Text>No Location Picked Yet..Click on Search Location..</Text>;
 
     if (pickedLocation) {
         mapPreview = (
@@ -73,7 +73,7 @@ function LocationPicker({ navigation, route }) {
         );
     }
     else {
-        mapPreview = <Text>No Location Picked Yet</Text>;
+        mapPreview = <Text>No Location Picked Yet..Click on Search Location.</Text>;
     }
 
 
@@ -163,7 +163,7 @@ function LocationPicker({ navigation, route }) {
                 <View style={styles.header}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                         <AntDesign name="arrowleft" size={28} color='white' onPress={() => { navigation.goBack() }} />
-                        <Feather name="search" size={24} color="white" onPress={pickOnMapHandler} />
+                        <MaterialIcons name="location-searching"size={24} color="white" onPress={pickOnMapHandler} />
                     </View>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, }}>
                         <Text style={styles.heading}>{editedAddress ? 'Edit Address' : 'Add New Address'}</Text>
@@ -173,7 +173,7 @@ function LocationPicker({ navigation, route }) {
 
             <View style={styles.mapPreview}>{mapPreview}</View>
             <View style={styles.body}>
-                <View style={{ flex: 1 }}>
+                <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                     <Formik
                         initialValues={{
                             address: editedAddress ? data.address : '',
@@ -263,7 +263,7 @@ function LocationPicker({ navigation, route }) {
                                         // }
                                         value={values.address_type = tag}
                                     >
-                                        <View style={{ flexDirection: 'row', left: -10, gap: 20 }}>
+                                        <View style={{ flexDirection: 'row', left: -10, gap: 20, bottom: -4 }}>
                                             <View style={styles.radio_button}>
                                                 <RadioButton value="Home" color='#2c843e' label='Home' />
                                                 <Text style={styles.sheetItems}>Home</Text>
@@ -279,10 +279,10 @@ function LocationPicker({ navigation, route }) {
                                             </View>
 
                                         </View>
-                                    </RadioButton.Group>
                                     {touched.address_type && errors.address_type ? (
-                                        <Text style={styles.errorText}>{errors.address_type}</Text>
+                                        <Text style={[styles.errorText,{top: -8}]}>{errors.address_type}</Text>
                                     ) : null}
+                                    </RadioButton.Group>
                                 </View>
                                 <TouchableOpacity style={styles.verify} onPress={handleSubmit}>
                                     {isLoading ?
@@ -293,7 +293,7 @@ function LocationPicker({ navigation, route }) {
                             </ScrollView>
                         )}
                     </Formik>
-                </View>
+                </ScrollView>
             </View>
         </View>
     );

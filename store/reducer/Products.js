@@ -25,8 +25,11 @@ const productReducer = (state = initialState, action) => {
             console.log("Reduc data for filter", action)
             let price = {}
             const category = action.FilterBy.categoryFilter
-            price.min = action.FilterBy.priceFilter[0]
-            price.max = action.FilterBy.priceFilter[1]
+            const prices = action.FilterBy.priceFilter
+            price.min = prices[0]
+            price.max = prices[1]
+            console.log("Reduc data for filter", price)
+
             return {
                 ...state,
                 categoryFilter: category,

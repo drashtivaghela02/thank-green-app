@@ -36,13 +36,13 @@ const CancelOrder = (props) => {
     console.log("gu7ygt7yig", values);
     dispatch(orderAction.cancelOrder(values, accessToken))
       .then((response) => {
-        setIsLoading(false); // Set loading state to false after fetching data
-        // setPastOrders(response.data.pastOrders); // Set fetched data to state
+        setIsLoading(false);
         Alert.alert("", response.msg)
+        props.navigation.navigate('CurrentOrder')
         console.log(response);
       })
       .catch(error => {
-        setIsLoading(false); // Set loading state to false in case of error
+        setIsLoading(false);
         console.error("Error fetching user information:", error);
       });
 
@@ -55,7 +55,7 @@ const CancelOrder = (props) => {
       <ScrollView>
         <View style={styles.body}>
 
-          <Text style={{ fontSize: 17, paddingBottom: 30, paddingHorizontal: 20, alignSelf: 'center', textAlign: 'center', fontWeight: '500' }}>We are sorry to see you are cancelling your order. Tell us why and we'll improve.</Text>
+          <Text style={styles.sorryText}>We are sorry to see you are cancelling your order. Tell us why and we'll improve.</Text>
 
           <View style={styles.card}>
             <RadioButton.Group onValueChange={newValue => setValue(newValue)} value={value} >
@@ -73,11 +73,10 @@ const CancelOrder = (props) => {
                   onChangeText={(value) => setOtherValue(value)}
                 />
               </View>
-
-
-
             </RadioButton.Group>
+
             <Divider />
+
             <View style={[styles.detail, { gap: 10 }]}>
               <View style={{ gap: 8 }}>
                 <Text style={styles.title}>Want to edit order then call us on this number. </Text>
@@ -85,11 +84,9 @@ const CancelOrder = (props) => {
                   <FontAwesome5 name="phone-alt" size={20} color='#2c843e' />
                   <Text style={styles.subTitle}>  +011 - 8893023406</Text>
                 </View>
-
               </View>
             </View>
           </View>
-
 
           <TouchableOpacity
             disabled={value === '' || (value === 'Other' && otherValue === '')}
@@ -102,7 +99,6 @@ const CancelOrder = (props) => {
     </View>
   )
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -124,7 +120,6 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     left: -5
   },
-
   card: {
     elevation: 8,
     borderRadius: 10,
@@ -135,19 +130,23 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     overflow: 'hidden',
     alignSelf: 'center'
-
   },
-
   card1: {
     elevation: 5,
-
     backgroundColor: 'white',
     // height: 140,
     width: '100%',
     padding: 5,
     overflow: 'hidden',
     alignSelf: 'center'
-
+  },
+  sorryText: {
+    fontSize: 17,
+    paddingBottom: 30,
+    paddingHorizontal: 20,
+    alignSelf: 'center',
+    textAlign: 'center',
+    fontWeight: '500'
   },
   detail: {
     justifyContent: 'center',
@@ -165,10 +164,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 18,
   },
-
-
-
-
   verify: {
     marginTop: 30,
     // marginBottom: 60,

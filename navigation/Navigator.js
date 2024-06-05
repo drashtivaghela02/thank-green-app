@@ -54,6 +54,7 @@ import CheckOutIntent from '../screens/CheckOut/CheckOutIntent';
 import CustomIntent from '../screens/CheckOut/CustomIntent';
 import DeliveryTimeScreen from '../screens/CheckOut/DeliveryTimeScreen';
 import CategoryProducts from '../screens/Shop/CategoryProducts';
+import WebViewScreen from '../Components/Form/WebViewScreen';
 
 
 const FormStack = createStackNavigator();
@@ -61,6 +62,7 @@ const FormNavigator = () => {
   return (
     <FormStack.Navigator>
       <FormStack.Screen name="SignIn" component={SignIn} options={{ headerShown: false }} />
+      <FormStack.Screen name="WebViewScreen" component={WebViewScreen} options={{ headerShown: false }} />
     </FormStack.Navigator>
   );
 }

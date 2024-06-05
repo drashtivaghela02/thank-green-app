@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, ScrollView, ActivityIndicator, Alert, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Formik } from 'formik';
@@ -17,7 +17,13 @@ const SignIn = (props) => {
     const state = useSelector(state => state.auth);
     // console.log("signin reducer state",state)
 
-
+    const handleGoogle = () => {
+        dispatch(authActions.google_signin()).then(response => {
+            console.log("Gogle", response)
+        navigation.navigate('WebViewScreen', { htmlContent: response });
+            
+        })
+}
     const Validation = Yup.object({
         emailOrContact: Yup.string()
             .test(
@@ -190,7 +196,10 @@ const SignIn = (props) => {
                             <View style={styles.lines}></View>
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'center', padding: 15, gap: 15 }}>
+                            <TouchableOpacity onPress={handleGoogle}>
+
                             <Image source={require('../../assets/google_logo.png')} style={styles.GoogleLogo} />
+                            </TouchableOpacity>
                             <Image source={require('../../assets/facebook_logo.png')} style={styles.FacebookLogo} />
                         </View>
 

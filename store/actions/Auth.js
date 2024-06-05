@@ -9,6 +9,28 @@ export const CHANGE_PASSWORD = 'CHANGE_PASSWORD';
 export const LOAD_STATE = 'LOAD_STATE';
 export const SIGNOUT = 'SIGNOUT';
 export const SET_LOADING = 'SET_LOADING';
+
+export const GOOGLE_SIGNIN = 'GOOGLE_SIGNIN'
+
+export const google_signin = () => {
+
+  return async dispatch => {
+    try {
+      const response = await fetch('https://thankgreen.onrender.com/api/auth/google', {
+        method: 'GET',
+      });
+
+      const resData = await response.text();
+      console.log("Google resData", resData);
+
+      // Handle the JSON response data as needed
+    } catch (error) {
+      console.error("Google error", error);
+      Alert.alert('Error', error.message);
+    }
+  };
+};
+
 export const signup = (values) => {
 
   return async dispatch => {

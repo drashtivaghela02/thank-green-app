@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, ScrollView, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, ScrollView, ActivityIndicator, ImageBackground } from "react-native";
 import CustomHeader from "../../Components/UI/CustomHeader";
 import { LinearGradient } from "expo-linear-gradient";
 import { AntDesign, Entypo, Feather, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
@@ -13,6 +13,9 @@ import ProductsHome from "../../Components/UI/ProductsHome";
 import * as cartItem from '../../store/actions/Cart'
 import CartIcon from "../../Components/UI/CartIcon";
 import ScreenLoader from "../../Components/UI/ScreenLoader";
+import Colors from "../../Constant/Colors";
+import CouponCard from "../../Components/UI/CouponCard";
+import CouponHome from "../../Components/UI/CouponHome";
 
 const Home = props => {
   const accessToken = useSelector(state => state.auth.accessToken)
@@ -46,7 +49,7 @@ const Home = props => {
 
   const onCategorySelectHandler = (id, name) => {
     console.log("touched", id)
-   props.navigation.navigate('CategoryProducts', {categoryId: id, name: name}) 
+    props.navigation.navigate('CategoryProducts', { categoryId: id, name: name })
   }
   const onProductSelectHandler = (id, data) => {
     props.navigation.navigate('ProductDescription', { ProductId: id, data: data })
@@ -90,63 +93,69 @@ const Home = props => {
 
       {isLoading ? <ScreenLoader />
         :
-      <ScrollView contentContainerStyle={styles.body}>
+        <ScrollView contentContainerStyle={styles.body}>
 
-        <View style={styles.container1}>
-          <Carousel
-            data={bannerData}
-            renderItem={renderItem}
-            sliderWidth={Dimensions.get("window").width}
-            itemWidth={Dimensions.get("window").width}
-            width={Dimensions.get("window").width}
-          />
-        </View>
+          <View style={styles.container1}>
+            <Carousel
+              data={bannerData}
+              renderItem={renderItem}
+              sliderWidth={Dimensions.get("window").width}
+              itemWidth={Dimensions.get("window").width}
+              width={Dimensions.get("window").width}
+            />
+          </View>
 
-        <View>
-          <Text style={styles.categoryList}>Categories</Text>
-          <FlatList
-            data={category}
-            keyExtractor={(item) => item.category_id}
-            horizontal={true}
-            renderItem={itemData =>
-              <CategoryFoodHome
-                param={itemData.item}
-                onSelect={onCategorySelectHandler}
-              />}
-          />
-        </View>
+          <View style={styles.couponContainer}>
+            <CouponHome />
+          </View>
 
-        <View>
-          <Text style={styles.categoryList}>Past Orders</Text>
-          <FlatList
-            data={pastOrders}
-            keyExtractor={(item) => item.product_id}
-            horizontal={true}
-            style={{ paddingHorizontal: 10}}
-            renderItem={itemData =>
-              <ProductsHome
-                param={itemData.item}
-                onSelect={onProductSelectHandler}
-                onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0].quantity_variant_id}`)) }}
-              />}
-          />
-        </View>
-        <View>
-          <Text style={styles.categoryList}>Recomended Products</Text>
-          <FlatList
-            data={recommendedProducts}
-            keyExtractor={(item) => item.product_id}
-            horizontal={true}
-            style={{ paddingHorizontal: 10 }}
-            renderItem={itemData =>
-              <ProductsHome
-                param={itemData.item}
-                onSelect={onProductSelectHandler}
-                onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.productId}-${itemData?.item?.quantity_variants[0]?.quantity_variant_id}`)) }}
-              />}
-          />
-        </View>
-      </ScrollView>
+          <View>
+            <Text style={styles.categoryList}>Categories</Text>
+            <FlatList
+              data={category}
+              keyExtractor={(item) => item.category_id}
+              horizontal={true}
+              renderItem={itemData =>
+                <CategoryFoodHome
+                  param={itemData.item}
+                  onSelect={onCategorySelectHandler}
+                />}
+            />
+          </View>
+
+
+
+          <View>
+            <Text style={styles.categoryList}>Past Orders</Text>
+            <FlatList
+              data={pastOrders}
+              keyExtractor={(item) => item.product_id}
+              horizontal={true}
+              style={{ paddingHorizontal: 10 }}
+              renderItem={itemData =>
+                <ProductsHome
+                  param={itemData.item}
+                  onSelect={onProductSelectHandler}
+                  onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0].quantity_variant_id}`)) }}
+                />}
+            />
+          </View>
+          <View>
+            <Text style={styles.categoryList}>Recomended Products</Text>
+            <FlatList
+              data={recommendedProducts}
+              keyExtractor={(item) => item.product_id}
+              horizontal={true}
+              style={{ paddingHorizontal: 10 }}
+              renderItem={itemData =>
+                <ProductsHome
+                  param={itemData.item}
+                  onSelect={onProductSelectHandler}
+                  onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.productId}-${itemData?.item?.quantity_variants[0]?.quantity_variant_id}`)) }}
+                />}
+            />
+          </View>
+        </ScrollView>
       }
     </View>
   )
@@ -210,6 +219,11 @@ const styles = StyleSheet.create({
   image: {
     // width: '100%',
     height: 180,
+  },
+  couponContainer: {
+    width: '100%',
+    paddingHorizontal: 20,
+    paddingVertical: 10
   },
   categoryList: {
     fontWeight: '400',
