@@ -2,20 +2,25 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
 
-const CouponCard = ({ onApply, onShowTerms }) => {
+const CouponCard = ({ param, onApply, onShowTerms,NotApplyable }) => {
+  const data = param
+  console.log("Coupon data in card ", data);
   return (
     <View style={styles.card}>
-      <ImageBackground source={{ uri: "https://static.gostor.com/images/images/apply-coupon.png" }} resizeMode="contain" style={styles.coupon}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '90%', alignItems: 'center', paddingVertical: 13, paddingLeft: 20 }}>
+      <ImageBackground source={{ uri: "https://static.gostor.com/images/images/apply-coupon.png" }} resizeMode="stretch" style={styles.coupon}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '90%', alignItems: 'center', paddingVertical: 13, paddingLeft: 10 }}>
           <View>
-            <Text>Code : Description</Text>
+            <View>
+            <Text style={styles.code}>{data?.code}</Text>
+            <Text style={{fontSize: 13}}>{data?.description}</Text>
+            </View>
             <TouchableOpacity style={styles.button} onPress={onShowTerms}>
-              <Text style={styles.buttonText}>T&C</Text>
+                  <Text style={[styles.buttonText, {textDecorationLine: 'underline'}]}>T&C</Text>
             </TouchableOpacity>
 
           </View>
-          <TouchableOpacity style={styles.applybutton} onPress={onApply}>
-            <Text style={styles.buttonText}>Apply</Text>
+          <TouchableOpacity style={styles.applybutton} disabled={NotApplyable} onPress={onApply}>
+          <Text style={[styles.buttonText, NotApplyable && styles.disabledText]}>Apply</Text>
           </TouchableOpacity>
 
         </View>
@@ -34,12 +39,19 @@ const styles = StyleSheet.create({
   //   alignItems: 'center',
   //   marginVertical: 10,
   // },
+  code: {
+    fontWeight: 'bold',
+    
+    color: '#1e4c5e',
+
+  },
   coupon: {
-    height: 70,
-    alignItems: 'center'
+    height: 80,
+    alignItems: 'center',
     // width: '100%',
     // flex: 1,
     // padding: 10
+    marginBottom: 10
   },
 
   button: {
@@ -64,7 +76,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#2c843e',
     fontSize: 16,
-    paddingLeft: 5
+    fontWeight: '500',
+    // paddingLeft: 5
+  },
+  disabledText: {
+    color: '#888',
   },
 });
 

@@ -26,6 +26,9 @@ const PlaceOrder = (props) => {
   const [time, setTime] = useState('   -');
   const [date, setDate] = useState('   -');
   const [APIDate, setAPIDate] = useState('');
+  const [orderId, setOrderId] = useState('')
+  const [details, setDetails] = useState();
+
   const dispatch = useDispatch();
 
   const { initPaymentSheet, presentPaymentSheet, confirmPaymentSheetPayment } = usePaymentSheet();
@@ -43,6 +46,26 @@ const PlaceOrder = (props) => {
         Alert.alert("Error fetching user information:", error.message);
       });
   }, [accessToken, isFocused]);
+
+
+  const handleSuccess = (id) => {
+    setIsLoading(true); 
+    dispatch(orderAction.getOrderDetailsInfo(id, accessToken))
+    .then((response) => {
+      setDetails(response.data[0]);
+      console.log("order details",response);
+      setIsLoading(false);
+      navigation.navigate('OrderDetails', {Id: id, Details: response })
+    })
+    .catch(error => {
+      setIsLoading(false); 
+      console.error("Error fetching user information ewftwe:", error);
+    });
+
+    dispatch(cartItem.resetState())
+  
+  }
+
 
   const handleAddressSelect = (id) => {
     setSelectedAddressId(id);
@@ -74,15 +97,15 @@ const PlaceOrder = (props) => {
         }
       } else {
         console.log("Payment was successful.");
-        Alert.alert("Success", "Payment was successful");
+        Alert.alert("Success", "Payment was successful" ,[{ text: 'cancel', style: 'cancel' }, { text: 'Ok', onPress: () => handleSuccess(orderId)}]);
       }
     } else {
       console.error("Error initializing payment sheet:", error);
       Alert.alert(`Error initializing payment sheet: ${error.message}`);
     }
 
-    props.navigation.navigate('Home')
-    dispatch(cartItem.resetState())
+    // props.navigation.navigate('OrderDetailsCheckout')
+    // dispatch(cartItem.resetState())
   };
 
   const pickOnDeliveryTimeHandler = () => {
@@ -91,7 +114,7 @@ const PlaceOrder = (props) => {
         setTime(time);
         setDate(`${date.split(' ')[3]} ${date.split(' ')[1]} ${date.split(' ')[2]}`);
         setAPIDate(`${date.split(' ')[7]} ${time.split(' ')[2]}`)
-        console.log(`${date.split(' ')[7]} ${time.split(' ')[2]}`);
+        console.log("Delivery time final ",`${date.split(' ')[7]} ${time.split(' ')[2]}`);
       },
     });
   }
@@ -125,10 +148,13 @@ const PlaceOrder = (props) => {
       .then((response) => {
         setIsLoading(false);
         if (response.statusCode === 200) {
-          initializePaymentSheet(response.data);
-        }
-        else {
-          Alert.alert('Error',response.msg);
+          setOrderId(response.data.order_id)
+          if (value === 'card') { initializePaymentSheet(response.data); }
+
+        
+          else {
+            Alert.alert("Success", "Order successful", [{ text: 'cancel', style: 'cancel' }, { text: 'Ok', onPress: () => handleSuccess(response.data.order_id) }]);
+          }
         }
       })
     // .catch(error => {
@@ -190,7 +216,7 @@ const PlaceOrder = (props) => {
                 </View>
               </View>
             </RadioButton.Group>
-            {value === 'cod' && (<View style={styles.paymentOption}>
+            {value === 'COD' && (<View style={styles.paymentOption}>
               <Image source={require('../../assets/Cash-PNG-File.png')} style={{ height: 65, width: 65 }} />
               <Text style={styles.codTitle}>Cash on Delivery</Text></View>)}
             {value === 'card' && (<View style={styles.paymentOption}>
@@ -205,6 +231,10 @@ const PlaceOrder = (props) => {
               <Text>Sub Total</Text>
               <Text>${orderData ? orderData.sub_total : '00.00'}</Text>
             </View>
+            <View style={styles.summaryRow}>
+                <Text>Discount Amount</Text>
+                <Text>${orderData ? orderData?.discount_amount : '00.00'}</Text>
+              </View>
             <View style={styles.summaryRow}>
               <Text>Delivery Charges</Text>
               <Text>${orderData ? orderData.delivery_charges : '00.00'}</Text>
@@ -235,7 +265,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 5,
   },
   radioButtoncontainer: {
     flexDirection: 'row',
@@ -251,7 +281,7 @@ const styles = StyleSheet.create({
   headingTitle: {
     fontWeight: '600',
     fontSize: 20,
-    paddingTop: 10
+    paddingTop: 5
   },
   codTitle: {
     fontWeight: '400',

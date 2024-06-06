@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, ScrollView, ActivityIndicator, Alert, Pressable } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, ScrollView, ActivityIndicator, Alert, Pressable, Linking } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Formik } from 'formik';
@@ -18,12 +18,11 @@ const SignIn = (props) => {
     // console.log("signin reducer state",state)
 
     const handleGoogle = () => {
-        dispatch(authActions.google_signin()).then(response => {
-            console.log("Gogle", response)
-        navigation.navigate('WebViewScreen', { htmlContent: response });
-            
-        })
-}
+            const url = 'https://thankgreen.onrender.com/api/auth/google';
+            Linking.openURL(url).then( props.navigation.navigate('Home'))
+              .catch((err) => console.error('Failed to open URL:', err));
+          };
+
     const Validation = Yup.object({
         emailOrContact: Yup.string()
             .test(

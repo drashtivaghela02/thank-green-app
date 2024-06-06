@@ -83,6 +83,30 @@ console.log("Post orders value",value, accessToken)
   };
 };
 
+
+export const postCouponOrder = (value,couponId, accessToken) => {
+  console.log("Post orders value",value, accessToken)
+    return async dispatch => {
+      try {
+        const response = await fetch(`https://thankgreen.onrender.com/api/order-summary?products=${JSON.stringify(value)}&couponId=${couponId}`,
+          {
+            method: 'GET',
+            headers: {
+              'Authorization': 'Bearer ' + accessToken,
+            },
+          }
+        );
+  
+        const resData = await response.json();
+        console.log("Post orders for coupon resData", resData);
+        return resData;
+      } catch (error) {
+        console.error("Post orders for coupon error", error);
+      }
+    };
+};
+  
+
 export const postFinalOrder = (value, accessToken) => {
   console.log("Post final orders value",value)
     return async dispatch => {
@@ -240,7 +264,7 @@ export const trackInfo = (orderId, accessToken) => {
 export const getCouponInfo = (productList, accessToken) => {
   return async dispatch => {
     try {
-      const response = await fetch(`https://thankgreen.onrender.com/api/coupons/?productId=${productList}`,
+      const response = await fetch(`https://thankgreen.onrender.com/api/coupons/?productId=${JSON.stringify(productList)}`,
         {
           method: 'GET',
           headers: {
@@ -256,10 +280,10 @@ export const getCouponInfo = (productList, accessToken) => {
     }
   }
 }
-export const getCouponTnC = (couponId) => {
+export const getCouponTnC = (couponId, accessToken) => {
   return async dispatch => {
   try {
-    const response = await fetch(`api/coupons/t&c/${couponId}`,
+    const response = await fetch(`https://thankgreen.onrender.com/api/coupons/t&c/${couponId}`,
       {
         method: 'GET',
         headers: {
@@ -275,10 +299,11 @@ export const getCouponTnC = (couponId) => {
   }
 } }
 
-export const applyCoupon = (productList, couponCode) => {
+export const applyCoupon = (productList, couponCode, accessToken) => {
+  console.log("get Couppon info",productList, couponCode,)
   return async dispatch => {
     try {
-      const response = await fetch(`api/coupons/apply?products=${productList}&code=${couponCode}`,
+      const response = await fetch(`https://thankgreen.onrender.com/api/coupons/apply?products=${JSON.stringify(productList)}&code=${couponCode}`,
         {
           method: 'GET',
           headers: {

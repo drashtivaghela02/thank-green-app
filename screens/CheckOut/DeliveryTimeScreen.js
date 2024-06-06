@@ -22,7 +22,7 @@ const DeliveryTimeScreen = (props) => {
       const shortDay = currentDate.toDateString();
       const month = months[currentDate.getMonth()];
       const year = currentDate.getFullYear();
-      const mon = currentDate.getMonth();
+      const mon = currentDate.getMonth() + 1;
 
       dates.push(`${day} ${month} ${date} ${shortDay} ${year}-${String(mon).padStart(2, '0')}-${date}`);
       currentDate.setDate(currentDate.getDate() + 1);

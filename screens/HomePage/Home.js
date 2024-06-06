@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, ScrollView, ActivityIndicator, ImageBackground } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, ScrollView, ActivityIndicator, ImageBackground, Modal, Pressable } from "react-native";
 import CustomHeader from "../../Components/UI/CustomHeader";
 import { LinearGradient } from "expo-linear-gradient";
 import { AntDesign, Entypo, Feather, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
@@ -14,18 +14,22 @@ import * as cartItem from '../../store/actions/Cart'
 import CartIcon from "../../Components/UI/CartIcon";
 import ScreenLoader from "../../Components/UI/ScreenLoader";
 import Colors from "../../Constant/Colors";
-import CouponCard from "../../Components/UI/CouponCard";
 import CouponHome from "../../Components/UI/CouponHome";
+import * as orderAction from '../../store/actions/Orders';
 
 const Home = props => {
   const accessToken = useSelector(state => state.auth.accessToken)
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [bannerData, setBannerData] = useState([])
+  const [couponsData, setCouponsData] = useState([]);
   const [category, setCategory] = useState([])
   const [pastOrders, setPastOrders] = useState([])
   const [recommendedProducts, setRecommendedProducts] = useState([])
   const [resData, setResdata] = useState();
+  const [modalVisible, setModalVisible] = useState(false)
+  const [TnC, setTnC] = useState({})
+  const keyValuePairs = Object.keys(TnC).map(key => ({ key, value: TnC[key] }));
 
   useEffect(() => {
     setIsLoading(true);
@@ -36,6 +40,7 @@ const Home = props => {
         console.log("Home PAge=> ", response?.data?.banner[0]?.banners)
         setResdata(response?.data);
         setBannerData(response?.data?.banner[0]?.banners)
+        setCouponsData(response?.data?.coupons)
         setCategory(response?.data?.categoryFilter)
         setPastOrders(response?.data?.pastOrders)
         setRecommendedProducts(response?.data?.recommendedProducts)
@@ -46,6 +51,22 @@ const Home = props => {
         console.error("Error fetching user information:", error);
       });
   }, [accessToken])
+
+
+  const handleTnC = (id) => {
+
+    console.log("TNC data id getting", id)
+    dispatch(orderAction.getCouponTnC(id, accessToken))
+      .then((response) => {
+        setTnC(response?.data);
+        console.log("TNC data getting", response)
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.error('Error fetching user information:', error);
+      });
+  }
 
   const onCategorySelectHandler = (id, name) => {
     console.log("touched", id)
@@ -105,8 +126,51 @@ const Home = props => {
             />
           </View>
 
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              setModalVisible(!modalVisible);
+            }}
+          >
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Text style={[styles.modalText, { fontWeight: '600', fontSize: 16 }]}>Terms and Conditions</Text>
+                <FlatList
+                  data={keyValuePairs}
+                  keyExtractor={item => item.key}
+                  renderItem={({ item }) => (
+                    <Text style={styles.modalText}>
+                      {item.key}: {item.value}
+                    </Text>
+                  )}
+                />
+                <Pressable
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={() => setModalVisible(!modalVisible)}
+                >
+                  <Text style={styles.textStyle}>Close</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
+          
           <View style={styles.couponContainer}>
-            <CouponHome />
+          <FlatList
+              data={couponsData}
+              keyExtractor={(item) => item.id}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              renderItem={itemData =>
+                <CouponHome
+                  param={itemData.item}
+                  onShowTerms={() => {
+                    setModalVisible(true);
+                    handleTnC(itemData.item.id)
+                  }}
+                />}
+            />
           </View>
 
           <View>
@@ -221,14 +285,56 @@ const styles = StyleSheet.create({
     height: 180,
   },
   couponContainer: {
-    width: '100%',
+    // width: '100%',
     paddingHorizontal: 20,
-    paddingVertical: 10
+    paddingBottom: 10,
+    gap: 20
   },
   categoryList: {
     fontWeight: '400',
     fontSize: 20,
     textAlign: "left",
     paddingHorizontal: 20
-  }
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // marginTop: 22,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)'
+  },
+  modalView: {
+    height: 330,
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 8,
+  },
+  button: {
+    borderRadius: 5,
+    padding: 10,
+    elevation: 2,
+    marginTop: 5,
+  },
+  buttonClose: {
+    backgroundColor: Colors.green,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'left',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
 })

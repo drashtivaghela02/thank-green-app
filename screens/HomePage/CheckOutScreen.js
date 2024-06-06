@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, Image, Modal, Pressable, ScrollView, SectionList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Dimensions, FlatList, Image, Modal, Pressable, ScrollView, SectionList, StyleSheet, Text, Touchable, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIsFocused } from '@react-navigation/native';
 import { debounce } from 'lodash';
@@ -17,15 +17,19 @@ const CheckOutScreen = (props) => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [orderData, setOrderData] = useState([]);
+  const [isCoupon, setIsCoupon] = useState(true)
   const accessToken = useSelector((state) => state?.auth?.accessToken);
   const cartItems = useSelector((state) => state?.cart?.items);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(false);
-
+  const [discount, setDiscount] = useState('00.00')
   const [couponsData, setCouponsData] = useState([]);
+  const [applicableCoupons, setApplicableCoupons] = useState([]);
+  const [notApplicableCoupons, setNotApplicableCoupons] = useState([]);
+  const [TnC, setTnC] = useState({})
+  const keyValuePairs = Object.keys(TnC).map(key => ({ key, value: TnC[key] }));
 
-
-  console.log('Cart Items: ..', cartItems);
+  // console.log('Cart Items: ..', cartItems);
 
 
   const calculateSummaryData = (cartItems) => {
@@ -46,11 +50,11 @@ const CheckOutScreen = (props) => {
     const couponData = []
     for (const key in cartItems) {
       couponData.push(
-cartItems[key].productData.product_id,
+        cartItems[key].productData.product_id,
       );
     }
     return couponData;
-    
+
   }
 
   const transformedCartItems = Object.keys(cartItems).map((key) => ({
@@ -73,6 +77,7 @@ cartItems[key].productData.product_id,
   }, []);
 
   const fetchData = (summaryData) => {
+    setCouponsData([]);
     setIsLoading(true);
     dispatch(orderAction.postOrder(summaryData, accessToken))
       .then((response) => {
@@ -84,6 +89,20 @@ cartItems[key].productData.product_id,
         console.error('Error fetching user information:', error);
       });
   };
+
+  const fetchDataWithCoupon = (summaryData, couponId) => {
+    setIsLoading(true);
+    dispatch(orderAction.postCouponOrder(summaryData, couponId, accessToken))
+      .then((response) => {
+        setOrderData(response?.data);
+        setDiscount(response?.data?.discount_amount)
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.error('Error fetching user information:', error);
+      });
+  }
 
   const debouncedFetchData = debounce((summaryData) => {
     fetchData(summaryData);
@@ -98,19 +117,102 @@ cartItems[key].productData.product_id,
   const couponHandler = () => {
     setModalVisible(true)
     const couponItem = CouponData(cartItems);
-    console.log("Sure",couponItem)
+    console.log("Sure", couponItem)
     dispatch(orderAction.getCouponInfo(couponItem, accessToken))
-    .then((response) => {
-      setCouponsData(response?.data);
-      console.log("Coupon data getting",response)
-      setIsLoading(false);
-    })
-    .catch((error) => {
-      setIsLoading(false);
-      console.error('Error fetching user information:', error);
-    });
-    
+      .then((response) => {
+        setApplicableCoupons(response?.data?.ApplicableCoupons)
+        setNotApplicableCoupons(response?.data?.NotApplicableCoupons)
+        console.log("Coupon data getting", response?.data?.NotApplicableCoupons)
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.error('Error fetching user information:', error);
+      });
+
   }
+  const handleTnC = (id) => {
+
+    console.log("TNC data id getting", id)
+    dispatch(orderAction.getCouponTnC(id, accessToken))
+      .then((response) => {
+        setTnC(response?.data);
+        console.log("TNC data getting", response)
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.error('Error fetching user information:', error);
+      });
+  }
+
+  const handleApplyCoupon = (item, couponCode, id) => {
+    const summaryData = calculateSummaryData(cartItems);
+    dispatch(orderAction.applyCoupon(summaryData, couponCode, accessToken))
+      .then((response) => {
+        // setTnC(response?.data);
+        if (response.status === 'success') {
+          setIsCoupon(true)
+          setCouponsData([couponCode]);
+          setDiscount(response.data.discount)
+          fetchDataWithCoupon(summaryData, id)
+        }
+        if (response.status === 'error') {
+          Alert.alert("Error",response.msg)
+          return
+        }
+        console.log("Aply coupon data getting", response)
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.error('apply coupons information:', error);
+      });
+  }
+
+  let ApplicableCoupons;
+
+  if (applicableCoupons.length !== 0) {
+
+    ApplicableCoupons = <FlatList
+      data={applicableCoupons}
+      keyExtractor={(item) => item.id}
+      renderItem={itemData =>
+        <CouponCard
+          param={itemData.item}
+          onApply={() => {
+            handleApplyCoupon(itemData.item, itemData.item.code, itemData.item.id)
+            setModalVisible(false)
+          }}
+          onShowTerms={() => {
+            setModalVisible(true);
+            setModalVisible2(true);
+            handleTnC(itemData.item.id)
+          }}
+        />}
+    />
+
+  }
+  let NotApplicableCoupons;
+  if (notApplicableCoupons.length !== 0) {
+
+    NotApplicableCoupons = <FlatList
+      data={notApplicableCoupons}
+      keyExtractor={(item) => item.id}
+      renderItem={itemData =>
+        <CouponCard
+          param={itemData.item}
+          NotApplyable
+          onShowTerms={() => {
+            setModalVisible(true);
+            setModalVisible2(true);
+            handleTnC(itemData.item.id)
+          }}
+        />}
+    />
+
+  }
+
 
   if (isLoading) {
     return (
@@ -144,14 +246,17 @@ cartItems[key].productData.product_id,
                   param={item}
                   onAddItem={() => {
                     dispatch(cartItem.addToCart(item?.productData, item?.quantityId));
+                    fetchData(calculateSummaryData(cartItems))
                   }}
                   onRemoveItem={() => {
                     dispatch(cartItem.removeFromCart(item?.productId));
+                    fetchData(calculateSummaryData(cartItems))
                   }}
                   onDeleteItem={() => {
                     dispatch(cartItem.deleteFromCart(item?.productId));
+                    fetchData(calculateSummaryData(cartItems))
                   }}
-                  isFocused={isFocused}
+                // isFocused={isFocused}
                 />
               )}
               renderSectionHeader={({ section: { title } }) => <Text style={styles.sectionHeader}>{title}</Text>}
@@ -160,7 +265,7 @@ cartItems[key].productData.product_id,
           </View>
 
           <Modal
-            animationType="fade"
+            animationType="slide"
             transparent={true}
             visible={modalVisible2}
             onRequestClose={() => {
@@ -169,10 +274,17 @@ cartItems[key].productData.product_id,
           >
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
-                <Text style={styles.modalText}>Terms and Conditions</Text>
-                <Text style={styles.modalText}>
-                  Here are the terms and conditions for using the coupon...
-                </Text>
+                <Text style={[styles.modalText, { fontWeight: '600', fontSize: 16 }]}>Terms and Conditions</Text>
+                <FlatList
+                  data={keyValuePairs}
+                  keyExtractor={item => item.key}
+                  renderItem={({ item }) => (
+                    <Text style={styles.modalText}>
+                      {item.key}: {item.value}
+                    </Text>
+                  )}
+                />
+
                 <Pressable
                   style={[styles.button, styles.buttonClose]}
                   onPress={() => setModalVisible2(!modalVisible2)}
@@ -184,7 +296,7 @@ cartItems[key].productData.product_id,
           </Modal>
 
           <Modal
-            animationType="fade"
+            animationType="slide"
             transparent={true}
             visible={modalVisible}
             onRequestClose={() => {
@@ -193,37 +305,47 @@ cartItems[key].productData.product_id,
           >
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
-      <Text style={styles.cardTitle}>Coupon Card</Text>
-                
-                <CouponCard
-                  onApply={() => setModalVisible(false)}
-                  onShowTerms={() => {
-                    setModalVisible(false);
-                    setModalVisible2(true);
-                  }}
-                />
-                <CouponCard
-                  onApply={() => setModalVisible(false)}
-                  onShowTerms={() => {
-                    setModalVisible(false);
-                    setModalVisible2(true);
-                  }}
-                />
+                <Text style={styles.cardTitle}>               Coupon Card            <Text onPress={() => { setModalVisible(false) }} style={{ fontWeight: '500', color: Colors.green }}>close</Text></Text>
+                <View style={{ flex: 1 }}>
+                  {applicableCoupons.length !== 0 && (<Text style={styles.cardTitle}>Applicable Coupons</Text>)}
+                  {ApplicableCoupons}
+                  {notApplicableCoupons.length !== 0 && (<Text style={styles.cardTitle}> Not Applicable Coupons</Text>)}
+                  {NotApplicableCoupons}
+                </View>
               </View>
             </View>
           </Modal>
 
           <Text style={styles.sectionHeader}>Coupons</Text>
-          <TouchableOpacity
-            style={[styles.couponContainer, { flexDirection: 'row', justifyContent: 'space-between' }]}
-            onPress={couponHandler}
-          >
-            <MaterialIcons name="discount" size={24} color={Colors.green} />
-            <Text>Apply coupons</Text>
-          </TouchableOpacity>
-          {/* <View style={styles.couponContainer}>
-            <CouponCard />
-          </View> */}
+
+
+          <View style={styles.couponContainer}>
+            {couponsData.length === 0
+              ?
+
+              (<TouchableOpacity style={styles.coupons} onPress={couponHandler} >
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                  <Image source={require('../../assets/discount.png')} style={styles.logo} tintColor={Colors.green} />
+                  <Text>Apply coupons</Text>
+                </View>
+                <AntDesign name="right" size={24} color="black" />
+              </TouchableOpacity>)
+              :
+              (<View style={styles.coupons} >
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                  <Image source={require('../../assets/discount.png')} style={styles.logo} tintColor={Colors.green} />
+                  <Text>{couponsData ?? couponsData?.code}</Text>
+                  <Text style={{fontWeight: '500'}}>Saved ${discount}</Text>
+                </View>
+                <TouchableOpacity onPress={() => setCouponsData([])} hitSlop={5}>
+
+                  <Text style={{ color: 'red', fontWeight: '600' }} >Remove</Text>
+                </TouchableOpacity>
+              </View>)}
+
+
+          </View>
+
 
           <View>
             <View style={styles.summaryContainer}>
@@ -280,8 +402,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   couponContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    elevation: 5,
+    borderRadius: 5,
+    backgroundColor: 'white',
+    // padding: 10,
+    margin: 20,
+    gap: 20,
+  },
+  coupons: { paddingHorizontal: 10, paddingVertical: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  logo: {
+    height: 35,
+    width: 35
   },
   sectionHeader: {
     fontSize: 18,
@@ -290,6 +421,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 20,
   },
+
   summaryContainer: {
     elevation: 8,
     borderRadius: 5,
@@ -354,12 +486,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 22,
+    // marginTop: 22,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)'
   },
   modalView: {
+    height: 330,
     margin: 20,
     backgroundColor: 'white',
-    borderRadius: 20,
+    borderRadius: 8,
     padding: 20,
     alignItems: 'center',
     shadowColor: '#000',
@@ -372,10 +506,10 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   button: {
-    // borderRadius: 20,
+    borderRadius: 5,
     padding: 10,
     elevation: 2,
-    marginTop: 10,
+    marginTop: 5,
   },
   buttonClose: {
     backgroundColor: Colors.green,
@@ -387,7 +521,7 @@ const styles = StyleSheet.create({
   },
   modalText: {
     marginBottom: 15,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   cardTitle: {
     fontSize: 18,

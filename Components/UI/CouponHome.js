@@ -1,25 +1,35 @@
-import { ImageBackground, StyleSheet, Text, View } from "react-native"
+import { Dimensions, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import Colors from "../../Constant/Colors";
 
-const CouponHome = () => {
+const CouponHome = ({ param, onShowTerms }) => {
+  console.log("coupon data coming", param)
   return (
+    <View style={{flex:1}}>
+
     <ImageBackground source={{ uri: "https://static.gostor.com/images/images/apply-coupon.png" }} resizeMode="stretch" style={styles.coupon}>
       <View style={styles.textContainer}>
         <View style={{ alignItems: 'flex-start' }}>
-          <Text style={styles.text}>code: </Text>
-          <Text style={styles.text}>Description </Text>
-        </View>
-        <Text style={styles.textTNC}>T&C</Text>
+            <Text style={styles.code}>{ param?.code}</Text>
+            <Text style={styles.text}>{param?.description} </Text>
+            <Text style={styles.validity}>Valid till {param?.expiry_date} </Text>
+          </View>
+          <TouchableOpacity onPress={onShowTerms}>
+          
+            <Text style={styles.textTNC}>T&C</Text>
+            </TouchableOpacity>
       </View>
     </ImageBackground>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   coupon: {
-    height: 70,
-    width: '100%',
-    flex: 1,
+    height: 80,
+    // alignItems: 'center',
+    marginRight: 10,
+    width: Dimensions.get('window').width*0.85,
+    // flex: 1,
     // padding: 10
   },
   textContainer: {
@@ -32,6 +42,16 @@ const styles = StyleSheet.create({
   text: {
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  validity: {
+    textAlign: 'center',
+    color: '#666'
+  },
+  code: {
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#1e4c5e',
+
   },
   textTNC: {
     fontWeight: 'bold',
