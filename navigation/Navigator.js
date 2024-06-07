@@ -124,6 +124,8 @@ const AuthNavigator = () => {
         <AuthStack.Screen name='TrackOrder' component={TrackOrder} options={{ headerShown: false }} />
         <AuthStack.Screen name='ProductDescription' component={ProductDescription} options={{ headerShown: false }} />
         <AuthStack.Screen name='PlaceOrder' component={PlaceOrder} options={{ headerShown: false }} />
+      <AuthStack.Screen name='OrderDetails' component={OrderDetails} options={{ headerShown: false }} />
+
         <AuthStack.Screen name='CheckOutIntent' component={CheckOutIntent} options={{ headerShown: false }} />
         <AuthStack.Screen name='CustomIntent' component={CustomIntent} options={{ headerShown: false }} />
         <AuthStack.Screen name='DeliveryTimeScreen' component={DeliveryTimeScreen} options={{ headerShown: false }} />

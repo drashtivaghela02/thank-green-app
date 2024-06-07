@@ -49,7 +49,7 @@ console.log("aabuisfhqhfea;jsd;j",orderId, accessToken);
         throw new Error('Failed to fetch DATA');
       }
       const resData = await response.json();
-      // console.log("get orders details resData", resData);
+      console.log("get orders details resData", resData);
       dispatch({ type: GET_ORDER_DETAILS_INFO, data: resData });
       return resData;
     } catch (error) {

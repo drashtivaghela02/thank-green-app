@@ -10,10 +10,11 @@ import * as orderAction from '../../store/actions/Orders';
 
 const OrderDetails = (props) => {
 
-  const Id = props.route.params ? props.route.params.Id : null;
-  const detail = props.route.params ? props.route.params.Details : null;
+  const Id = props.route.params ? props?.route?.params?.Id : null;
+  const detail = props.route.params ? props?.route?.params?.Details : null;
+  const order = props?.route?.params?.order
 
-  console.log("ghftufug", Id)
+  console.log("ghftufug", order)
   const [isLoading, setIsLoading] = useState(false);
   // const [details, setDetails] = useState();
   const accessToken = useSelector(state => state.auth.accessToken);
@@ -34,13 +35,10 @@ const OrderDetails = (props) => {
   // }, []);
 
   // const paymentDetails = details.payment_details
-  const details = detail.data[0]
-  const productData = details.Product_details
+  const details = detail?.data[0]
+  const productData = details?.Product_details
   console.log("order detail past order ==>", productData);
 
-  if (isLoading) {
-    <ActivityIndicator size="large" color="#2c843e" />
-  }
 
   return (
     <View style={styles.container}>
@@ -64,9 +62,9 @@ const OrderDetails = (props) => {
                 </View>
 
                 <View style={{ gap: 8 }}>
-                  <Text style={styles.subTitle}>{details.Order_date}</Text>
-                  <Text style={styles.subTitle}>{details.order_number}</Text>
-                  <Text style={styles.subTitle}>Order {details.order_status[0].toUpperCase() + details.order_status.substring(1)}</Text>
+                  <Text style={styles.subTitle}>{details?.Order_date}</Text>
+                  <Text style={styles.subTitle}>{details?.order_number}</Text>
+                  <Text style={styles.subTitle}>Order {details?.order_status[0].toUpperCase() + details?.order_status.substring(1)}</Text>
 
                 </View>
               </View>
@@ -132,8 +130,8 @@ const OrderDetails = (props) => {
                 </View>
 
                 <View style={{ gap: 8 }}>
-                  <Text style={styles.subTitle}>Wed 9 Sep 2019</Text>
-                  <Text style={styles.subTitle}>07:30AM to 01:00 PM</Text>
+                  <Text style={styles.subTitle}>{details?.delivery_on.split(' ')[0]}</Text>
+                  <Text style={styles.subTitle}>{details?.delivery_on.split(' ')[1]}</Text>
                 </View>
               </View>
             </View>
@@ -147,35 +145,41 @@ const OrderDetails = (props) => {
                 <Text style={styles.title1}>Payment Option </Text>
                 <Text style={styles.title1}>Order Items </Text>
                 <Text style={styles.title1}>Sub Total </Text>
+                <Text style={styles.title1}>Discount </Text>
                 <Text style={styles.title1}>Delivery Charges </Text>
                 <Text style={styles.title2}>Total Amount </Text>
               </View>
 
-              <View style={{width: '60%'}}>
-                <Text style={styles.subTitle1} numberOfLines={1}>{details.payment_details.invoice_number}</Text>
-                <Text style={styles.subTitle1}>{details.payment_details.type}</Text>
-                <Text style={styles.subTitle1}>{details.payment_details.total_quantity} items</Text>
-                <Text style={styles.subTitle1}>${details.payment_details.gross_amount.toFixed(2)}</Text>
-                <Text style={styles.subTitle1}>${details.payment_details.delivery_charge.toFixed(2)}</Text>
-                <Text style={styles.subTitle2}>${details.payment_details.order_amount.toFixed(2)}</Text>
+              <View style={{ width: '60%' }}>
+                <Text style={styles.subTitle1} numberOfLines={1}>{details?.payment_details.invoice_number}</Text>
+                <Text style={styles.subTitle1}>{details?.payment_details.type}</Text>
+                <Text style={styles.subTitle1}>{details?.payment_details.total_quantity} items</Text>
+                <Text style={styles.subTitle1}>${details?.payment_details.gross_amount.toFixed(2)}</Text>
+                <Text style={styles.subTitle1}>${details?.payment_details.discount_amount.toFixed(2)}</Text>
+                <Text style={styles.subTitle1}>${details?.payment_details.delivery_charge.toFixed(2)}</Text>
+                <Text style={styles.subTitle2}>${details?.payment_details.order_amount.toFixed(2)}</Text>
               </View>
             </View>
 
             <View>
-              {details.order_status === "delivered" &&
+              {details?.order_status === "delivered" &&
                 <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('ReportIssue', { Id: details.order_number }); }}>
                   <Text style={styles.verifyButton}>REPORT ISSUE</Text>
                 </TouchableOpacity>
               }
-              {details.order_status !== "delivered" && details.order_status !== "cancel" &&
+              {details?.order_status !== "delivered" && details?.order_status !== "cancel" &&
                 <View>
                   <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('TrackOrder', { Id: details.order_number, status: details.order_status }); }}>
                     <Text style={styles.verifyButton}>TRACK ORDER</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity style={styles.verify1} onPress={() => { props.navigation.navigate('CancelOrder', { Id: details.order_number }); }}>
+                  {order === false ? (<TouchableOpacity style={styles.verify1} onPress={() => { props.navigation.navigate('CancelOrder', { Id: details.order_number }); }}>
                     <Text style={styles.verifyButton1}>Cancel Order</Text>
-                  </TouchableOpacity>
+                  </TouchableOpacity>)
+                    :
+                    (<TouchableOpacity style={styles.verify1} onPress={() => { props.navigation.navigate('Home'); }}>
+                      <Text style={styles.verifyButton1}>Continue Shopping</Text>
+                    </TouchableOpacity>)}
                 </View>
               }
 

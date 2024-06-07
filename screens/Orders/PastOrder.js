@@ -43,7 +43,7 @@ const PastOrder = ({navigation}) => {
       setDetails(response.data[0]);
       console.log("order details",response);
       setIsLoading(false); // Set loading state to false after fetching data
-      navigation.navigate('OrderDetails', {Id: id, Details: response })
+      navigation.navigate('OrderDetails', {Id: id, Details: response ,order: false})
     })
     .catch(error => {
       setIsLoading(false); // Set loading state to false in case of error

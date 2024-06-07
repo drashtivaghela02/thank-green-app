@@ -106,7 +106,7 @@ const Home = props => {
               <Feather name="search" size={18} color="black" style={{ marginLeft: 1 }} />
               <Text style={{ fontSize: 17 }}>Search</Text>
             </TouchableOpacity>
-            <AntDesign name="bars" size={28} color="white" onPress={() => { props.navigation.navigate('Filters') }} />
+            {/* <AntDesign name="bars" size={28} color="white" onPress={() => { props.navigation.navigate('Filters') }} /> */}
             {/* <FontAwesome6 name="bars-staggered" size={24} color="white" onPress={() => { props.navigation.goBack() }} /> */}
           </View>
         </View>
@@ -251,12 +251,12 @@ const styles = StyleSheet.create({
   container2: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'center' //'space-between'
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: Dimensions.get('window').width * 0.8,
+    width: Dimensions.get('window').width * 0.9,
     backgroundColor: 'white',
     paddingHorizontal: 8,
     paddingVertical: 10,

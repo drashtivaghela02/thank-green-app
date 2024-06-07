@@ -16,7 +16,7 @@ const SignUp = props => {
     const [imagePath, setImagePath] = useState(null);
     const [formatedNumber, setFormatedNumber] = useState(''); //for phone number with code
     const [validate, setValidate] = useState(true)
-    const phoneInput = useRef()
+    // const phoneInput = useRef()
     const [phoneNumber, setPhoneNumber] = useState('');
 
     const handleImagePicked = (path) => {
@@ -54,11 +54,11 @@ const SignUp = props => {
     const SubmitHandler = (values) => {
         setError(null);
         setIsLoading(true);
-        const countryCode = '+' + phoneInput.current?.getCallingCode()
+        // const countryCode = '+' + phoneInput.current?.getCallingCode()
         values.phoneNumber = phoneNumber
         values.countryCode = countryCode
-        const checkValid = phoneInput.current?.isValidNumber(phoneNumber)
-        setValidate(checkValid ? checkValid : false)
+        // const checkValid = phoneInput.current?.isValidNumber(phoneNumber)
+        // setValidate(checkValid ? checkValid : false)
 
         const formData = new FormData();
         formData.append('profileImage', imagePath);
@@ -112,7 +112,7 @@ const SignUp = props => {
             <View style={styles.screen}>
                 <KeyboardAvoidingView>
                     <Formik
-                        initialValues={{ profileImage: '', name: '', email: '', countryCode: '', phoneNumber: '', password: '', cpassword: '' }}
+                        initialValues={{ profileImage: '', name: '', email: '', countryCode: '+', phoneNumber: '', password: '', cpassword: '' }}
                         validationSchema={Validation}
                         onSubmit={SubmitHandler}
                     >
@@ -153,7 +153,7 @@ const SignUp = props => {
                                 </View>
                                 <View style={styles.inputContainer}>
                                     <Text style={styles.label}>Phone Number</Text>
-                                    <View>
+                                    {/* <View>
                                         <PhoneInput
                                             ref={phoneInput}
                                             defaultCode='IN'
@@ -174,11 +174,35 @@ const SignUp = props => {
                                             flagButtonStyle={{ color: 'white' }}
                                         />
                                     </View>
-                                    {touched.phoneNumber && errors.phoneNumber
+                                       {touched.phoneNumber && errors.phoneNumber
                                         ? (!phoneInput?.current?.isValidNumber(phoneNumber)
                                                 ? <Text style={styles.errorText}>{errors.phoneNumber}</Text>
                                                 : null
-                                        ) : null}
+                                        ) : null} */}
+                                     <View style={{flexDirection: 'row'}}>
+                                    <View style={contact.countryCodeContainer}>
+                                        <TextInput
+                                            style={[contact.countryCodeInput, styles.input]}
+                                            value={values.countryCode}
+                                                onChangeText={handleChange('countryCode')}
+                                            keyboardType="phone-pad"
+                                                
+                                        />
+                                    </View>
+                                    <View style={contact.phoneNumberContainer}>
+                                        <TextInput
+                                        style={styles.input}
+                                            placeholder="Enter phone number"
+                                            value={values.phoneNumber = phoneNumber}
+                                            onChangeText={(text) => {
+                                                setPhoneNumber(text)
+                                                handleChange('phoneNumber')
+                                            }}
+                                            keyboardType="phone-pad"
+                                        />
+                                    </View>
+                                </View> 
+                                 
                                 </View>
 
                                 <View style={styles.inputContainer}>
@@ -302,17 +326,44 @@ const styles = StyleSheet.create({
     },
 });
 
+// const contact = StyleSheet.create({
+//     container: {
+//         width: '100%',
+//         borderRadius: 10,
+//         borderWidth: 1,
+//         borderColor: '#1e4c5e',
+//         backgroundColor: '#1e4c5e',
+//     },
+//     countryCodeInput: {
+//         width: 80,
+//         marginRight: 10,
+//     },
+//     phoneNumberInput: {
+//         borderRadius: 10,
+//         backgroundColor: '#1e4c5e',
+//         paddingHorizontal: 10,
+//         paddingVertical: 8
+//     },
+
+// });
+
 const contact = StyleSheet.create({
     container: {
-        width: '100%',
-        borderRadius: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#1e4c5e',
-        backgroundColor: '#1e4c5e',
+        borderRadius: 5,
+        borderColor: '#ccc',
+        padding: 10,
+    },
+    countryCodeContainer: {
+        marginRight: 10,
     },
     countryCodeInput: {
         width: 80,
-        marginRight: 10,
+    },
+    phoneNumberContainer: {
+        flex: 1,
     },
     phoneNumberInput: {
         borderRadius: 10,

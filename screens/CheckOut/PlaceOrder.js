@@ -49,13 +49,17 @@ const PlaceOrder = (props) => {
 
 
   const handleSuccess = (id) => {
+    console.log("testtesttesting",id)
     setIsLoading(true); 
     dispatch(orderAction.getOrderDetailsInfo(id, accessToken))
-    .then((response) => {
+      .then((response) => {
+        if (response.status === 'success') {
+        Alert.alert("",response.msg)
+      }
       setDetails(response.data[0]);
-      console.log("order details",response);
+      console.log("order details getting",response);
       setIsLoading(false);
-      navigation.navigate('OrderDetails', {Id: id, Details: response })
+      props.navigation.navigate('OrderDetails', {Id: id, Details: response, order: true })
     })
     .catch(error => {
       setIsLoading(false); 

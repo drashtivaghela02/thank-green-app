@@ -214,13 +214,13 @@ const CheckOutScreen = (props) => {
   }
 
 
-  if (isLoading) {
-    return (
-      <View>
-        <ActivityIndicator />
-      </View>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <View>
+  //       <ActivityIndicator />
+  //     </View>
+  //   );
+  // }
   if (cartItems.length === 0 || Object.keys(cartItems).length === 0) {
     return (
       <View style={styles.container}>
@@ -337,7 +337,11 @@ const CheckOutScreen = (props) => {
                   <Text>{couponsData ?? couponsData?.code}</Text>
                   <Text style={{fontWeight: '500'}}>Saved ${discount}</Text>
                 </View>
-                <TouchableOpacity onPress={() => setCouponsData([])} hitSlop={5}>
+                    
+                <TouchableOpacity onPress={() => {
+                  setCouponsData([])
+                  fetchData(calculateSummaryData(cartItems))
+                }} hitSlop={5}>
 
                   <Text style={{ color: 'red', fontWeight: '600' }} >Remove</Text>
                 </TouchableOpacity>
