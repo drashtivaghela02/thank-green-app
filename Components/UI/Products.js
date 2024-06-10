@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 
 const Products = (props) => {
-  console.log("Products from category id",props);
+  console.log("Products from category id", props);
   const cartItems = useSelector(state => state?.cart?.items)
 
   const data = props.param;
@@ -42,17 +42,18 @@ const Products = (props) => {
         setCartitemId(`${data?.product_id}-${quantityVId}`)
       }
     }
-    setShowOptions(false); // Close the selection list after selecting an option
-    // dispatch(addToCart(selling))
+    setShowOptions(false);
   };
   useEffect(() => {
     if (cartItems[`${props?.param?.product_id}-${quantityVarientId}`]) {
+      console.log("sdhfljh", `${props?.param?.product_id}-${quantityVarientId}`)
       setQty(cartItems[`${props?.param?.product_id}-${quantityVarientId}`]?.quantity)
     }
     else {
       console.log("hiiiezlkjflz");
+      setQty(0)
     }
-  })
+  }, [cartItemId])
   // console.log("etwtuoafevy7na8ohyf7ar0n7",data.images)
 
   return (
@@ -94,16 +95,18 @@ const Products = (props) => {
               </TouchableOpacity>)
               : (
                 <View style={[styles.Cart, { justifyContent: 'space-between' }]}>
+
+                  <TouchableOpacity onPress={() => {
+                    setQty(qty - 1)
+                    props.onRemoveItem()
+                  }}><AntDesign name="minuscircleo" size={24} color="white" /></TouchableOpacity>
+
+                  <Text style={{ fontSize: 17, fontWeight: '500', color: 'white' }}>{cartItems[cartItemId] ? cartItems[cartItemId]?.quantity : String(qty).padStart(2, '0')}</Text>
                   <TouchableOpacity onPress={() => {
                     setQty(qty + 1)
                     console.log("product lisisting quantity", quantityVarientId)
                     dispatch(cartItem.addToCart(data, quantityVarientId))
                   }}><AntDesign name="pluscircleo" size={24} color="white" /></TouchableOpacity>
-                  <Text style={{ fontSize: 17, fontWeight: '500', color: 'white' }}>{cartItems[cartItemId]? cartItems[cartItemId]?.quantity : String(qty).padStart(2, '0')}</Text>
-                  <TouchableOpacity onPress={() => {
-                    setQty(qty - 1)
-                    props.onRemoveItem()
-                  }}><AntDesign name="minuscircleo" size={24} color="white" /></TouchableOpacity>
                 </View>
               )}
           </View>

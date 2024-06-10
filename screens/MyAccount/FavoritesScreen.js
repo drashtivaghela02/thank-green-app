@@ -1,78 +1,85 @@
-import { FlatList, Text } from "react-native";
-import { StyleSheet, View } from "react-native"
+import { ActivityIndicator, FlatList, ScrollView, Text } from "react-native";
+import { StyleSheet, View } from "react-native";
 import CustomHeader from "../../Components/UI/CustomHeader";
-import FavouriteProductData from "../../Components/UI/FavouriteProductData";
+import * as productAction from '../../store/actions/Products';
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import ProductsHome from "../../Components/UI/ProductsHome";
+import * as cartItem from '../../store/actions/Cart';
+import usePagination from "../../Components/UI/usePagination";
+import Colors from "../../Constant/Colors";
+
+const INITIAL_PAGE = 1;
 
 const FavoritesScreen = props => {
+  const accessToken = useSelector(state => state.auth.accessToken);
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
+  const [resData, setResdata] = useState([]);
+  const [productCount, setProductCount] = useState(0);
 
-  const products = [
-    {
-      "product_id": 3,
-      "category_name": "fruites & vegetables",
-      "subcategory_name": "Fresh fruit",
-      "product_title": "Fresho mango",
-      "images": "https://res.cloudinary.com/djuz5lkbf/image/upload/v1713157089/ThankGreen/i4hjtd4uacvcg4w9zbuy.jpg",
-      "quantity_variants": [
-        {
-          "actual_price": 19.99,
-          "selling_price": 19.49,
-          "quantity_variant": "500g"
-        }
-      ],
-      "product_description": "Fresho mango",
-      "product_start_delivery_time": "13:00:00",
-      "product_end_delivery_time": "22:00:30"
-    },
-    {
-      "product_id": 6,
-      "category_name": "snacks",
-      "subcategory_name": "Chips",
-      "product_title": "Nachos",
-      "images": "https://res.cloudinary.com/djuz5lkbf/image/upload/v1713157316/ThankGreen/bhnej4nn0topd8hy9yef.jpg",
-      "quantity_variants": [
-        {
-          "actual_price": 59,
-          "selling_price": 49.99,
-          "quantity_variant": "250g"
-        }
-      ],
-      "product_description": "Nachos",
-      "product_start_delivery_time": "07:30:00",
-      "product_end_delivery_time": "17:00:00"
-    },
-    {
-      "product_id": 8,
-      "category_name": "snacks",
-      "subcategory_name": "biscuits",
-      "product_title": "Chocolate biscuits",
-      "images": "https://res.cloudinary.com/djuz5lkbf/image/upload/v1713157455/ThankGreen/ajiprcvbqc5tk5ul6ghj.jpg",
-      "quantity_variants": [
-        {
-          "actual_price": 55.5,
-          "selling_price": 48.5,
-          "quantity_variant": "250g"
-        }
-      ],
-      "product_description": "Chocolate biscuits",
-      "product_start_delivery_time": "09:15:15",
-      "product_end_delivery_time": "15:15:15"
-    }
-  ]
+  const fetchFavourites = (page) => {
+    setIsLoading(true);
+    dispatch(productAction.getFavourites(accessToken, page))
+      .then((response) => {
+        setIsLoading(false);
+        console.log("fav prods get => ", response?.data);
+        setResdata((prevData) => [...prevData, ...response?.data?.favoriteProducts]);
+        setProductCount(response?.data?.total_products);
+      })
+      .catch(error => {
+        setIsLoading(false);
+        console.error("Error fetching fav information:", error);
+      });
+  };
+
+  const { currentPage, handleEndReached } = usePagination({
+    fetchFunction: fetchFavourites,
+    totalPages: Math.ceil(productCount / 10),
+    initialPage: INITIAL_PAGE,
+  });
+
+  useEffect(() => {
+    fetchFavourites(INITIAL_PAGE);
+  }, [accessToken]);
+
+  const onProductSelectHandler = (id, data) => {
+    props.navigation.navigate('ProductDescription', { ProductId: id, data: data });
+  };
+
+  if (productCount === 0 && !isLoading) {
+    return (
+      <View style={styles.container}>
+        <CustomHeader label='Favorites' press={() => { props.navigation.goBack() }} />
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No favorite products found. Start adding some!</Text>
+        </View>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container} >
+    <View style={styles.container}>
       <CustomHeader label='Favorites' press={() => { props.navigation.goBack() }} />
-      <View style={{margin: 10}}>
+      <View style={{ flex: 1, margin: 10 }}>
 
         <FlatList
           keyExtractor={(item) => item.product_id}
-          data={products}
+          data={resData}
           numColumns={2}
           renderItem={itemData =>
-            <FavouriteProductData
+            <ProductsHome
               param={itemData.item}
-              // onSelect={onProductSelectHandler}
+              favourites={1}
+              onSelect={onProductSelectHandler}
+              onRemoveItem={() => {
+                dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0].quantity_variant_id}`))
+              }}
             />
           }
+          onEndReached={handleEndReached}
+          onEndReachedThreshold={0.1}
+          ListFooterComponent={isLoading ? <ActivityIndicator size="large" color={Colors.green} /> : null}
         />
       </View>
     </View>
@@ -85,6 +92,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 18,
   },
 });
 

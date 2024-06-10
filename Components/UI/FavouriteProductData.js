@@ -46,12 +46,12 @@ const FavouriteProductData = (props) => {
 }
 
 const styles = StyleSheet.create({
-  gridItem: {
-    width: Dimensions.get('window').width/2 - 20,
-    margin: 10,
+   gridItem: {
+    width: Dimensions.get('window').width / 2 - 20,
+    marginVertical: 10,
+    marginRight: 20,
     borderRadius: 8,
     elevation: 8,
-    borderRadius: 10,
     backgroundColor: 'white',
     height: 200,
     overflow: 'hidden',
@@ -64,9 +64,10 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   title: {
+    flex: 0.9,
     fontSize: 14,
     fontWeight: '600',
-    width: '90%'
+    width: '80%'
   },
   weight: {
     fontSize: 11,
@@ -82,7 +83,7 @@ const styles = StyleSheet.create({
   selling: {
     fontSize: 16,
     fontWeight: '700'
-  }
+  },
 })
 
 export default FavouriteProductData;

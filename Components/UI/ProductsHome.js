@@ -9,9 +9,11 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const ProductsHome = (props) => {
   const cartItems = useSelector(state => state?.cart?.items)
+  const favoriteProductIds = useSelector(state => state.product.favoriteProductIds);
   const id = props.param.product_id;
   const data = props.param;
   const [qty, setQty] = useState(0);
+  const [fav, setFav] = useState(props.favourites ? props.favourites : data?.is_favorite)
   const dispatch = useDispatch();
   console.log("Home product data", data)
   let actual_price = '$' + data.quantity_variants[0].actual_price ?? 0
@@ -28,6 +30,11 @@ const ProductsHome = (props) => {
     else {
       console.log("hiiiezlkjflz");
     }
+    if (favoriteProductIds[id]) {
+      console.log("yesyesyesyeysyeysy")
+      setFav(1);
+    }
+
   })
 
   return (
@@ -37,7 +44,7 @@ const ProductsHome = (props) => {
           <View style={{ flex: 1 }}>
             <Image source={{ uri: data.images[0] }} style={styles.image} />
             <View style={{ position: 'absolute', top: 0, right: 0, padding: 5, backgroundColor: 'white', borderBottomLeftRadius: 10, elevation: 6, opacity: 0.8 }}>
-              {data.is_favorite === 1 ? <MaterialIcons name="favorite" size={24} color="red" /> : <MaterialIcons name="favorite-border" size={24} color="#888" />}
+              {fav === 1 ? <MaterialIcons name="favorite" size={24} color="red" /> : <MaterialIcons name="favorite-border" size={24} color="#888" />}
             </View>
           </View>
           <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5 }}>

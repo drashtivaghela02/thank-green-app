@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { TextInput, StyleSheet, Text, View, TouchableOpacity, KeyboardAvoidingView, ScrollView, Alert, ActivityIndicator } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useDispatch, useSelector } from 'react-redux';
-import PhoneInput from "react-native-phone-number-input";
+// import PhoneInput from "react-native-phone-number-input";
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 

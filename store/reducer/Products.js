@@ -1,10 +1,11 @@
-import { FILTER_BY, SORT_BY } from '../actions/Products';
+import { ADD_TO_FAVORITES, FILTER_BY, REMOVE_FROM_FAVORITES, SET_INITIAL_FAVORITES, SORT_BY } from '../actions/Products';
 
 const initialState = {
     deliveryTimeFilter: [],
     priceOrderFilter: [],
     categoryFilter: [],
     priceFilter: [],
+    favoriteProductIds: []
 };
 0
 const productReducer = (state = initialState, action) => {
@@ -14,7 +15,7 @@ const productReducer = (state = initialState, action) => {
             const delivery = action.SortBy.deliveryTimeFilter ? action.SortBy.deliveryTimeFilter : ''
             let deliveryTime = {};
             deliveryTime.start = delivery.split(' ')[0]
-            deliveryTime.end = delivery.split(' ')[2]
+            deliveryTime.end = delivery.split(' ')[3]
             const priceOrder = action.SortBy.priceOrderFilter
             return {
                 ...state,
@@ -35,6 +36,27 @@ const productReducer = (state = initialState, action) => {
                 categoryFilter: category,
                 priceFilter: price
             }
+        case SET_INITIAL_FAVORITES:
+            const favoriteProductIds = action.favoriteProducts.map(product => product.product_id);
+            console.log("reducer favasd",favoriteProductIds)
+            return {
+                ...state,
+                favoriteProductIds: favoriteProductIds
+            };
+        case ADD_TO_FAVORITES:
+            console.log("reducer add to fav",state)
+        
+            return {
+                ...state,
+                favoriteProductIds: [...state.favoriteProductIds, action.productId]
+            };
+        case REMOVE_FROM_FAVORITES:
+            console.log("reducer favasd",state.favoriteProductIds)
+
+            return {
+                ...state,
+                favoriteProductIds: state.favoriteProductIds.filter(product => product.product_id !== action.productId)
+            };
         default:
             // console.log("Unrecognized action:", action);
 

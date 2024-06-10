@@ -83,13 +83,7 @@ const CartProduct = (props) => {
 
 
             <View style={[styles.Cart, { gap: 15 }]}>
-              <TouchableOpacity
-                onPress={() => {
-                  setQty(qty + 1)
-                  props.onAddItem()
-                }} >
-                <AntDesign name="pluscircleo" size={25} /></TouchableOpacity>
-              <Text style={{ fontSize: 20, fontWeight: '500', }}>{String(qty).padStart(2, '0')}</Text>
+
               <TouchableOpacity
                 disabled={qty <= 1}
                 onPress={() => {
@@ -97,6 +91,15 @@ const CartProduct = (props) => {
                   props.onRemoveItem()
                 }}>
                 <AntDesign name="minuscircleo" size={25} />
+              </TouchableOpacity>
+
+              <Text style={{ fontSize: 20, fontWeight: '500', }}>{String(qty).padStart(2, '0')}</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setQty(qty + 1)
+                  props.onAddItem()
+                }} >
+                <AntDesign name="pluscircleo" size={25} />
               </TouchableOpacity>
             </View>
 

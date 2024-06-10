@@ -30,6 +30,7 @@ const Home = props => {
   const [modalVisible, setModalVisible] = useState(false)
   const [TnC, setTnC] = useState({})
   const keyValuePairs = Object.keys(TnC).map(key => ({ key, value: TnC[key] }));
+  const favoriteProductIds = useSelector(state => state.product.favoriteProductIds);
 
   useEffect(() => {
     setIsLoading(true);
@@ -199,6 +200,7 @@ const Home = props => {
               renderItem={itemData =>
                 <ProductsHome
                   param={itemData.item}
+                  favourites = {favoriteProductIds[itemData?.item?.product_id] ? 1 : 0}
                   onSelect={onProductSelectHandler}
                   onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0].quantity_variant_id}`)) }}
                 />}

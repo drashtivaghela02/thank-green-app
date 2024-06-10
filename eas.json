@@ -1,25 +1,27 @@
 {
+  "cli": {
+    "version": ">= 0.37.0"
+  },
   "build": {
     "development": {
       "developmentClient": true,
       "distribution": "internal"
     },
+    "test": {
+      "env": {
+        "APP_ICON": "./assets/Thanks_Green-removebg-preview.png",
+        "APP_NAME": "Thanks Green"
+      }
+    },
     "preview": {
-      "android": {
-        "buildType": "apk"
-      }
-    },
-    "preview2": {
-      "android": {
-        "gradleCommand": ":app:assembleRelease"
-      }
-    },
-    "preview3": {
-      "developmentClient": true
-    },
-    "preview4": {
       "distribution": "internal"
     },
-    "production": {}
+    "production": { 
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+      }
+    }
   }
 }

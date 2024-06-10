@@ -12,25 +12,23 @@ function FilterByScreen({ route }) {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [priceRange, setPriceRange] = useState([resData?.priceFilter?.minPrice, resData?.priceFilter?.maxPrice] ?? [0, 50]);
 
-  console.log("resdAta in Filter by screen ", resData);
+  // console.log("resdAta in Filter by screen ", resData);
   console.log("PriceChange. ", priceRange, selectedCategories);
-
-  const handleCategorySelect = (categoryId) => {
-    setSelectedCategories((prevSelectedCategories) => {
-      if (prevSelectedCategories.includes(categoryId)) {
-        return prevSelectedCategories.filter(id => id !== categoryId);
-      } else {
-        return [...prevSelectedCategories, categoryId];
-      }
-    });
-    dispatch(filter.FilterBy({ categoryFilter: selectedCategories, priceFilter: priceRange }))
-  };
 
   const renderCategoryItem = ({ item }) => (
     <CategoryFoodHome
       param={item}
       isSelected={selectedCategories.includes(item?.category_id)}
-      onSelect={handleCategorySelect}
+      onSelect={() => {
+        setSelectedCategories((prevSelectedCategories) => {
+          if (prevSelectedCategories.includes(item?.category_id)) {
+            return prevSelectedCategories.filter(id => id !== item?.category_id);
+          } else {
+            return [...prevSelectedCategories, item?.category_id];
+          }
+        });
+        dispatch(filter.FilterBy({ categoryFilter: selectedCategories, priceFilter: priceRange }))
+      }}
     />
   );
 

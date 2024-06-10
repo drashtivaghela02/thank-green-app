@@ -24,7 +24,7 @@ const ProductDescription = props => {
   const [data, setResdata] = useState(null);
   const [cartItemId, setCartitemId] = useState(`${ProductId}-${data?.quantity_variants[0]?.quantity_variant_id}`)
   const [quantityVarientId, setQuantityVarientId] = useState(data?.quantity_variants[0]?.quantity_variant_id ?? '')
-  const [selectedOption, setSelectedOption] = useState(data?.quantity_variants[0]?.quantity_variant ?? ''); // Assuming the first size as the initial value
+  const [selectedOption, setSelectedOption] = useState(data?.quantity_variants[0]?.quantity_variant ?? '');
   const [isFavourite, setIsFavourite] = useState(data?.is_favorite != null ? data?.is_favorite : 0)
   const [actual, setActuals] = useState(data?.quantity_variants[0]?.actual_price ?? 0)
   const [selling, setSelling] = useState(data?.quantity_variants[0]?.selling_price ?? 0)
@@ -35,28 +35,37 @@ const ProductDescription = props => {
     setShowOptions(!showOptions);
   };
 
+  const handleFavouriteToggle = () => {
+    if (isFavourite === 1) {
+      dispatch(productAction.removeFromFavorites(ProductId, accessToken));
+      setIsFavourite(0)
+    } else {
+      dispatch(productAction.addToFavorites(ProductId, accessToken));
+      setIsFavourite(1)
+    }
+  };
 
   useEffect(() => {
     setIsLoading(true);
     dispatch(productAction.getProducts(ProductId, accessToken))
-    .then((response) => {
-      setIsLoading(false);
-      setResdata(response?.data?.product[0]);
-      setQuantityVarientId(response?.data?.product[0].quantity_variants[0]?.quantity_variant_id)
-      setCartitemId(`${ProductId}-${response?.data?.product[0].quantity_variants[0]?.quantity_variant_id}`)
-      setSelectedOption(response?.data?.product[0].quantity_variants[0]?.quantity_variant);
-      setActuals(response?.data?.product[0].quantity_variants[0]?.actual_price);
-      setSelling(response?.data?.product[0].quantity_variants[0]?.selling_price);
-      setIsFavourite(response?.data?.product[0]?.is_favorite)
-      setQty(cartItems[`${ProductId}-${data?.quantity_variants[0]?.quantity_variant_id}`].quantity)
-      console.log("product description=> ", response?.data?.product[0])
-    })
-    .catch(error => {
-      setIsLoading(false);
-      console.error("Error fetching user information:", error);
-    });
+      .then((response) => {
+        setIsLoading(false);
+        setResdata(response?.data?.product[0]);
+        setQuantityVarientId(response?.data?.product[0].quantity_variants[0]?.quantity_variant_id)
+        setCartitemId(`${ProductId}-${response?.data?.product[0].quantity_variants[0]?.quantity_variant_id}`)
+        setSelectedOption(response?.data?.product[0].quantity_variants[0]?.quantity_variant);
+        setActuals(response?.data?.product[0].quantity_variants[0]?.actual_price);
+        setSelling(response?.data?.product[0].quantity_variants[0]?.selling_price);
+        setIsFavourite(response?.data?.product[0]?.is_favorite)
+        setQty(cartItems[`${ProductId}-${data?.quantity_variants[0]?.quantity_variant_id}`].quantity)
+        console.log("product description=> ", response?.data?.product[0])
+      })
+      .catch(error => {
+        setIsLoading(false);
+        console.error("Error fetching user information:", error);
+      });
   }, [accessToken, qty])
-  
+
   const handleOptionSelect = (quantityVId) => {
     for (let variant of data?.quantity_variants) {
       if (variant.quantity_variant_id === quantityVId) {
@@ -69,19 +78,19 @@ const ProductDescription = props => {
     }
     setShowOptions(false);
   };
-  
+
   if (cartItems[cartItemId]) {
     console.log("cart item exists", cartItems[cartItemId].quantity)
     // setQty(cartItems[cartItemId].quantity)
   }
 
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size={50} color={Colors.green} />
-      </View>
-    )
-  }
+  // if (isLoading) {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+  //       <ActivityIndicator size={50} color={Colors.green} />
+  //     </View>
+  //   )
+  // }
 
   return (
     <View style={styles.container}>
@@ -132,6 +141,14 @@ const ProductDescription = props => {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5, alignItems: 'center' }}>
             <Text style={{ fontSize: 20, fontWeight: '500' }}>Quantity</Text>
             <View style={[styles.Cart, { justifyContent: 'space-between', alignItems: 'center' }]}>
+              <TouchableOpacity disabled={qty === 1}
+                onPress={() => {
+                  setQty(qty - 1)
+                  dispatch(cartItem.removeFromCart(`${ProductId}-${quantityVarientId}`))
+                }}>
+                <AntDesign name="minuscircleo" size={24} color="#666" />
+              </TouchableOpacity>
+              <Text style={{ fontSize: 18, fontWeight: '500', color: cartItems[cartItemId] ? Colors.green : '#666' }}>{cartItems[cartItemId] ? String(cartItems[cartItemId].quantity).padStart(2, '0') : String(qty).padStart(2, '0')}</Text>
               <TouchableOpacity
                 disabled={!cartItems[cartItemId]}
                 onPress={() => {
@@ -140,12 +157,6 @@ const ProductDescription = props => {
                 }}>
                 <AntDesign name="pluscircleo" size={24} color="#666" />
               </TouchableOpacity>
-              <Text style={{ fontSize: 18, fontWeight: '500', color: cartItems[cartItemId] ? Colors.green : '#666'  }}>{cartItems[cartItemId] ? String(cartItems[cartItemId].quantity).padStart(2,'0') :String(qty).padStart(2, '0')}</Text>
-              <TouchableOpacity disabled={qty === 1}
-                onPress={() => {
-                  setQty(qty - 1)
-                  dispatch(cartItem.removeFromCart(`${ProductId}-${quantityVarientId}`))
-                }}><AntDesign name="minuscircleo" size={24} color="#666" /></TouchableOpacity>
             </View>
           </View>
 
@@ -187,7 +198,8 @@ const ProductDescription = props => {
             }}>
 
               <TouchableOpacity
-                onPress={() => { isFavourite === 1 ? setIsFavourite(0) : setIsFavourite(1) }}
+                // onPress={() => { isFavourite === 1 ? setIsFavourite(0) : setIsFavourite(1) }}
+                onPress={handleFavouriteToggle}
               >
                 {isFavourite === 1
                   ? <MaterialIcons name="favorite" size={24} color="red" />
@@ -203,8 +215,9 @@ const ProductDescription = props => {
                 elevation: 8,
                 overflow: 'hidden'
               }]}
-              onPress={() => {cartItems[cartItemId] ? props.navigation.navigate('CheckOut')
-                : dispatch(cartItem.addToCart(data, quantityVarientId))
+              onPress={() => {
+                cartItems[cartItemId] ? props.navigation.navigate('CheckOut')
+                  : dispatch(cartItem.addToCart(data, quantityVarientId))
               }}
             >
               <MaterialCommunityIcons name="cart-variant" size={24} color='white' />

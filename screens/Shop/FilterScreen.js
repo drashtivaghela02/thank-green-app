@@ -67,13 +67,7 @@ export default function FilterScreen(props) {
   const handleFilter = () => {
 
     const filteredItems = {};
-    for (const [key, val] of Object.entries(sortedData)) {
-      if (val.length > 0) { 
-        filteredItems[key] = val;
-        console.log("filteritem check", filteredItems, val, key)
-      }
-      
-    }
+    
 
     props.route.params.onGoBack(filteredItems);
     props.navigation.goBack();

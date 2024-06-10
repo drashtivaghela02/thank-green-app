@@ -5,7 +5,9 @@ const GET_PRODUCTS_FROM_SUB_CAT = 'GET_PRODUCTS_FROM_SUB_CAT';
 export const SORT_BY = 'SORT_BY';
 export const FILTER_BY = 'FILTER_BY';
 export const SEARCH = 'SEARCH';
-
+export const ADD_TO_FAVORITES = 'ADD_TO_FAVORITES';
+export const REMOVE_FROM_FAVORITES = 'REMOVE_FROM_FAVORITES';
+export const SET_INITIAL_FAVORITES = 'SET_INITIAL_FAVORITES';
 export const getCategory = (accessToken) => {
 
   return async dispatch => {
@@ -150,11 +152,11 @@ export const getProducts = (id, accessToken) => {
 };
 
 
-export const search = (id, accessToken) => {
-  console.log("get products ", id, accessToken)
+export const search = (searchText, page, accessToken) => {
+  console.log("get products ", searchText, accessToken)
   return async dispatch => {
     try {
-      const response = await fetch(`https://thankgreen.onrender.com/api/shop/search?searchText=${id}&page=1`,
+      const response = await fetch(`https://thankgreen.onrender.com/api/shop/search?searchText=${searchText}&page=${page}`,
         {
           method: 'GET',
           headers: {
@@ -225,3 +227,62 @@ export const SortBy = (sorted) => {
 export const FilterBy = (filtered) => {
   return { type: FILTER_BY, FilterBy: filtered };
 }
+
+export const getFavourites = (accessToken, page) => {
+
+  return async dispatch => {
+    try {
+      const response = await fetch(`https://thankgreen.onrender.com/api/shop/favoriteProducts?page=${page}`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + accessToken,
+          },
+        }
+      );
+      const resData = await response.json();
+      console.log("get fav prod info resData", resData);
+      dispatch({
+        type: SET_INITIAL_FAVORITES, 
+          favoriteProducts: resData?.data?.favoriteProducts
+        });
+      return resData;
+    } catch (error) {
+      console.error("Get fav prod Info error", error);
+    }
+  };
+};
+
+export const addToFavorites = (productId, accessToken) => {
+    return async dispatch => {
+        try {
+            const response = await fetch(`https://thankgreen.onrender.com/api/shop/favoriteProducts/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                },
+            });
+            const resData = await response.json();
+            dispatch({ type: ADD_TO_FAVORITES, productId });
+        } catch (err) {
+            throw err;
+        }
+    };
+};
+
+export const removeFromFavorites = (productId, accessToken) => {
+    return async dispatch => {
+        try {
+            const response = await fetch(`https://thankgreen.onrender.com/api/shop/favoriteProducts/${productId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                },
+            });
+            const resData = await response.json();
+            dispatch({ type: REMOVE_FROM_FAVORITES, productId });
+        } catch (err) {
+            throw err;
+        }
+    };
+};
