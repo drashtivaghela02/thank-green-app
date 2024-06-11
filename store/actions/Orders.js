@@ -1,54 +1,33 @@
-const GET_ORDER_INFO = 'GET_ORDER_INFO';
-const GET_ORDER_DETAILS_INFO = 'GET_ORDER_DETAILS_INFO';
-const POST_ORDER = 'POST_ORDER';
-const RATE_ORDER = 'RATE_ORDER';
-const CANCEL_ORDER = 'CANCEL_ORDER';
-const TRACK_ORDER = 'TRACK_ORDER';
-const REPORT_ISSUE = 'REPORT_ISSUE';
+import { Alert } from "react-native";
+import makeApiCall from './../api'; // Import the makeApiCall function
 
-export const getOrderInfo = (accessToken) => {
+export const GET_ORDER_INFO = 'GET_ORDER_INFO';
+export const GET_ORDER_DETAILS_INFO = 'GET_ORDER_DETAILS_INFO';
+export const POST_ORDER = 'POST_ORDER';
+export const RATE_ORDER = 'RATE_ORDER';
+export const CANCEL_ORDER = 'CANCEL_ORDER';
+export const TRACK_ORDER = 'TRACK_ORDER';
+export const REPORT_ISSUE = 'REPORT_ISSUE';
 
+export const getOrderInfo = (curpage, pastpage, accessToken) => {
   return async dispatch => {
     try {
-      const response = await fetch('https://thankgreen.onrender.com/api/orders',
-        {
-          method: 'GET',
-          headers: {
-            'Authorization': 'Bearer ' + accessToken,
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error('Failed to fetch user info');
-      }
-      const resData = await response.json();
+      const resData = await makeApiCall('orders', 'GET', null, accessToken, {currentOrderPage: curpage, pastOrderPage: pastpage});
       console.log("get orders resData", resData);
       dispatch({ type: GET_ORDER_INFO, data: resData });
       return resData;
     } catch (error) {
       console.error("Get orders error", error);
-      // Optionally dispatch an action to update the state with the error
       dispatch({ type: GET_ORDER_INFO, error: error.message });
     }
   };
 };
 
 export const getOrderDetailsInfo = (orderId, accessToken) => {
-console.log("aabuisfhqhfea;jsd;j",orderId, accessToken);
+  console.log("aabuisfhqhfea;jsd;j",orderId, accessToken);
   return async dispatch => {
     try {
-      const response = await fetch(`https://thankgreen.onrender.com/api/orders/${orderId}`,
-        {
-          method: 'GET',
-          headers: {
-            'Authorization': 'Bearer ' + accessToken,
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error('Failed to fetch DATA');
-      }
-      const resData = await response.json();
+      const resData = await makeApiCall(`orders/${orderId}`, 'GET', null, accessToken);
       console.log("get orders details resData", resData);
       dispatch({ type: GET_ORDER_DETAILS_INFO, data: resData });
       return resData;
@@ -58,22 +37,11 @@ console.log("aabuisfhqhfea;jsd;j",orderId, accessToken);
   };
 };
 
-
 export const postOrder = (value, accessToken) => {
-console.log("Post orders value",value, accessToken)
+  console.log("Post orders value",value, accessToken)
   return async dispatch => {
     try {
-      const response = await fetch(`https://thankgreen.onrender.com/api/order-summary?products=${JSON.stringify(value)} `,
-        {
-          method: 'GET',
-          headers: {
-            'Authorization': 'Bearer ' + accessToken,
-          },
-        }
-      );
-      console.log("Post orders resData", value);
-
-      const resData = await response.json();
+      const resData = await makeApiCall(`order-summary?products=${JSON.stringify(value)}`, 'GET', null, accessToken);
       console.log("Post orders resData", resData);
       dispatch({ type: POST_ORDER, payload : resData });
       return resData;
@@ -82,7 +50,6 @@ console.log("Post orders value",value, accessToken)
     }
   };
 };
-
 
 export const postCouponOrder = (value,couponId, accessToken) => {
   console.log("Post orders value",value, accessToken)

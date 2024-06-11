@@ -1,8 +1,9 @@
 import { Dimensions, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import Colors from "../../Constant/Colors";
-
+import moment from "moment";
 const CouponHome = ({ param, onShowTerms }) => {
   console.log("coupon data coming", param)
+  const date = param?.expiry_date
   return (
     <View style={{flex:1}}>
 
@@ -11,7 +12,7 @@ const CouponHome = ({ param, onShowTerms }) => {
         <View style={{ alignItems: 'flex-start' }}>
             <Text style={styles.code}>{ param?.code}</Text>
             <Text style={styles.text}>{param?.description} </Text>
-            <Text style={styles.validity}>Valid till {param?.expiry_date} </Text>
+            <Text style={styles.validity}>Valid untill {moment(date).format("MMMM Do YYYY")}{" "} </Text>
           </View>
           <TouchableOpacity onPress={onShowTerms}>
           

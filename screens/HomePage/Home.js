@@ -156,9 +156,9 @@ const Home = props => {
               </View>
             </View>
           </Modal>
-          
+
           <View style={styles.couponContainer}>
-          <FlatList
+            <FlatList
               data={couponsData}
               keyExtractor={(item) => item.id}
               horizontal={true}
@@ -190,7 +190,7 @@ const Home = props => {
 
 
 
-          <View>
+          {accessToken !== null && <View>
             <Text style={styles.categoryList}>Past Orders</Text>
             <FlatList
               data={pastOrders}
@@ -200,12 +200,12 @@ const Home = props => {
               renderItem={itemData =>
                 <ProductsHome
                   param={itemData.item}
-                  favourites = {favoriteProductIds[itemData?.item?.product_id] ? 1 : 0}
+                  favourites={favoriteProductIds[itemData?.item?.product_id] ? 1 : 0}
                   onSelect={onProductSelectHandler}
                   onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0].quantity_variant_id}`)) }}
                 />}
             />
-          </View>
+          </View>}
           <View>
             <Text style={styles.categoryList}>Recomended Products</Text>
             <FlatList

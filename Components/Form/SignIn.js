@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, ScrollView, ActivityIndicator, Alert, Pressable, Linking } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import * as authActions from '../../store/actions/Auth';
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+
+WebBrowser.maybeCompleteAuthSession();
 
 const SignIn = (props) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -13,15 +17,51 @@ const SignIn = (props) => {
     const [selected, setSelected] = useState(true);
     const dispatch = useDispatch();
 
+    const [request, responseType, promptAsync] = Google.useAuthRequest({
+        androidClientId: '383741119267-f5fgfjo5lksk11s6dumm8ff87nip3kn3.apps.googleusercontent.com',
+        // webClientId: '383741119267-dpo3amhvf5v4k4pmbbi4o191jtrvoe0t.apps.googleusercontent.com',
+    });
 
-    const state = useSelector(state => state.auth);
-    // console.log("signin reducer state",state)
+    useEffect(() => {
+        console.log("dsklfjl;sd;fk",responseType)
 
-    const handleGoogle = () => {
-            const url = 'https://thankgreen.onrender.com/api/auth/google';
-            Linking.openURL(url).then( props.navigation.navigate('Home'))
-              .catch((err) => console.error('Failed to open URL:', err));
-          };
+        if (responseType?.type === 'success') {
+            const { authentication } = responseType; 
+
+            console.log("dsklfjl;sd;fk",responseType)
+            handleGoogleSignIn(authentication.accessToken);
+        }
+    }, [responseType]);
+
+    const handleGoogleSignIn = async (accessToken) => {
+        try {
+            const res = await fetch('https://thankgreen.onrender.com/api/auth/google/callback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    token: 'ya29.a0AXooCgu3iqFeN0Jh0TCXrpopQFEi5_h3j3HgPMGyv5iGfsKP1YisHHJQMBKasrqcu2tr7oqNsrQTmI4pxy4IzYXYaLOOeAXJ9YXGmV7ZubACs91uyjUYGu3OlLdjrvfXPGbrmVpBpq33d5LXRD1n80DD-Msow9ZOdelHaCgYKAXUSARASFQHGX2MiV0vfbgq4RchpfmWyc-A2aQ0171',
+                }),
+            });
+
+            const data = await res.json();
+            if (data.status === 'success') {
+                props.navigation.navigate('Home');
+            } else {
+                Alert.alert('Alert', data.msg || data.error, [
+                    {
+                        text: 'Cancel',
+                        onPress: () => console.log('Cancel Pressed'),
+                        style: 'cancel',
+                    },
+                    { text: 'OK', onPress: () => console.log('OK Pressed') },
+                ]);
+            }
+        } catch (error) {
+            console.error('Error authenticating with backend', error);
+        }
+    };
 
     const Validation = Yup.object({
         emailOrContact: Yup.string()
@@ -46,56 +86,48 @@ const SignIn = (props) => {
             .matches(/(?=.*[0-9])/, 'Password must contain a number.')
             .matches(/(?=.*[a-z])/, 'Password must contain a lowercase letter.')
             .matches(/(?=.*[A-Z])/, 'Password must contain an uppercase letter.')
-            // .matches(/(?=.*[!@#$%^&*])/, 'Password must contain a Symbol')
             .required('Password is Required'),
     });
-    // console.log(validationSchema)
 
     const SubmitHandler = async (values) => {
-        let value = {}
+        let value = {};
         setError(null);
         setIsLoading(true);
 
         if (isNaN(values.emailOrContact)) {
-            value['email'] = values['emailOrContact']
-            value['password'] = values['password']
-            // delete values['emailOrContact']
+            value['email'] = values['emailOrContact'];
+            value['password'] = values['password'];
 
             try {
                 await dispatch(authActions.loginEmail(value.email, value.password)).then((state) => {
-                    console.log("Login state response", state)
-                    if (state.status == 'success') {
-                        setIsLoading(false)
+                    if (state.status === 'success') {
+                        setIsLoading(false);
                         props.navigation.navigate('Home');
+                    } else {
+                        Alert.alert('Alert', state.msg || state.error, [
+                            {
+                                text: 'Cancel',
+                                onPress: () => console.log('Cancel Pressed'),
+                                style: 'cancel',
+                            },
+                            { text: 'OK', onPress: () => console.log('OK Pressed') },
+                        ]);
+                        setIsLoading(false);
                     }
-                    else {
-                        Alert.alert('Alert', state.msg || state.error, [{
-                            text: 'Cancel',
-                            onPress: () => console.log('Cancel Pressed'),
-                            style: 'cancel',
-                        },
-                        { text: 'OK', onPress: () => console.log('OK Pressed') },
-                        ])
-                        setIsLoading(false)
-                    }
-                })
+                });
             } catch (err) {
                 setError(err.message);
                 setIsLoading(false);
             }
-        }
-        else {//if(Number.isInteger(values.emailOrContact) && length(values.emailOrContact) ===  10){
-            value['contact'] = values['emailOrContact']
-            value['password'] = values['password']
-            // delete values['emailOrContact']
-            // try {
+        } else {
+            value['contact'] = values['emailOrContact'];
+            value['password'] = values['password'];
+
             dispatch(authActions.loginContact(value.contact, value.password)).then((state) => {
-                console.log("contact response", state);
-                if (state.status == 'success') {
-                    setIsLoading(false)
+                if (state.status === 'success') {
+                    setIsLoading(false);
                     props.navigation.navigate('Home');
-                }
-                else {
+                } else {
                     Alert.alert('Alert', state.msg || state.error, [
                         {
                             text: 'Cancel',
@@ -103,26 +135,17 @@ const SignIn = (props) => {
                             style: 'cancel',
                         },
                         { text: 'OK', color: 'pink', onPress: () => console.log('OK Pressed') },
-                    ])
-                    setIsLoading(false)
+                    ]);
+                    setIsLoading(false);
                 }
-            })
-            // } catch (err) {
-            //     console.log("console login contact",err);
-            //     setError(err.message);
-            //     setIsLoading(false);
-            // }
+            });
         }
-        console.log("data to be sent", value)
-
-    }
-
+    };
 
     return (
         <LinearGradient
             colors={['#2c843e', '#205065']}
             style={styles.gradient}
-        // end={{x: 0.5, y: 0.7}} 
         >
             <View style={styles.screen} >
                 <KeyboardAvoidingView>
@@ -175,7 +198,6 @@ const SignIn = (props) => {
 
                                     <View style={styles.checkbox}>
                                         <MaterialCommunityIcons name={selected ? "checkbox-outline" : "checkbox-blank-outline"} size={24} color="white" />
-                                        {/* <MaterialCommunityIcons name="checkbox-outline" size={24} color="white" /> */}
                                         <Text style={styles.checkboxText}> Remember me</Text>
                                     </View>
 
@@ -195,9 +217,8 @@ const SignIn = (props) => {
                             <View style={styles.lines}></View>
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'center', padding: 15, gap: 15 }}>
-                            <TouchableOpacity onPress={handleGoogle}>
-
-                            <Image source={require('../../assets/google_logo.png')} style={styles.GoogleLogo} />
+                            <TouchableOpacity onPress={() => promptAsync()}>
+                                <Image source={require('../../assets/google_logo.png')} style={styles.GoogleLogo} />
                             </TouchableOpacity>
                             <Image source={require('../../assets/facebook_logo.png')} style={styles.FacebookLogo} />
                         </View>
@@ -214,7 +235,7 @@ const SignIn = (props) => {
             </View>
         </LinearGradient>
     );
-}
+};
 
 const styles = StyleSheet.create({
     gradient: {
@@ -233,18 +254,15 @@ const styles = StyleSheet.create({
         color: 'white',
         alignSelf: 'flex-end',
         fontSize: 16,
-        // marginBottom: 20,
     },
     logoContainer: {
         alignItems: 'center',
-        // marginBottom: 10
     },
     logo: {
         width: 250,
         height: 200
     },
     GoogleLogo: {
-        // marginTop:15,
         width: 40,
         height: 40
     },
@@ -254,7 +272,6 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         marginBottom: 10,
-        // marginTop: 10,
     },
     label: {
         color: 'white',
@@ -272,7 +289,6 @@ const styles = StyleSheet.create({
     },
     forgotPasswordContainer: {
         alignItems: 'flex-end',
-        // marginBottom: 5
     },
     forgotPasswordText: {
         color: 'white'
@@ -290,7 +306,6 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 18,
         alignSelf: 'center'
-
     },
     signUpContainer: {
         flexDirection: 'row',
@@ -298,7 +313,6 @@ const styles = StyleSheet.create({
         marginTop: 10
     },
     checkbox: {
-        // marginVertical: 10,
         flexDirection: 'row', alignItems: 'center'
     },
     checkboxText: {
@@ -316,12 +330,10 @@ const styles = StyleSheet.create({
         height: 2,
         flex: 1
     },
-
     btntext: {
         color: "#fff",
         fontWeight: "bold"
     },
-
     signUpText: {
         color: 'white'
     },

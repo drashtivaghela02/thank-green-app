@@ -9,7 +9,8 @@ import Products from "../../Components/UI/Products";
 import * as cartItem from '../../store/actions/Cart'
 import CartIcon from "../../Components/UI/CartIcon";
 import Colors from "../../Constant/Colors";
-
+import usePagination from "../../Components/UI/usePagination";
+const INITIAL_PAGE = 1;
 
 const ProductsListing = props => {
   const SubCategoryId = props?.route?.params?.SubCatId;
@@ -21,19 +22,31 @@ const ProductsListing = props => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [resData, setResdata] = useState([]);
+  const [productCount, setProductCount] = useState(0);
 
-  useEffect(() => {
+  const fetchProductData = (page) => {
     setIsLoading(true);
-    dispatch(productAction.getProductsFromSubCat(SubCategoryId, accessToken))
+    dispatch(productAction.getProductsFromSubCat(SubCategoryId, page, accessToken))
       .then((response) => {
-        setResdata(response?.data?.products);
+        setResdata((prevData) => [...prevData, ...response?.data?.products]);
         setIsLoading(false);
+        setProductCount(response?.data?.total_products)
         console.log("sgdagfv xzv=> ", response?.data)
       })
       .catch(error => {
         setIsLoading(false);
         console.error("Error fetching user information:", error);
       });
+  }
+
+  const { currentPage, handleEndReached } = usePagination({
+    fetchFunction: fetchProductData,
+    totalPages: Math.ceil(productCount / 10),
+    initialPage: INITIAL_PAGE,
+  });
+
+  useEffect(() => {
+   fetchProductData(INITIAL_PAGE)
   }, [accessToken])
 
   const onProductSelectHandler = (id, data) => {
@@ -80,6 +93,9 @@ const ProductsListing = props => {
                   onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0]?.quantity_variant_id}`)) }}
                 />
               }
+              onEndReached={handleEndReached}
+              onEndReachedThreshold={0.1}
+              ListFooterComponent={isLoading ? <ActivityIndicator size="large" color={Colors.green} /> : null}
             />
           </View>
           )}

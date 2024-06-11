@@ -1,7 +1,7 @@
 import { AntDesign, Feather, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
-import { FlatList, TouchableOpacity } from "react-native";
+import { ActivityIndicator, FlatList, TouchableOpacity } from "react-native";
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import * as productAction from '../../store/actions/Products';
@@ -9,26 +9,28 @@ import Products from "../../Components/UI/Products";
 import * as cartItem from '../../store/actions/Cart'
 import CartIcon from "../../Components/UI/CartIcon";
 import ScreenLoader from "../../Components/UI/ScreenLoader";
+import usePagination from "../../Components/UI/usePagination";
+import Colors from "../../Constant/Colors";
 
-
+const INITIAL_PAGE = 1;
 const CategoryProducts = props => {
   const SubCategoryId = props?.route?.params?.categoryId;
   const name = props?.route?.params?.name;
-  console.log("hello",props)
+  console.log("hello", props)
 
   const accessToken = useSelector(state => state?.auth?.accessToken)
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
 
   const [resData, setResdata] = useState([]);
-  const [totalProducts, setTotalProducts] = useState(0);
+  const [productCount, setProductCount] = useState(0);
 
-  useEffect(() => {
+  const fetchProducts = (page) => {
     setIsLoading(true);
-    dispatch(productAction.getProductsFromCategory(SubCategoryId, accessToken))
+    dispatch(productAction.getProductsFromCategory(SubCategoryId, page, accessToken))
       .then((response) => {
-        setResdata(response?.data?.products);
-        setTotalProducts(response?.data?.total_products)
+        setResdata((prevData) => [...prevData, ...response?.data?.products]);
+        setProductCount(response?.data?.total_products)
         setIsLoading(false);
         console.log("sgdagfv xzv=> ", response?.data)
       })
@@ -36,6 +38,16 @@ const CategoryProducts = props => {
         setIsLoading(false);
         console.error("Error fetching user information:", error);
       });
+  }
+
+  const { currentPage, handleEndReached } = usePagination({
+    fetchFunction: fetchProducts,
+    totalPages: Math.ceil(productCount / 10),
+    initialPage: INITIAL_PAGE,
+  });
+
+  useEffect(() => {
+    fetchProducts(INITIAL_PAGE)
   }, [accessToken])
 
   const onProductSelectHandler = (id, data) => {
@@ -62,27 +74,23 @@ const CategoryProducts = props => {
       </LinearGradient>
 
       <View style={styles.body}>
-      {isLoading ? (
-          <ScreenLoader />
-        ) : totalProducts === 0 ? (
-          <View>
-            <Text>No products available for this category</Text>
-          </View>
-        ) 
-          : (<View style={{ flex: 1, width: '100%' }}>
-            <FlatList
-              data={resData}
-              keyExtractor={(item) => item?.product_id}
-              renderItem={itemData =>
-                <Products
-                  param={itemData.item}
-                  onSelect={onProductSelectHandler}
-                  onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0]?.quantity_variant_id}`)) }}
-                />
-              }
-            />
-          </View>
-          )}
+        <View style={{ flex: 1, width: '100%' }}>
+          <FlatList
+            data={resData}
+            keyExtractor={(item) => item?.product_id}
+            renderItem={itemData =>
+              <Products
+                param={itemData.item}
+                onSelect={onProductSelectHandler}
+                onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0]?.quantity_variant_id}`)) }}
+              />
+            }
+            onEndReached={handleEndReached}
+            onEndReachedThreshold={0.1}
+            ListFooterComponent={isLoading ? <ActivityIndicator size="large" color={Colors.green} /> : null}
+          />
+        </View>
+
       </View>
     </View>
   );

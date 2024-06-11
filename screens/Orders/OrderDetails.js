@@ -37,7 +37,7 @@ const OrderDetails = (props) => {
   // const paymentDetails = details.payment_details
   const details = detail?.data[0]
   const productData = details?.Product_details
-  console.log("order detail past order ==>", productData);
+  console.log("order detail past order ==>", details);
 
 
   return (
@@ -74,21 +74,21 @@ const OrderDetails = (props) => {
             {/* Card 2 */}
             <Text style={styles.headingTitle}>Product Details</Text>
             <View style={styles.card}>
-              {productData.map((productDetail, index) => (
+              {productData?.map((productDetail, index) => (
                 <View key={index}>
-                  <Text style={{ fontSize: 15, fontWeight: '500', color: '#888', paddingHorizontal: 10 }}>{productDetail.subcategory_name}</Text>
-                  {productDetail.products.map((product, productIndex) => (
+                  <Text style={{ fontSize: 15, fontWeight: '500', color: '#888', paddingHorizontal: 10 }}>{productDetail?.subcategory_name}</Text>
+                  {productDetail?.products.map((product, productIndex) => (
                     <View key={productIndex} style={styles.mainscreen}>
                       <View style={{ ...styles.imagePreview, ...{ borderWidth: 1, marginHorizontal: 10, borderRadius: 7, borderColor: 'white' } }}>
-                        <Image style={styles.image} source={{ uri: product.product_image }} />
+                        <Image style={styles.image} source={{ uri: product?.product_image }} />
                       </View>
                       <View style={styles.textcontainer}>
                         <View>
-                          <Text style={{ fontSize: 15, fontWeight: '500', color: '#888' }}>{product.product_name}</Text>
-                          <Text style={{ fontSize: 13, fontWeight: '400', color: '#888' }}>Net wt: {product.quantity_variant}</Text>
-                          <Text style={{ fontSize: 13, fontWeight: '400', color: '#888' }}>Qty: {product.quantity}</Text>
+                          <Text style={{ fontSize: 15, fontWeight: '500', color: '#888' }}>{product?.product_name}</Text>
+                          <Text style={{ fontSize: 13, fontWeight: '400', color: '#888' }}>Net wt: {product?.quantity_variant}</Text>
+                          <Text style={{ fontSize: 13, fontWeight: '400', color: '#888' }}>Qty: {product?.quantity}</Text>
                         </View>
-                        <Text style={{ fontSize: 18, fontWeight: '800', color: '#666' }}>${product.order_price}</Text>
+                        <Text style={{ fontSize: 18, fontWeight: '800', color: '#666' }}>${product?.order_price}</Text>
                       </View>
                     </View>
                   ))}
@@ -105,9 +105,8 @@ const OrderDetails = (props) => {
                   <Image source={require('../../assets/location-pin.png')} style={{ height: 40, width: 15 }} />
                 </View>
                 <View style={{ gap: 8 }}>
-                  <Text style={styles.title}>{details.delivery_address.address_type} {details.delivery_address.landmark ? '- ' + details.delivery_address.landmark : ''}</Text>
-                  <Text style={[styles.subTitle, { fontSize: 12 }]}>{details.delivery_address.address}, {details.delivery_address.zip_code} </Text>
-
+                  <Text style={styles.title}>{details?.delivery_address?.address_type} {details?.delivery_address.landmark ? '- ' + details?.delivery_address?.landmark : ''}</Text>
+                  <Text style={[styles.subTitle, { fontSize: 12 }]}>{details?.delivery_address.address}, {details?.delivery_address?.zip_code} </Text>
                 </View>
               </View>
             </View>
@@ -151,19 +150,19 @@ const OrderDetails = (props) => {
               </View>
 
               <View style={{ width: '60%' }}>
-                <Text style={styles.subTitle1} numberOfLines={1}>{details?.payment_details.invoice_number}</Text>
-                <Text style={styles.subTitle1}>{details?.payment_details.type}</Text>
-                <Text style={styles.subTitle1}>{details?.payment_details.total_quantity} items</Text>
-                <Text style={styles.subTitle1}>${details?.payment_details.gross_amount.toFixed(2)}</Text>
-                <Text style={styles.subTitle1}>${details?.payment_details.discount_amount.toFixed(2)}</Text>
-                <Text style={styles.subTitle1}>${details?.payment_details.delivery_charge.toFixed(2)}</Text>
-                <Text style={styles.subTitle2}>${details?.payment_details.order_amount.toFixed(2)}</Text>
+                <Text style={styles.subTitle1} numberOfLines={1}>{details?.payment_details?.invoice_number}</Text>
+                <Text style={styles.subTitle1}>{details?.payment_details?.type}</Text>
+                <Text style={styles.subTitle1}>{details?.payment_details?.total_quantity} items</Text>
+                <Text style={styles.subTitle1}>${details?.payment_details?.gross_amount.toFixed(2)}</Text>
+                <Text style={styles.subTitle1}>${details?.payment_details?.discount_amount.toFixed(2)}</Text>
+                <Text style={styles.subTitle1}>${details?.payment_details?.delivery_charge.toFixed(2)}</Text>
+                <Text style={styles.subTitle2}>${details?.payment_details?.order_amount.toFixed(2)}</Text>
               </View>
             </View>
 
             <View>
               {details?.order_status === "delivered" &&
-                <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('ReportIssue', { Id: details.order_number }); }}>
+                <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('ReportIssue', { Id: details?.order_number }); }}>
                   <Text style={styles.verifyButton}>REPORT ISSUE</Text>
                 </TouchableOpacity>
               }

@@ -1,124 +1,67 @@
-const GET_INFO = 'GET_INFO';
-const UPDATE_INFO = 'UPDATE_INFO';
-const GET_ADDRESS = 'GET_ADDRESS';
-const ADD_NEW_ADDRESS = 'ADD_NEW_ADDRESS';
-const EDIT_ADDRESS = 'EDIT_ADDRESS';
-const DELETE_ADDRESS = 'DELETE_ADDRESS';
-const GET_CARD = 'GET_CARD';
-const ADD_NEW_CARD = 'ADD_NEW_CARD';
-const EDIT_CARD = 'EDIT_CARD';
-const DELETE_CARD = 'DELETE_CARD';
+import makeApiCall from './../api';
+export const GET_INFO = 'GET_INFO';
+export const UPDATE_INFO = 'UPDATE_INFO';
+export const GET_ADDRESS = 'GET_ADDRESS';
+export const ADD_NEW_ADDRESS = 'ADD_NEW_ADDRESS';
+export const EDIT_ADDRESS = 'EDIT_ADDRESS';
+export const DELETE_ADDRESS = 'DELETE_ADDRESS';
+export const GET_CARD = 'GET_CARD';
+export const ADD_NEW_CARD = 'ADD_NEW_CARD';
+export const EDIT_CARD = 'EDIT_CARD';
+export const DELETE_CARD = 'DELETE_CARD';
 
 export const getInfo = (accessToken) => {
-
   return async dispatch => {
     try {
-      const response = await fetch('https://thankgreen.onrender.com/api/userprofile/info',
-        {
-          method: 'GET',
-          headers: {
-            'Authorization': 'Bearer ' + accessToken,
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error('Failed to fetch user info');
-      }
-      const resData = await response.json();
+      const resData = await makeApiCall('userprofile/info', 'GET', null, accessToken);
       console.log("getinfo resData", resData?.data[0]);
       dispatch({
         type: GET_INFO,
         userdata: resData?.data[0],
         name: resData?.data[0].name,
-        email : resData?.data[0].email,
+        email: resData?.data[0].email,
         phone_number: resData?.data[0].phone_number,
-        profileImageUrl : resData?.data[0].profileImageUrl
+        profileImageUrl: resData?.data[0].profileImageUrl
       });
       return resData;
     } catch (error) {
       console.error("Get Info error", error);
-      // Optionally dispatch an action to update the state with the error
       dispatch({ type: GET_INFO, error: error.message });
     }
   };
 };
 
 export const updateInfo = (formData, accessToken) => {
-  console.log("asfhdshf",formData)
   return async dispatch => {
     try {
-      const response = await fetch('https://thankgreen.onrender.com/api/userprofile/info',
-        {
-          method: 'PUT',
-          body: formData,
-          headers: {
-            'Authorization': 'Bearer ' + accessToken,
-            'Content-Type': 'multipart/form-data',
-          }
-        });
-        const resData = await response.json();
-        console.log('update info resdata: ', resData);
-        dispatch({ type: UPDATE_INFO, data: resData })
-        return resData;
+      const resData = await makeApiCall('userprofile/info', 'PUT', formData, accessToken);
+      console.log('update info resdata: ', resData);
+      dispatch({ type: UPDATE_INFO, data: resData });
+      return resData;
     } catch (error) {
-      console.error('Error UPdate Information : ', error);
+      console.error('Error Update Information : ', error);
     }
-  }
-}
+  };
+};
 
 export const getAddress = (accessToken) => {
-
   return async dispatch => {
     try {
-      const response = await fetch('https://thankgreen.onrender.com/api/userprofile/address',
-        {
-          method: 'GET',
-          headers: {
-            'Authorization': 'Bearer ' + accessToken,
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error('Failed to fetch user info');
-      }
-      const resData = await response.json();
+      const resData = await makeApiCall('userprofile/address', 'GET', null, accessToken);
       console.log("getAddress resData", resData?.data[0]);
       dispatch({ type: GET_ADDRESS, data: resData?.data[0] });
       return resData;
     } catch (error) {
-      console.error("Get Info error", error);
-      // Optionally dispatch an action to update the state with the error
+      console.error("Get Address error", error);
       dispatch({ type: GET_ADDRESS, error: error.message });
     }
   };
-  
 };
-
-
 
 export const addNewAddress = (values, accessToken) => {
   return async dispatch => {
     try {
-      console.log('sdfugy', values);
-      const response = await fetch('https://thankgreen.onrender.com/api/userprofile/add-address', {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer ' + accessToken,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            address_type: values.address_type,
-            address: values.address,
-            landmark: values.landmark,
-            zip_code: values.zip_code,
-            city: values.city,
-            state: values.state,
-            latitude: values.latitude,
-            longitude: values.longitude,
-          })
-        }
-      );
-      const resData = await response.json();
+      const resData = await makeApiCall('userprofile/add-address', 'POST', values, accessToken);
       console.log("add new address resData", resData);
       dispatch({ type: ADD_NEW_ADDRESS });
       return resData;
@@ -129,31 +72,9 @@ export const addNewAddress = (values, accessToken) => {
 };
 
 export const editAddress = (id, values, accessToken) => {
-
   return async dispatch => {
     try {
-      console.log('edit', values);
-      const response = await fetch(`https://thankgreen.onrender.com/api/userprofile/update-address/${id}`,
-
-        {
-          method: 'PUT',
-          headers: {
-            'Authorization': 'Bearer ' + accessToken,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            address_type: values.address_type,
-            address: values.address,
-            landmark: values.landmark,
-            zip_code: values.zip_code,
-            city: values.city,
-            state: values.state,
-            latitude: values.latitude,
-            longitude: values.longitude,
-          })
-        }
-      );
-      const resData = await response.json();
+      const resData = await makeApiCall(`userprofile/update-address/${id}`, 'PUT', values, accessToken);
       console.log("edit address resData", resData);
       dispatch({ type: EDIT_ADDRESS });
       return resData;
@@ -163,80 +84,37 @@ export const editAddress = (id, values, accessToken) => {
   };
 };
 
-
-
 export const deleteAddress = (addressId, accessToken) => {
-console.log("action a data:  >>>>>>", addressId, accessToken)
   return async dispatch => {
     try {
-      console.log('sdfugy', addressId);
-      const response = await fetch(`https://thankgreen.onrender.com/api/userprofile/delete-address/${addressId}`,
-
-        {
-          method: 'DELETE',
-          headers: {
-            'Authorization': 'Bearer ' + accessToken,
-          },
-         
-        }
-      );
-      const resData = await response.json();
+      const resData = await makeApiCall(`userprofile/delete-address/${addressId}`, 'DELETE', null, accessToken);
       console.log("Delete address resData", resData);
       dispatch({ type: DELETE_ADDRESS });
       return resData;
     } catch (error) {
-      console.error("Sign up error", error);
+      console.error("Delete Address error", error);
     }
   };
 };
 
 export const getCard = (accessToken) => {
-
   return async dispatch => {
     try {
-      const response = await fetch('https://thankgreen.onrender.com/api/userprofile/card',
-        {
-          method: 'GET',
-          headers: {
-            'Authorization': 'Bearer ' + accessToken,
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error('Failed to fetch card info');
-      }
-      const resData = await response.json();
+      const resData = await makeApiCall('userprofile/card', 'GET', null, accessToken);
       console.log("getCard resData", resData);
       dispatch({ type: GET_CARD, data: resData });
       return resData;
     } catch (error) {
-      console.error("Get card error", error);
-      // Optionally dispatch an action to update the state with the error
+      console.error("Get Card error", error);
       dispatch({ type: GET_CARD, error: error.message });
     }
   };
-  
 };
 
 export const addNewCard = (values, accessToken) => {
   return async dispatch => {
     try {
-      console.log('sdfugy', values);
-      const response = await fetch('https://thankgreen.onrender.com/api/userprofile/add-card', {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer ' + accessToken,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            number: values.cardNumber,
-            holder_name: values.cardHolder,
-            expiry: values.expirationDate,
-            cvv: values.cvv,
-          })
-        }
-      );
-      const resData = await response.json();
+      const resData = await makeApiCall('userprofile/add-card', 'POST', values, accessToken);
       console.log("add new card resData", resData);
       dispatch({ type: ADD_NEW_CARD });
       return resData;
@@ -247,27 +125,9 @@ export const addNewCard = (values, accessToken) => {
 };
 
 export const editCard = (id, values, accessToken) => {
-
   return async dispatch => {
     try {
-      // console.log('edit', values);
-      const response = await fetch(`https://thankgreen.onrender.com/api/userprofile/update-card/${id}`,
-
-        {
-          method: 'PUT',
-          headers: {
-            'Authorization': 'Bearer ' + accessToken,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            number: values.cardNumber,
-            holder_name: values.cardHolder,
-            expiry: values.expirationDate,
-            cvv: values.cvv,
-          })
-        }
-      );
-      const resData = await response.json();
+      const resData = await makeApiCall(`userprofile/update-card/${id}`, 'PUT', values, accessToken);
       console.log("edit card resData", resData);
       dispatch({ type: EDIT_CARD });
       return resData;
@@ -278,27 +138,14 @@ export const editCard = (id, values, accessToken) => {
 };
 
 export const deleteCard = (cardId, accessToken) => {
-  console.log("action a data:  >>>>>>", cardId, accessToken)
-    return async dispatch => {
-      try {
-        console.log('sdfugy', cardId);
-        const response = await fetch(`https://thankgreen.onrender.com/api/userprofile/delete-card/${cardId}`,
-  
-          {
-            method: 'DELETE',
-            headers: {
-              'Authorization': 'Bearer ' + accessToken,
-            },
-           
-          }
-        );
-        const resData = await response.json();
-        console.log("Delete address resData", resData);
-        dispatch({ type: DELETE_CARD });
-        return resData;
-      } catch (error) {
-        console.error("Sign up error", error);
-      }
-    };
+  return async dispatch => {
+    try {
+      const resData = await makeApiCall(`userprofile/delete-card/${cardId}`, 'DELETE', null, accessToken);
+      console.log("Delete card resData", resData);
+      dispatch({ type: DELETE_CARD });
+      return resData;
+    } catch (error) {
+      console.error("Delete Card error", error);
+    }
   };
-  
+};

@@ -30,8 +30,8 @@ const ProductsHome = (props) => {
     else {
       console.log("hiiiezlkjflz");
     }
-    if (favoriteProductIds[id]) {
-      console.log("yesyesyesyeysyeysy")
+    if (props.favourites && favoriteProductIds[id]) {
+      console.log("yesyesyesyeysyeysy", favoriteProductIds[id])
       setFav(1);
     }
 

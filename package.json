@@ -33,6 +33,7 @@
     "expo-status-bar": "~1.11.1",
     "firebase": "^10.12.2",
     "formik": "^2.4.5",
+    "moment": "^2.30.1",
     "react": "18.2.0",
     "react-native": "0.73.6",
     "react-native-flash-message": "^0.4.2",
@@ -57,7 +58,10 @@
     "redux": "^5.0.1",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^3.1.0",
-    "yup": "^1.4.0"
+    "yup": "^1.4.0",
+    "expo-auth-session": "~5.4.0",
+    "undefined": "expo-auth-session/providers/google",
+    "expo-web-browser": "~12.8.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

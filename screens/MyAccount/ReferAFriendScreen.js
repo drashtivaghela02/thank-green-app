@@ -1,8 +1,31 @@
 import { AntDesign } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useEffect, useState } from 'react';
 import { Button, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, ToastAndroid } from "react-native";
+import { useDispatch, useSelector } from 'react-redux';
+import * as homeAction from '../../store/actions/Home';
 
 const ReferAFriendScreen = props => {
+  const accessToken = useSelector(state => state.auth.accessToken)
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
+  const [resData, setResdata] = useState([]);
+  useEffect(() => {
+    setIsLoading(true);
+    console.log(accessToken)
+    dispatch(homeAction.getReferral(accessToken))
+      .then((response) => {
+        setIsLoading(false);
+        console.log("Referral PAge=> ", response?.data)
+        setResdata(response?.data?.referralDetails);
+      })
+      .catch(error => {
+        setIsLoading(false);
+        console.error("Error fetching referral information:", error);
+      });
+  }, [accessToken])
+
+
   return (
     <View style={styles.container} >
       <LinearGradient
@@ -29,7 +52,7 @@ const ReferAFriendScreen = props => {
           </TouchableOpacity>
 
           <View>
-            <Text style={styles.bodyMainText} >1  2  3  4</Text>
+            <Text style={styles.bodyMainText} >{resData?.referral_code?.replaceAll(""," ")}</Text>
           </View>
 
           <View style={styles.orData}>

@@ -68,11 +68,7 @@ export default (state = initialState, action) => {
       } 
     case SIGNOUT: 
       return {
-        signUpData: null, 
-        otpVerificationStatus: null, 
-        status:null,
-        accessToken: null,
-        refreshToken: null,
+        initialState
       }
     default:
       return state;

@@ -38,10 +38,11 @@ const productReducer = (state = initialState, action) => {
             }
         case SET_INITIAL_FAVORITES:
             const favoriteProductIds = action.favoriteProducts.map(product => product.product_id);
-            console.log("reducer favasd",favoriteProductIds)
+            const initial = state.favoriteProductIds
+            console.log("reducer favasd",initial.concat(favoriteProductIds))
             return {
                 ...state,
-                favoriteProductIds: favoriteProductIds
+                favoriteProductIds: initial.concat(favoriteProductIds)
             };
         case ADD_TO_FAVORITES:
             console.log("reducer add to fav",state)

@@ -1,28 +1,35 @@
-const HOME = 'HOME'
+import makeApiCall from './../api'; 
+
+const HOME = 'HOME';
 
 export const getHome = (accessToken) => {
-
-  return async dispatch => {
+  return async (dispatch) => {
     try {
-      const response = await fetch('https://thankgreen.onrender.com/api/home/?categoryPage=1&pastOrdersPage=1&recommendedProductsPage=1',
-        {
-          method: 'GET',
-          headers: {
-            'Authorization': 'Bearer ' + accessToken,
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error('Failed to fetch Home info');
-      }
-      const resData = await response.json();
+      const resData = await makeApiCall('home', 'GET', null, accessToken, {
+        categoryPage: 1,
+        pastOrdersPage: 1,
+        recommendedProductsPage: 1,
+      });
+
       console.log("get Home resData", resData);
       dispatch({ type: HOME, data: resData });
       return resData;
     } catch (error) {
       console.error("Get Home error", error);
-      // // Optionally dispatch an action to update the state with the error
-      // dispatch({ type: HOME, error: error.message });
+    }
+  };
+};
+
+export const getReferral = (accessToken) => {
+  return async (dispatch) => {
+    try {
+      const resData = await makeApiCall('home/referral', 'GET', null, accessToken);
+
+      console.log("get referral resData", resData);
+      dispatch({ type: HOME, data: resData });
+      return resData;
+    } catch (error) {
+      console.error("Get referral error", error);
     }
   };
 };

@@ -17,6 +17,7 @@ const FavoritesScreen = props => {
   const [isLoading, setIsLoading] = useState(false);
   const [resData, setResdata] = useState([]);
   const [productCount, setProductCount] = useState(0);
+  const favoriteProductIds = useSelector(state => state.product.favoriteProductIds);
 
   const fetchFavourites = (page) => {
     setIsLoading(true);
@@ -70,7 +71,7 @@ const FavoritesScreen = props => {
           renderItem={itemData =>
             <ProductsHome
               param={itemData.item}
-              favourites={1}
+              favourites={favoriteProductIds[itemData?.item?.product_id] ? 1 : 0}
               onSelect={onProductSelectHandler}
               onRemoveItem={() => {
                 dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0].quantity_variant_id}`))
