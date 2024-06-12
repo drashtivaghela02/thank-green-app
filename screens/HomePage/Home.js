@@ -10,76 +10,109 @@ import { useEffect, useState } from "react";
 import Carousel from "react-native-reanimated-carousel";
 import { Image } from "react-native";
 import ProductsHome from "../../Components/UI/ProductsHome";
-import * as cartItem from '../../store/actions/Cart'
+import * as cartItem from '../../store/actions/Cart';
 import CartIcon from "../../Components/UI/CartIcon";
 import ScreenLoader from "../../Components/UI/ScreenLoader";
 import Colors from "../../Constant/Colors";
 import CouponHome from "../../Components/UI/CouponHome";
 import * as orderAction from '../../store/actions/Orders';
+import usePagination from "../../Components/UI/usePagination";
+
+const INITIAL_PAST_PAGE = 1;
+const INITIAL_RECO_PAGE = 1;
+const ITEMS_PER_PAGE = 10;
 
 const Home = props => {
-  const accessToken = useSelector(state => state.auth.accessToken)
+  const accessToken = useSelector(state => state.auth.accessToken);
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  const [bannerData, setBannerData] = useState([])
+  const [again, setAgain] = useState(true)
+  const [bannerData, setBannerData] = useState([]);
   const [couponsData, setCouponsData] = useState([]);
-  const [category, setCategory] = useState([])
-  const [pastOrders, setPastOrders] = useState([])
-  const [recommendedProducts, setRecommendedProducts] = useState([])
+  const [category, setCategory] = useState([]);
+  const [pastOrders, setPastOrders] = useState([]);
+  const [recommendedProducts, setRecommendedProducts] = useState([]);
   const [resData, setResdata] = useState();
-  const [modalVisible, setModalVisible] = useState(false)
-  const [TnC, setTnC] = useState({})
+  const [pastOrderCount, setPastOrderCount] = useState(0);
+  const [recomendedCount, setRecomendedCount] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [TnC, setTnC] = useState({});
   const keyValuePairs = Object.keys(TnC).map(key => ({ key, value: TnC[key] }));
   const favoriteProductIds = useSelector(state => state.product.favoriteProductIds);
 
-  useEffect(() => {
+  const fetchHomePage = (pastPage, recoPage) => {
     setIsLoading(true);
-    console.log(accessToken)
-    dispatch(homeAction.getHome(accessToken))
+    console.log(accessToken);
+    dispatch(homeAction.getHome(pastPage, recoPage, accessToken))
       .then((response) => {
         setIsLoading(false);
-        console.log("Home PAge=> ", response?.data?.banner[0]?.banners)
+        console.log("Home PAge=> ", response?.data?.banner[0]?.banners);
         setResdata(response?.data);
-        setBannerData(response?.data?.banner[0]?.banners)
-        setCouponsData(response?.data?.coupons)
-        setCategory(response?.data?.categoryFilter)
-        setPastOrders(response?.data?.pastOrders)
-        setRecommendedProducts(response?.data?.recommendedProducts)
-
+        setBannerData(response?.data?.banner[0]?.banners);
+        setCouponsData(response?.data?.coupons);
+        setCategory(response?.data?.categoryFilter);
+        setPastOrders((prevData) => pastPage === INITIAL_PAST_PAGE ? response?.data?.pastOrders : [...prevData, ...response?.data?.pastOrders]);
+        setRecommendedProducts((prevData) => recoPage === INITIAL_RECO_PAGE ? response?.data?.recommendedProducts : [...prevData, ...response?.data?.recommendedProducts]);
+        setPastOrderCount(response?.data?.total_past_orders);
+        setRecomendedCount(response?.data?.total_recommended_products);
       })
       .catch(error => {
         setIsLoading(false);
         console.error("Error fetching user information:", error);
       });
-  }, [accessToken])
+  };
 
+  const { currentPage: pastPage, handleEndReached: handlePastOrdersEndReached } = usePagination({
+    fetchFunction: (page) => {
+      setAgain(false)
+      fetchHomePage(page, INITIAL_RECO_PAGE)
+    },
+    totalPages: Math.ceil(pastOrderCount / ITEMS_PER_PAGE),
+    initialPage: INITIAL_PAST_PAGE,
+  });
+
+  const { currentPage: recoPage, handleEndReached: handleRecomendedEndReached } = usePagination({
+    fetchFunction: (page) => {
+      setAgain(false)
+      fetchHomePage(INITIAL_PAST_PAGE, page)
+    },
+    totalPages: Math.ceil(recomendedCount / ITEMS_PER_PAGE),
+    initialPage: INITIAL_RECO_PAGE,
+  });
+
+  useEffect(() => {
+    fetchHomePage(INITIAL_PAST_PAGE, INITIAL_RECO_PAGE);
+    // setAgain(false)
+  }, [accessToken]);
 
   const handleTnC = (id) => {
-
-    console.log("TNC data id getting", id)
+    console.log("TNC data id getting", id);
     dispatch(orderAction.getCouponTnC(id, accessToken))
       .then((response) => {
         setTnC(response?.data);
-        console.log("TNC data getting", response)
+        console.log("TNC data getting", response);
         setIsLoading(false);
       })
       .catch((error) => {
         setIsLoading(false);
         console.error('Error fetching user information:', error);
       });
-  }
+  };
 
   const onCategorySelectHandler = (id, name) => {
-    console.log("touched", id)
-    props.navigation.navigate('CategoryProducts', { categoryId: id, name: name })
-  }
+    console.log("touched", id);
+    props.navigation.navigate('CategoryProducts', { categoryId: id, name: name });
+  };
+
   const onProductSelectHandler = (id, data) => {
-    props.navigation.navigate('ProductDescription', { ProductId: id, data: data })
-  }
+    props.navigation.navigate('ProductDescription', { ProductId: id, data: data });
+  };
 
   const renderItem = ({ item }) => {
     return (
-      <Image source={{ uri: item.image }} style={styles.image} />
+      <TouchableOpacity onPress={() => props.navigation.navigate('BannerScreen', { id: item.id })}>
+        <Image source={{ uri: item.image }} style={styles.image} />
+      </TouchableOpacity>
     );
   };
 
@@ -94,7 +127,7 @@ const Home = props => {
           <View style={{ flexDirection: 'row', gap: 10, justifyContent: 'space-between', alignItems: 'center' }}>
             <Entypo name="menu" size={28} color="white" onPress={() => props.navigation.toggleDrawer()} />
             <View>
-              <Text style={styles.subHeading} >Deliver to</Text>
+              <Text style={styles.subHeading}>Deliver to</Text>
               <Text numberOfLines={1} style={styles.heading}>Culture Tea Bar, Broad...</Text>
             </View>
             <Ionicons name="notifications-outline" size={28} color="white" onPress={() => { props.navigation.navigate('Notifications') }} />
@@ -107,127 +140,130 @@ const Home = props => {
               <Feather name="search" size={18} color="black" style={{ marginLeft: 1 }} />
               <Text style={{ fontSize: 17 }}>Search</Text>
             </TouchableOpacity>
-            {/* <AntDesign name="bars" size={28} color="white" onPress={() => { props.navigation.navigate('Filters') }} /> */}
-            {/* <FontAwesome6 name="bars-staggered" size={24} color="white" onPress={() => { props.navigation.goBack() }} /> */}
           </View>
         </View>
       </LinearGradient>
-
-      {isLoading ? <ScreenLoader />
+      
+      {isLoading && again ? <ScreenLoader />
         :
-        <ScrollView contentContainerStyle={styles.body}>
+      <ScrollView contentContainerStyle={styles.body}>
+        <View style={styles.container1}>
+          <Carousel
+            data={bannerData}
+            renderItem={renderItem}
+            sliderWidth={Dimensions.get("window").width}
+            itemWidth={Dimensions.get("window").width}
+            width={Dimensions.get("window").width}
+          />
+        </View>
 
-          <View style={styles.container1}>
-            <Carousel
-              data={bannerData}
-              renderItem={renderItem}
-              sliderWidth={Dimensions.get("window").width}
-              itemWidth={Dimensions.get("window").width}
-              width={Dimensions.get("window").width}
-            />
-          </View>
-
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => {
-              setModalVisible(!modalVisible);
-            }}
-          >
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-                <Text style={[styles.modalText, { fontWeight: '600', fontSize: 16 }]}>Terms and Conditions</Text>
-                <FlatList
-                  data={keyValuePairs}
-                  keyExtractor={item => item.key}
-                  renderItem={({ item }) => (
-                    <Text style={styles.modalText}>
-                      {item.key}: {item.value}
-                    </Text>
-                  )}
-                />
-                <Pressable
-                  style={[styles.button, styles.buttonClose]}
-                  onPress={() => setModalVisible(!modalVisible)}
-                >
-                  <Text style={styles.textStyle}>Close</Text>
-                </Pressable>
-              </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={[styles.modalText, { fontWeight: '600', fontSize: 16 }]}>Terms and Conditions</Text>
+              <FlatList
+                data={keyValuePairs}
+                keyExtractor={item => item.key}
+                renderItem={({ item }) => (
+                  <Text style={styles.modalText}>
+                    {item.key}: {item.value}
+                  </Text>
+                )}
+              />
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}
+              >
+                <Text style={styles.textStyle}>Close</Text>
+              </Pressable>
             </View>
-          </Modal>
-
-          <View style={styles.couponContainer}>
-            <FlatList
-              data={couponsData}
-              keyExtractor={(item) => item.id}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              renderItem={itemData =>
-                <CouponHome
-                  param={itemData.item}
-                  onShowTerms={() => {
-                    setModalVisible(true);
-                    handleTnC(itemData.item.id)
-                  }}
-                />}
-            />
           </View>
+        </Modal>
 
-          <View>
-            <Text style={styles.categoryList}>Categories</Text>
-            <FlatList
-              data={category}
-              keyExtractor={(item) => item.category_id}
-              horizontal={true}
-              renderItem={itemData =>
-                <CategoryFoodHome
-                  param={itemData.item}
-                  onSelect={onCategorySelectHandler}
-                />}
-            />
-          </View>
+        <View style={styles.couponContainer}>
+          <FlatList
+            data={couponsData}
+            keyExtractor={(item) => item.id}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            renderItem={itemData =>
+              <CouponHome
+                param={itemData.item}
+                onShowTerms={() => {
+                  setModalVisible(true);
+                  handleTnC(itemData.item.id);
+                }}
+              />}
+          />
+        </View>
 
+        <View>
+          <Text style={styles.categoryList}>Categories</Text>
+          <FlatList
+            data={category}
+            keyExtractor={(item) => item.category_id}
+            horizontal={true}
+            renderItem={itemData =>
+              <CategoryFoodHome
+                param={itemData.item}
+                onSelect={onCategorySelectHandler}
+              />}
+          />
+        </View>
 
+        {accessToken !== null && <View>
+          <Text style={styles.categoryList}>Past Orders</Text>
+          <FlatList
+            data={pastOrders}
+            keyExtractor={(item) => item.product_id}
+            horizontal={true}
+            style={{ paddingHorizontal: 10 }}
+            renderItem={itemData =>
+              <ProductsHome
+                param={itemData.item}
+                favourites={favoriteProductIds[itemData?.item?.product_id] ? 1 : 0}
+                onSelect={onProductSelectHandler}
+                onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0].quantity_variant_id}`)) }}
+              />}
+            onEndReached={handlePastOrdersEndReached}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={isLoading ? <ActivityIndicator size="large" color={Colors.green} style= {{paddingHorizontal: 10, paddingVertical: 75,}} /> : null}
+          />
+        </View>}
 
-          {accessToken !== null && <View>
-            <Text style={styles.categoryList}>Past Orders</Text>
-            <FlatList
-              data={pastOrders}
-              keyExtractor={(item) => item.product_id}
-              horizontal={true}
-              style={{ paddingHorizontal: 10 }}
-              renderItem={itemData =>
-                <ProductsHome
-                  param={itemData.item}
-                  favourites={favoriteProductIds[itemData?.item?.product_id] ? 1 : 0}
-                  onSelect={onProductSelectHandler}
-                  onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0].quantity_variant_id}`)) }}
-                />}
-            />
-          </View>}
-          <View>
-            <Text style={styles.categoryList}>Recomended Products</Text>
-            <FlatList
-              data={recommendedProducts}
-              keyExtractor={(item) => item.product_id}
-              horizontal={true}
-              style={{ paddingHorizontal: 10 }}
-              renderItem={itemData =>
-                <ProductsHome
-                  param={itemData.item}
-                  onSelect={onProductSelectHandler}
-                  onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.productId}-${itemData?.item?.quantity_variants[0]?.quantity_variant_id}`)) }}
-                />}
-            />
-          </View>
-        </ScrollView>
+        <View>
+          <Text style={styles.categoryList}>Recommended Products</Text>
+          <FlatList
+            data={recommendedProducts}
+            keyExtractor={(item) => item.product_id}
+            horizontal={true}
+            style={{ paddingHorizontal: 10 }}
+            renderItem={itemData =>
+              <ProductsHome
+                param={itemData.item}
+                onSelect={onProductSelectHandler}
+                onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.productId}-${itemData?.item?.quantity_variants[0]?.quantity_variant_id}`)) }}
+              />}
+            onEndReached={handleRecomendedEndReached}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={isLoading ? <ActivityIndicator size="large" color={Colors.green} style= {{paddingHorizontal: 10, paddingVertical: 75,}} /> : null}
+          />
+        </View>
+      </ScrollView>
       }
     </View>
-  )
-}
+  );
+};
 
 export default Home;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -245,15 +281,13 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width * 0.55
   },
   subHeading: {
-    // paddingTop: 4,
     color: 'white',
-    fontWeight: 'bold',
     fontWeight: '400'
   },
   container2: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center' //'space-between'
+    justifyContent: 'center'
   },
   searchContainer: {
     flexDirection: 'row',
@@ -267,27 +301,16 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   body: {
-    // flex: 1,
-    // alignItems: 'center',
     justifyContent: "flex-start",
     backgroundColor: 'white',
-    // paddingHorizontal: 20,
-    // paddingBottom: 50,
   },
   container1: {
-    // flex: 1,
-    // justifyContent: 'center',
-    // alignItems: 'center',
-    // width: '100%'
     height: 200,
-
   },
   image: {
-    // width: '100%',
     height: 180,
   },
   couponContainer: {
-    // width: '100%',
     paddingHorizontal: 20,
     paddingBottom: 10,
     gap: 20
@@ -302,7 +325,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    // marginTop: 22,
     backgroundColor: 'rgba(0, 0, 0, 0.3)'
   },
   modalView: {
@@ -339,4 +361,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-})
+});

@@ -152,7 +152,7 @@ export const loadInitialState = () => {
       }
       dispatch({ type: SET_LOADING, payload: false });
     } catch (error) {
-      console.error('Error loading state from AsyncStorage:', error);
+      // console.error('Error loading state from AsyncStorage:', error);
     }
   };
 };

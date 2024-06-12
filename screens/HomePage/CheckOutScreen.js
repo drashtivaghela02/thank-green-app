@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Dimensions, FlatList, Image, Modal, Pressable, ScrollView, SectionList, StyleSheet, Text, Touchable, TouchableOpacity, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { useIsFocused } from '@react-navigation/native';
+import { CommonActions, useIsFocused } from '@react-navigation/native';
 import { debounce } from 'lodash';
 import { AntDesign, Feather, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -109,8 +109,9 @@ const CheckOutScreen = (props) => {
   }, 1);
 
   useEffect(() => {
+    if(cartItems.length !== 0 ){
     const summaryData = calculateSummaryData(cartItems);
-    debouncedFetchData(summaryData);
+    debouncedFetchData(summaryData);}
   }, [cartItems]);
 
 
@@ -132,7 +133,7 @@ const CheckOutScreen = (props) => {
 
   }
   const handleTnC = (id) => {
-
+    setIsLoading(true)
     console.log("TNC data id getting", id)
     dispatch(orderAction.getCouponTnC(id, accessToken))
       .then((response) => {
@@ -147,28 +148,54 @@ const CheckOutScreen = (props) => {
   }
 
   const handleApplyCoupon = (item, couponCode, id) => {
-    const summaryData = calculateSummaryData(cartItems);
-    dispatch(orderAction.applyCoupon(summaryData, couponCode, accessToken))
-      .then((response) => {
-        // setTnC(response?.data);
-        if (response.status === 'success') {
-          setIsCoupon(true)
-          setCouponsData([couponCode]);
-          setDiscount(response.data.discount)
-          fetchDataWithCoupon(summaryData, id)
+    if (accessToken) {
+      const summaryData = calculateSummaryData(cartItems);
+      dispatch(orderAction.applyCoupon(summaryData, couponCode, accessToken))
+        .then((response) => {
+          if (response.status === 'success') {
+            setIsCoupon(true)
+            setCouponsData([couponCode]);
+            setDiscount(response.data.discount)
+            fetchDataWithCoupon(summaryData, id)
+          }
+          if (response.status === 'error') {
+            Alert.alert("Error", response.msg)
+            return
+          }
+          console.log("Aply coupon data getting", response)
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          setIsLoading(false);
+        });
+    }
+    else {
+      Alert.alert("You are not signed in", "Sign in to proceed..", [{ text: 'cancel', style: "cancel" }, {
+        text: 'Login',
+        onPress: () => {
+          props.navigation.dispatch(
+            CommonActions.reset({ index: 0, routes: [{ name: 'auth' }], }));
         }
-        if (response.status === 'error') {
-          Alert.alert("Error",response.msg)
-          return
-        }
-        console.log("Aply coupon data getting", response)
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        console.error('apply coupons information:', error);
-      });
+      }])
+    }
   }
+
+  const handleCheckout = () => {
+    if (accessToken) {
+      props.navigation.navigate('PlaceOrder', { OrderData: orderData, SummaryData: calculateSummaryData(cartItems) });
+    }
+    else {
+      Alert.alert("You are not signed in", "Sign in to proceed checkout..", [{ text: 'cancel', style: "cancel" }, {
+        text: 'Login',
+        onPress: () => {
+          props.navigation.dispatch(
+            CommonActions.reset({ index: 0, routes: [{ name: 'auth' }], }));
+        }
+      }])
+    }
+  }
+
+
 
   let ApplicableCoupons;
 
@@ -335,9 +362,9 @@ const CheckOutScreen = (props) => {
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                   <Image source={require('../../assets/discount.png')} style={styles.logo} tintColor={Colors.green} />
                   <Text>{couponsData ?? couponsData?.code}</Text>
-                  <Text style={{fontWeight: '500'}}>Saved ${discount}</Text>
+                  <Text style={{ fontWeight: '500' }}>Saved ${discount}</Text>
                 </View>
-                    
+
                 <TouchableOpacity onPress={() => {
                   setCouponsData([])
                   fetchData(calculateSummaryData(cartItems))
@@ -373,9 +400,10 @@ const CheckOutScreen = (props) => {
             <View style={styles.buttonsContainer}>
               <TouchableOpacity
                 style={styles.verify}
-                onPress={() => {
-                  props.navigation.navigate('PlaceOrder', { OrderData: orderData, SummaryData: calculateSummaryData(cartItems) });
-                }}
+                onPress={handleCheckout}
+              //   () => {
+              //   props.navigation.navigate('PlaceOrder', { OrderData: orderData, SummaryData: calculateSummaryData(cartItems) });
+              // }}
               >
                 <Text style={styles.verifyButton}>CHECKOUT</Text>
               </TouchableOpacity>

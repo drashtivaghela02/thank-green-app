@@ -14,7 +14,7 @@ export const getInfo = (accessToken) => {
   return async dispatch => {
     try {
       const resData = await makeApiCall('userprofile/info', 'GET', null, accessToken);
-      console.log("getinfo resData", resData?.data[0]);
+      console.log("getinfo resData", resData);
       dispatch({
         type: GET_INFO,
         userdata: resData?.data[0],
@@ -25,7 +25,7 @@ export const getInfo = (accessToken) => {
       });
       return resData;
     } catch (error) {
-      console.error("Get Info error", error);
+      console.log("Get Info error", error);
       dispatch({ type: GET_INFO, error: error.message });
     }
   };

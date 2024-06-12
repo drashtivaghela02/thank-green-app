@@ -6,7 +6,7 @@ const buildQueryString = (params) => {
     .join('&');
 };
 
-const makeApiCall = async (endpoint, method = 'GET', body = null, accessToken = null, queryParams = {}) => {
+const makeApiCall = async (endpoint, method , body = null, accessToken = null, queryParams = {}) => {
   const headers = {
     'Content-Type': 'application/json',
   };
@@ -37,7 +37,7 @@ const makeApiCall = async (endpoint, method = 'GET', body = null, accessToken = 
     }
     return await response.json();
   } catch (error) {
-    console.error(`Error in API call to ${endpoint}:`, error);
+    console.log(`Error in API call to ${endpoint}:`, error);
     throw error;
   }
 };

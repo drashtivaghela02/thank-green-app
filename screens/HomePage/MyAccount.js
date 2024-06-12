@@ -15,6 +15,7 @@ import ImagePicker from "../../Components/Image/ImagePicker";
 import ProfileImage from "../../Components/Image/ProfileImage";
 import { launchCameraAsync } from "expo-image-picker";
 import * as authActions from '../../store/actions/Auth';
+import { CommonActions, StackActions } from "@react-navigation/native";
 
 
 const MyAccount = props => {
@@ -87,8 +88,16 @@ const MyAccount = props => {
     };
 
     const handleLogout = () => {
+        props.navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [
+                { name: 'auth' }
+              ],
+            })
+          );
+        
         dispatch(authActions.signOut())
-        props.navigation.navigate('FormNavigator'); 
         console.log('logout');
         sheetRef.current.close();
     };

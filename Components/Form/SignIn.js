@@ -149,7 +149,7 @@ const SignIn = (props) => {
         >
             <View style={styles.screen} >
                 <KeyboardAvoidingView>
-                    <ScrollView>
+                    <ScrollView showsVerticalScrollIndicator={false}>
                         <TouchableOpacity onPress={() => props.navigation.navigate('Home')}>
                             <Text style={styles.skipText}>SKIP</Text>
                         </TouchableOpacity>
@@ -216,7 +216,7 @@ const SignIn = (props) => {
                             <View><Text style={{ color: 'white', marginHorizontal: 15 }}> OR CONNECT WITH </Text></View>
                             <View style={styles.lines}></View>
                         </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'center', padding: 15, gap: 15 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'center', padding: 15, gap: 40 }}>
                             <TouchableOpacity onPress={() => promptAsync()}>
                                 <Image source={require('../../assets/google_logo.png')} style={styles.GoogleLogo} />
                             </TouchableOpacity>
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     logo: {
-        width: 250,
+        width: 300,
         height: 200
     },
     GoogleLogo: {
@@ -305,6 +305,7 @@ const styles = StyleSheet.create({
     verifyButton: {
         color: 'white',
         fontSize: 18,
+        fontWeight: '500',
         alignSelf: 'center'
     },
     signUpContainer: {
@@ -339,8 +340,9 @@ const styles = StyleSheet.create({
     },
     signUpLink: {
         marginLeft: 5,
+        fontSize: 16,
         fontWeight: 'bold',
-        color: '#2c843e'
+        color: '#4fd970'
     },
     errorText: {
         color: 'red',

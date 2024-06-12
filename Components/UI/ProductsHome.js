@@ -73,17 +73,17 @@ const ProductsHome = (props) => {
           ) : (
             <View style={styles.qtyContainer2}>
               <TouchableOpacity onPress={() => {
-                setQty(qty + 1)
-                dispatch(cartItem.addToCart(data, data?.quantity_variants[0]?.quantity_variant_id))
-              }}>
-                <AntDesign name="pluscircleo" size={24} color="white" />
-              </TouchableOpacity>
-              <Text style={styles.qtyText}>{String(qty).padStart(2, '0')}</Text>
-              <TouchableOpacity onPress={() => {
                 setQty(qty - 1)
                 props.onRemoveItem()
               }}>
                 <AntDesign name="minuscircleo" size={24} color="white" />
+              </TouchableOpacity>
+              <Text style={styles.qtyText}>{String(qty).padStart(2, '0')}</Text>
+              <TouchableOpacity onPress={() => {
+                setQty(qty + 1)
+                dispatch(cartItem.addToCart(data, data?.quantity_variants[0]?.quantity_variant_id))
+              }}>
+                <AntDesign name="pluscircleo" size={24} color="white" />
               </TouchableOpacity>
             </View>
           )}

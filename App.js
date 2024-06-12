@@ -92,7 +92,7 @@ async function registerForPushNotificationsAsync() {
           projectId,
         })
       ).data;
-      console.log('Expo Push Token:', pushTokenString);  // Log the token to the console
+      console.log('Expo Push Token:', pushTokenString);  
       return pushTokenString;
     } catch (e) {
       handleRegistrationError(`${e}`);

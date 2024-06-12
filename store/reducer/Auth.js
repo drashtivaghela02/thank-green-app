@@ -67,6 +67,7 @@ export default (state = initialState, action) => {
         password: action.password,
       } 
     case SIGNOUT: 
+    AsyncStorage.clear();
       return {
         initialState
       }
@@ -77,7 +78,6 @@ export default (state = initialState, action) => {
 
 
 // AsyncStorage
-
 
 export const loadInitialState = () => {
   return async (dispatch) => {
@@ -91,15 +91,14 @@ export const loadInitialState = () => {
       else {
         console.log('Data not found in async storage')
         dispatch({ type: 'LOAD_STATE', state: initialState });
-
       }
     } catch (error) {
-      console.error('Error loading state from AsyncStorage:', error);
+      // console.error('Error loading state from AsyncStorage:', error);
     }
   };
 };
 
-// Middleware to save state to AsyncStorage whenever it changes
+
 export const saveStateMiddleware = store => next => action => {
   const result = next(action);
   const state = store.getState();

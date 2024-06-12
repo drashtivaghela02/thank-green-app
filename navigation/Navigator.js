@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { NavigationContainer } from '@react-navigation/native';
+import { CommonActions, NavigationContainer, StackActions } from '@react-navigation/native';
 import { FontAwesome, MaterialIcons, MaterialCommunityIcons, Fontisto, AntDesign, Feather, Entypo } from '@expo/vector-icons';
 
 import { ActivityIndicator, Dimensions, Image, SafeAreaView, Text, View } from 'react-native';
@@ -54,6 +54,7 @@ import CheckOutIntent from '../screens/CheckOut/CheckOutIntent';
 import CustomIntent from '../screens/CheckOut/CustomIntent';
 import DeliveryTimeScreen from '../screens/CheckOut/DeliveryTimeScreen';
 import CategoryProducts from '../screens/Shop/CategoryProducts';
+import BannerScreen from '../screens/Home/BannerScreen';
 // import WebViewScreen from '../Components/Form/WebViewScreen';
 
 
@@ -82,19 +83,20 @@ const AuthNavigator = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch data from AsyncStorage
         const storedAccessToken = await AsyncStorage.getItem('reduxState');
-        // If data is found, update redux state
         if (storedAccessToken) {
           dispatch(loadInitialState(storedAccessToken));
           console.log("navigator", storedAccessToken.auth.accessToken)
         }
+        else {
+          console.log("No access token available")
+        }
       } catch (error) {
-        console.error('Error fetching data from AsyncStorage:', error);
+        // console.error('Error fetching data from AsyncStorage:', error);
       }
     };
 
-    fetchData(); // Call the function when component mounts
+    fetchData();
   }, []);
 
   if (isLoading) {
@@ -105,26 +107,24 @@ const AuthNavigator = () => {
 
   return (
     <NavigationContainer>
-      <AuthStack.Navigator>
+      <AuthStack.Navigator >
         {(authState)
           ?
           <AuthStack.Screen name="Home" component={DrawerNavigator} options={{ headerShown: false }} />
           :
           (
-            <><AuthStack.Screen name="FormNavigator" component={FormNavigator} options={{ headerShown: false }} />
-              <AuthStack.Screen name="VerificationCode" component={VerificationCode} options={{ headerShown: false }} />
-              <AuthStack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
-              <AuthStack.Screen name="ForgetPassword" component={ForgetPassword} options={{ headerShown: false }} />
-              <AuthStack.Screen name="Home" component={DrawerNavigator} options={{ headerShown: false }} />
-            </>)
+            <AuthStack.Screen name="auth" component={AuthState} options={{ headerShown: false }} />
+
+            )
         }
+        {/* <AuthStack.Screen name="FormNavigator1" component={FormNavigator} options={{ headerShown: false }} /> */}
         <AuthStack.Screen name='ReferAFriends' component={ReferAFriendScreen} options={{ headerShown: false, }} />
         <AuthStack.Screen name="Map" component={Map} options={{ headerShown: false }} />
         <AuthStack.Screen name='LocationPicker' component={LocationPicker} options={{ headerShown: false }} />
         <AuthStack.Screen name='TrackOrder' component={TrackOrder} options={{ headerShown: false }} />
         <AuthStack.Screen name='ProductDescription' component={ProductDescription} options={{ headerShown: false }} />
         <AuthStack.Screen name='PlaceOrder' component={PlaceOrder} options={{ headerShown: false }} />
-      <AuthStack.Screen name='OrderDetails' component={OrderDetails} options={{ headerShown: false }} />
+        <AuthStack.Screen name='OrderDetails' component={OrderDetails} options={{ headerShown: false }} />
 
         <AuthStack.Screen name='CheckOutIntent' component={CheckOutIntent} options={{ headerShown: false }} />
         <AuthStack.Screen name='CustomIntent' component={CustomIntent} options={{ headerShown: false }} />
@@ -135,6 +135,19 @@ const AuthNavigator = () => {
     </NavigationContainer>
   );
 };
+const AuthStateStack = createStackNavigator();
+
+const AuthState = () => {
+  return (
+    <AuthStateStack.Navigator>
+
+  <AuthStateStack.Screen name="FormNavigator" component={FormNavigator} options={{ headerShown: false }} />
+  <AuthStateStack.Screen name="VerificationCode" component={VerificationCode} options={{ headerShown: false }} />
+  <AuthStateStack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
+  <AuthStateStack.Screen name="ForgetPassword" component={ForgetPassword} options={{ headerShown: false }} />
+      <AuthStateStack.Screen name="Home" component={DrawerNavigator} options={{ headerShown: false }} />
+      </AuthStateStack.Navigator>)
+}
 
 const LocationStack = createStackNavigator();
 const LocationScreen = () => {
@@ -177,6 +190,7 @@ const HomeScreen = () => {
       <HomeStack.Screen name='CategoryList' component={CategoryList} options={{ headerShown: false }} />
       <HomeStack.Screen name='ProductsListing' component={ProductsListing} options={{ headerShown: false }} />
       <HomeStack.Screen name='CategoryProducts' component={CategoryProducts} options={{ headerShown: false }} />
+      <HomeStack.Screen name='BannerScreen' component={BannerScreen} options={{ headerShown: false }} />
 
     </HomeStack.Navigator>
   )
@@ -284,14 +298,26 @@ const MyAccountScreen = () => {
 }
 
 const BottomTab = createMaterialBottomTabNavigator();
-const TabsNavigator = () => {
+const TabsNavigator = ({navigation}) => {
+  const dispatch = useDispatch();
+  const HandleLogout = (props) => {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [
+          { name: 'auth' }
+        ],
+      })
+    );
+    console.log('logout');
+  };
+  const authState = useSelector(state => state.auth.accessToken);
   return (
     <BottomTab.Navigator
       // shifting={true}
       activeColor={Colors.green}
       inactiveColor='#AFAFAF'
       barStyle={{ backgroundColor: 'white' }}
-
     >
       <BottomTab.Screen
         name="HomeTab"
@@ -339,12 +365,13 @@ const TabsNavigator = () => {
 
       <BottomTab.Screen
         name="MyAccount"
-        component={MyAccountScreen}
+        component={authState ? MyAccountScreen : HandleLogout}
         options={{
           tabBarLabel: 'MyAccount',
           tabBarIcon: ({ color }) => (
             <FontAwesome name="user" size={26} color={color} />
           ),
+          
         }}
       />
     </BottomTab.Navigator>
