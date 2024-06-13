@@ -6,7 +6,7 @@ const buildQueryString = (params) => {
     .join('&');
 };
 
-const makeApiCall = async (endpoint, method , body = null, accessToken = null, queryParams = {}) => {
+const makeApiCall = async (endpoint, method , body , accessToken, queryParams = {}) => {
   const headers = {
     'Content-Type': 'application/json',
   };
@@ -28,12 +28,13 @@ const makeApiCall = async (endpoint, method , body = null, accessToken = null, q
   if (Object.keys(queryParams).length > 0) {
     const queryString = buildQueryString(queryParams);
     url = `${url}?${queryString}`;
+    console.log("HEy query string builded like this",url )
   }
 
   try {
     const response = await fetch(url, options);
     if (!response.ok) {
-      throw new Error(`Failed to fetch: ${response.statusText}`);
+      throw new Error(`Failed to fetch: ${response.msg}`);
     }
     return await response.json();
   } catch (error) {

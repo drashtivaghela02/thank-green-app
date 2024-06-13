@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet, FlatList, Dimensions, TouchableOpacity } from "react-native";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import CategoryFoodHome from "../../Components/UI/CategoryFoodHome";
@@ -14,6 +14,9 @@ function FilterByScreen({ route }) {
 
   // console.log("resdAta in Filter by screen ", resData);
   console.log("PriceChange. ", priceRange, selectedCategories);
+  useEffect(() => {
+    dispatch(filter.FilterBy({ categoryFilter: selectedCategories, priceFilter: priceRange }));
+  }, [selectedCategories, priceRange]);
 
   const renderCategoryItem = ({ item }) => (
     <CategoryFoodHome
@@ -27,7 +30,7 @@ function FilterByScreen({ route }) {
             return [...prevSelectedCategories, item?.category_id];
           }
         });
-        dispatch(filter.FilterBy({ categoryFilter: selectedCategories, priceFilter: priceRange }))
+        // dispatch(filter.FilterBy({ categoryFilter: selectedCategories, priceFilter: priceRange }))
       }}
     />
   );
@@ -52,7 +55,7 @@ function FilterByScreen({ route }) {
           sliderLength={Dimensions.get("window").width * 0.90}
           onValuesChange={(values) => {
             setPriceRange(values)
-            dispatch(filter.FilterBy({ categoryFilter: selectedCategories, priceFilter: values }))
+            // dispatch(filter.FilterBy({ categoryFilter: selectedCategories, priceFilter: values }))
           }}
           allowOverlap={false}
           snapped

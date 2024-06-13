@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const Products = (props) => {
   const cartItems = useSelector(state => state?.cart?.items)
-console.log("search products ddata",props.param)
+// console.log("search products ddata",props.param)
   const data = props.param;
 
   const [quantityVarientId, setQuantityVarientId] = useState(props.param?.quantity_variants[0]?.quantity_variant_id ?? '')

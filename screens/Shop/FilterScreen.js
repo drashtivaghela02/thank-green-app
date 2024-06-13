@@ -65,9 +65,10 @@ export default function FilterScreen(props) {
       });
   }, []);
   const handleFilter = () => {
-
-    const filteredItems = {};
-    
+// console.log
+    let filteredItems = sortedData;
+    delete filteredItems.favoriteProductIds
+    console.log("sort data from filtered", filteredItems)
 
     props.route.params.onGoBack(filteredItems);
     props.navigation.goBack();

@@ -14,8 +14,13 @@ const productReducer = (state = initialState, action) => {
             console.log("Reduc data for sort", action)
             const delivery = action.SortBy.deliveryTimeFilter ? action.SortBy.deliveryTimeFilter : ''
             let deliveryTime = {};
-            deliveryTime.start = delivery.split(' ')[0]
-            deliveryTime.end = delivery.split(' ')[3]
+            if (delivery === '-Select Time-') {
+                deliveryTime = {}
+            }
+            else {
+                deliveryTime.start = delivery.split(' - ')[0]
+                deliveryTime.end = delivery.split(' - ')[1]
+            }
             const priceOrder = action.SortBy.priceOrderFilter
             return {
                 ...state,
@@ -39,20 +44,20 @@ const productReducer = (state = initialState, action) => {
         case SET_INITIAL_FAVORITES:
             const favoriteProductIds = action.favoriteProducts.map(product => product.product_id);
             const initial = state.favoriteProductIds
-            console.log("reducer favasd",initial.concat(favoriteProductIds))
+            console.log("reducer favasd", initial.concat(favoriteProductIds))
             return {
                 ...state,
                 favoriteProductIds: initial.concat(favoriteProductIds)
             };
         case ADD_TO_FAVORITES:
-            console.log("reducer add to fav",state)
-        
+            console.log("reducer add to fav", state)
+
             return {
                 ...state,
                 favoriteProductIds: [...state.favoriteProductIds, action.productId]
             };
         case REMOVE_FROM_FAVORITES:
-            console.log("reducer favasd",state.favoriteProductIds)
+            console.log("reducer favasd", state.favoriteProductIds)
 
             return {
                 ...state,

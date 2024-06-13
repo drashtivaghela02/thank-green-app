@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
 
 const CategoryFoodHome = ({ param,search ,isSelected, onSelect }) => {
-  console.log("onselect home category",param)
+  // console.log("onselect home category",param)
   const data = param;
   // const id = param.category_id;
   // const name = param.category_name;

@@ -9,7 +9,7 @@ import {
   View
 } from "react-native";
 import CustomHeader from "../../Components/UI/CustomHeader";
-import { AntDesign, Feather } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import SearchBar from "../../Components/UI/SearchBar";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,7 +31,13 @@ const SearchScreen = (props) => {
   const [searchCategoryList, setSearchCategoryList] = useState([]);
   const [searchProductList, setSearchProductList] = useState([]);
   const [searchSubCategoryList, setSearchSubCategoryList] = useState([]);
+  const [filterProductCount, setFilterProductCount] = useState(0);
   const [productCount, setProductCount] = useState(0);
+
+  const [filteredCurrentPage, setFilteredCurrentPage] = useState(INITIAL_PAGE);
+  const [filteredTotalPages, setFilteredTotalPages] = useState(1);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [filter, setFilter] = useState();
 
   const onCategorySelectHandler = (id, name) => {
     props.navigation.navigate('CategoryProducts', { categoryId: id, name: name });
@@ -45,25 +51,32 @@ const SearchScreen = (props) => {
     props.navigation.navigate('ProductDescription', { ProductId: id, data: data });
   };
 
+  const applyFilter = (sorted, page) => {
+    setIsLoading(true);
+    dispatch(productAction.applyFilter(sorted, page, accessToken))
+      .then((response) => {
+        setSearchCategoryList('No category found');
+        setSearchSubCategoryList('No subcategory found');
+        setFilteredProducts((prevData) => page === INITIAL_PAGE ? response?.data?.filterProducts : [...prevData, ...response?.data?.filterProducts]);
+        setFilterProductCount(response?.data?.total_filter_products);
+        setFilteredTotalPages(Math.ceil(response?.data?.total_filter_products / 10));
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.error("Error fetching user information:", error);
+      });
+  };
+
   const filterHandler = () => {
     props.navigation.navigate('Filters', {
       onGoBack: (sorted) => {
         if (searchPhrase) {
           sorted.searchText = searchPhrase;
         }
-
-        setIsLoading(true);
-        dispatch(productAction.applyFilter(sorted, accessToken))
-          .then((response) => {
-            setSearchCategoryList('No category found');
-            setSearchSubCategoryList('No subcategory found');
-            setSearchProductList(response?.data?.filterProducts);
-            setIsLoading(false);
-          })
-          .catch((error) => {
-            setIsLoading(false);
-            console.error("Error fetching user information:", error);
-          });
+        setFilter(sorted)
+        applyFilter(sorted, INITIAL_PAGE);
+        setFilteredCurrentPage(INITIAL_PAGE);
       },
     });
   };
@@ -72,9 +85,9 @@ const SearchScreen = (props) => {
     setIsLoading(true);
     dispatch(productAction.search(searchPhrase, page, accessToken))
       .then((response) => {
-        setSearchCategoryList(response?.data?.searchCategoryList);
-        setSearchSubCategoryList(response?.data?.searchSubCategoryList);
-        setSearchProductList((prevData) => [...prevData, ...response?.data?.searchProductList]);
+        setSearchCategoryList(response?.data?.searchCategoryList || 'No category found');
+        setSearchSubCategoryList(response?.data?.searchSubCategoryList || 'No subcategory found');
+        setSearchProductList((prevData) => page === INITIAL_PAGE ? response?.data?.searchProductList : [...prevData, ...response?.data?.searchProductList]);
         setProductCount(response?.data?.total_search_products);
         setIsLoading(false);
       })
@@ -84,18 +97,32 @@ const SearchScreen = (props) => {
       });
   };
 
-  const { currentPage, handleEndReached } = usePagination({
+  const { currentPage, handleEndReached, resetPagination } = usePagination({
     fetchFunction: fetchSearchData,
     totalPages: Math.ceil(productCount / 10),
     initialPage: INITIAL_PAGE,
   });
 
   useEffect(() => {
-    fetchSearchData(INITIAL_PAGE);
+    const delayDebounceFn = setTimeout(() => {
+      if (searchPhrase) {
+        resetPagination();
+        fetchSearchData(INITIAL_PAGE);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
   }, [searchPhrase]);
 
+  const handleFilteredEndReached = () => {
+    if (filteredCurrentPage < filteredTotalPages && !isLoading) {
+      applyFilter(filter, filteredCurrentPage + 1);
+      setFilteredCurrentPage(prevPage => prevPage + 1);
+    }
+  };
+
   let category;
-  if (searchCategoryList !== 'No category found') {
+  if (Array.isArray(searchCategoryList) && searchCategoryList.length > 0) {
     category = (
       <View style={{ marginHorizontal: 10 }}>
         <FlatList
@@ -115,7 +142,7 @@ const SearchScreen = (props) => {
   }
 
   let subcategory;
-  if (searchSubCategoryList !== "No subcategory found") {
+  if (Array.isArray(searchSubCategoryList) && searchSubCategoryList.length > 0) {
     subcategory = (
       <FlatList
         data={searchSubCategoryList}
@@ -133,7 +160,7 @@ const SearchScreen = (props) => {
   }
 
   let products;
-  if (searchProductList !== "No products found") {
+  if (Array.isArray(searchProductList) && searchProductList.length > 0) {
     products = (
       <FlatList
         data={searchProductList}
@@ -145,11 +172,34 @@ const SearchScreen = (props) => {
           />
         }
         onEndReached={handleEndReached}
-        onEndReachedThreshold={0.1}
         ListFooterComponent={isLoading ? <ActivityIndicator size="large" color={Colors.green} /> : null}
       />
     );
   }
+
+  let filteredProductList;
+  if (Array.isArray(filteredProducts) && filteredProducts.length > 0) {
+    filteredProductList = (
+      <FlatList
+        data={filteredProducts}
+        keyExtractor={(item) => item.product_id}
+        renderItem={itemData =>
+          <SearchProducts
+            param={itemData.item}
+            onSelect={onProductSelectHandler}
+          />
+        }
+        onEndReached={handleFilteredEndReached}
+        ListFooterComponent={isLoading ? <ActivityIndicator size="large" color={Colors.green} /> : null}
+      />
+    );
+  }
+
+  let noResultsMessage = (
+    <Text style={{ textAlign: 'center', marginTop: 20 }}>
+      No results found. Please try a different search term.
+    </Text>
+  );
 
   return (
     <View style={{ backgroundColor: 'white', flex: 1 }}>
@@ -170,10 +220,11 @@ const SearchScreen = (props) => {
         />
       </View>
       <ScrollView contentContainerStyle={{}}>
-        {/* {isLoading && <ActivityIndicator color={Colors.green} />} */}
-        {category}
-        {subcategory}
-        {products}
+        {isLoading ? <ActivityIndicator size="large" color={Colors.green} /> : null}
+        {category || noResultsMessage}
+        {subcategory || noResultsMessage}
+        {products || noResultsMessage}
+        {filteredProductList}
       </ScrollView>
     </View>
   );

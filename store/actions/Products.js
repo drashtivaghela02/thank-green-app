@@ -23,7 +23,7 @@ export const getCategory = (accessToken) => {
   };
 };
 
-export const getProductsFromCategory = (id,page, accessToken) => {
+export const getProductsFromCategory = (id, page, accessToken) => {
   return async dispatch => {
     try {
       const resData = await makeApiCall(`shop/products/category/${id}`, 'GET', null, accessToken, { page });
@@ -47,10 +47,10 @@ export const getSubCategory = (id, accessToken) => {
   };
 };
 
-export const getProductsFromSubCat = (id,page, accessToken) => {
+export const getProductsFromSubCat = (id, page, accessToken) => {
   return async dispatch => {
     try {
-      const resData = await makeApiCall(`shop/products/subCategory/${id}`, 'GET', null, accessToken, { page});
+      const resData = await makeApiCall(`shop/products/subCategory/${id}`, 'GET', null, accessToken, { page });
       dispatch({ type: GET_PRODUCTS_FROM_SUB_CAT });
       return resData;
     } catch (error) {
@@ -95,10 +95,18 @@ export const showFilter = () => {
   };
 };
 
-export const applyFilter = (value, accessToken) => {
+export const applyFilter = (value, page, accessToken) => {
   return async dispatch => {
     try {
-      const resData = await makeApiCall('shop/filter', 'GET', { value }, accessToken, { page: 1 });
+      const resData = await makeApiCall('shop/filter', 'GET', null, accessToken, {
+        page: 1,
+        searchText: value.searchText,
+        categoryFilter: JSON.stringify(value.categoryFilter),
+        priceFilter: JSON.stringify(value.priceFilter),
+        deliveryTimeFilter: JSON.stringify(value.deliveryTimeFilter),
+        priceOrderFilter: value.priceOrderFilter,
+      });
+      console.log("Response Data: ", resData);
       return resData;
     } catch (error) {
       console.error("Apply Filter Error", error);

@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
     height: 180,
   },
   couponContainer: {
-    paddingHorizontal: 20,
+    // paddingHorizontal: 20,
     paddingBottom: 10,
     gap: 20
   },

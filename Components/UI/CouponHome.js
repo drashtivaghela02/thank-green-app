@@ -5,7 +5,7 @@ const CouponHome = ({ param, onShowTerms }) => {
   console.log("coupon data coming", param)
   const date = param?.expiry_date
   return (
-    <View style={{flex:1}}>
+    <View style={{flex:1, paddingLeft: 15}}>
 
     <ImageBackground source={{ uri: "https://static.gostor.com/images/images/apply-coupon.png" }} resizeMode="stretch" style={styles.coupon}>
       <View style={styles.textContainer}>
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
   coupon: {
     height: 80,
     // alignItems: 'center',
-    marginRight: 10,
+    // marginRight: 10,
     width: Dimensions.get('window').width*0.85,
     // flex: 1,
     // padding: 10
