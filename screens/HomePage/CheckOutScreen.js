@@ -29,6 +29,8 @@ const CheckOutScreen = (props) => {
   const [TnC, setTnC] = useState({})
   const keyValuePairs = Object.keys(TnC).map(key => ({ key, value: TnC[key] }));
 
+  const [useReferralBonus, setUseReferralBonus] = useState(false)
+
   // console.log('Cart Items: ..', cartItems);
 
 
@@ -109,9 +111,10 @@ const CheckOutScreen = (props) => {
   }, 1);
 
   useEffect(() => {
-    if(cartItems.length !== 0 ){
-    const summaryData = calculateSummaryData(cartItems);
-    debouncedFetchData(summaryData);}
+    if (cartItems.length !== 0) {
+      const summaryData = calculateSummaryData(cartItems);
+      debouncedFetchData(summaryData);
+    }
   }, [cartItems]);
 
 
@@ -182,7 +185,7 @@ const CheckOutScreen = (props) => {
 
   const handleCheckout = () => {
     if (accessToken) {
-      props.navigation.navigate('PlaceOrder', { OrderData: orderData, SummaryData: calculateSummaryData(cartItems) });
+      props.navigation.navigate('PlaceOrder', { OrderData: orderData, useReferral: useReferralBonus , SummaryData: calculateSummaryData(cartItems) });
     }
     else {
       Alert.alert("You are not signed in", "Sign in to proceed checkout..", [{ text: 'cancel', style: "cancel" }, {
@@ -240,14 +243,6 @@ const CheckOutScreen = (props) => {
 
   }
 
-
-  // if (isLoading) {
-  //   return (
-  //     <View>
-  //       <ActivityIndicator />
-  //     </View>
-  //   );
-  // }
   if (cartItems.length === 0 || Object.keys(cartItems).length === 0) {
     return (
       <View style={styles.container}>
@@ -257,6 +252,10 @@ const CheckOutScreen = (props) => {
         </View>
       </View>
     );
+  }
+
+  const referralhandler = () => {
+
   }
 
   return (
@@ -377,6 +376,15 @@ const CheckOutScreen = (props) => {
 
           </View>
 
+          {orderData?.referral_bonus &&
+            <View style={{ flexDirection: 'row', padding: 15, marginHorizontal: 10, alignItems: 'center', gap: 5 }} >
+              {useReferralBonus
+                ?
+                <MaterialIcons name="check-box" size={24} color={Colors.green} onPress={() => setUseReferralBonus(false)} />
+                :
+                <MaterialIcons name="check-box-outline-blank" size={24} color="black" onPress={() => setUseReferralBonus(true)} />}
+              <Text>Use Referral Bonus</Text>
+            </View>}
 
           <View>
             <View style={styles.summaryContainer}>
@@ -388,13 +396,17 @@ const CheckOutScreen = (props) => {
                 <Text>Discount Amount</Text>
                 <Text>${orderData ? orderData?.discount_amount : '00.00'}</Text>
               </View>
+              {orderData?.referral_bonus && useReferralBonus && <View style={styles.summaryRow}>
+                <Text>Referral Discount Amount</Text>
+                <Text>${orderData ? orderData?.referral_bonus : '00.00'}</Text>
+              </View>}
               <View style={styles.summaryRow}>
                 <Text>Delivery Charges</Text>
                 <Text>${orderData ? orderData?.delivery_charges : '00.00'}</Text>
               </View>
               <View style={styles.summaryRow}>
                 <Text style={styles.totalLabel}>Total Amount</Text>
-                <Text style={styles.totalAmount}>${orderData ? orderData?.total : '00.00'}</Text>
+                <Text style={styles.totalAmount}>${(orderData?.referral_bonus && useReferralBonus) ? orderData?.total - orderData?.referral_bonus : orderData?.total}</Text>
               </View>
             </View>
             <View style={styles.buttonsContainer}>

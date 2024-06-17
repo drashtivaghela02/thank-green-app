@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View, Button } from "react-native";
+import { ActivityIndicator, Alert, Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View, Button, ScrollView } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
 import * as userAction from '../../store/actions/User';
 import * as orderAction from '../../store/actions/Orders';
@@ -16,6 +16,7 @@ import * as cartItem from '../../store/actions/Cart'
 const PlaceOrder = (props) => {
   const orderData = props.route.params.OrderData;
   const SummaryData = props.route.params.SummaryData;
+  const useReferralBonus = props.route.params.useReferral;
 
   const isFocused = useIsFocused();
   const [isLoading, setIsLoading] = useState(false);
@@ -49,25 +50,25 @@ const PlaceOrder = (props) => {
 
 
   const handleSuccess = (id) => {
-    console.log("testtesttesting",id)
-    setIsLoading(true); 
+    console.log("testtesttesting", id)
+    setIsLoading(true);
     dispatch(orderAction.getOrderDetailsInfo(id, accessToken))
       .then((response) => {
         if (response.status === 'success') {
-        Alert.alert("",response.msg)
-      }
-      setDetails(response.data[0]);
-      console.log("order details getting",response);
-      setIsLoading(false);
-      props.navigation.navigate('OrderDetails', {Id: id, Details: response, order: true })
-    })
-    .catch(error => {
-      setIsLoading(false); 
-      console.error("Error fetching user information ewftwe:", error);
-    });
+          Alert.alert("", response.msg)
+        }
+        setDetails(response.data);
+        console.log("order details getting", response);
+        setIsLoading(false);
+        props.navigation.navigate('OrderDetails', { Id: id, Details: response, order: true })
+      })
+      .catch(error => {
+        setIsLoading(false);
+        console.error("Error fetching user information ewftwe:", error);
+      });
 
     dispatch(cartItem.resetState())
-  
+
   }
 
 
@@ -101,7 +102,7 @@ const PlaceOrder = (props) => {
         }
       } else {
         console.log("Payment was successful.");
-        Alert.alert("Success", "Payment was successful" ,[{ text: 'cancel', style: 'cancel' }, { text: 'Ok', onPress: () => handleSuccess(orderId)}]);
+        Alert.alert("Success", "Payment was successful", [{ text: 'cancel', style: 'cancel' }, { text: 'Ok', onPress: () => handleSuccess(orderId) }]);
       }
     } else {
       console.error("Error initializing payment sheet:", error);
@@ -118,7 +119,7 @@ const PlaceOrder = (props) => {
         setTime(time);
         setDate(`${date.split(' ')[3]} ${date.split(' ')[1]} ${date.split(' ')[2]}`);
         setAPIDate(`${date.split(' ')[7]} ${time.split(' ')[2]}`)
-        console.log("Delivery time final ",`${date.split(' ')[7]} ${time.split(' ')[2]}`);
+        console.log("Delivery time final ", `${date.split(' ')[7]} ${time.split(' ')[2]}`);
       },
     });
   }
@@ -144,7 +145,7 @@ const PlaceOrder = (props) => {
       products: SummaryData,
       delivery_on: APIDate,
       payment_method: value,
-      use_referral_bonus: false
+      use_referral_bonus: useReferralBonus
     };
 
     setIsLoading(true);
@@ -155,7 +156,7 @@ const PlaceOrder = (props) => {
           setOrderId(response.data.order_id)
           if (value === 'card') { initializePaymentSheet(response.data); }
 
-        
+
           else {
             Alert.alert("Success", "Order successful", [{ text: 'cancel', style: 'cancel' }, { text: 'Ok', onPress: () => handleSuccess(response.data.order_id) }]);
           }
@@ -170,7 +171,7 @@ const PlaceOrder = (props) => {
   return (
     <View style={styles.container}>
       <CustomHeader label='Checkout' press={() => { props.navigation.goBack() }} />
-      <View style={styles.body}>
+      <ScrollView contentContainerStyle={styles.body}>
         <View>
           <Text style={styles.headingTitle}>Delivery Address</Text>
           <View style={{ paddingVertical: 10 }}>
@@ -193,7 +194,7 @@ const PlaceOrder = (props) => {
             <TouchableOpacity style={styles.paymentOption}
               onPress={pickOnDeliveryTimeHandler
                 // () => props.navigation.navigate("DeliveryTimeScreen")
-                }>
+              }>
               <EvilIcons name="calendar" size={45} color="black" />
               <View>
                 <Text style={styles.timeTitle}>Date</Text>
@@ -236,16 +237,20 @@ const PlaceOrder = (props) => {
               <Text>${orderData ? orderData.sub_total : '00.00'}</Text>
             </View>
             <View style={styles.summaryRow}>
-                <Text>Discount Amount</Text>
-                <Text>${orderData ? orderData?.discount_amount : '00.00'}</Text>
-              </View>
+              <Text>Discount Amount</Text>
+              <Text>${orderData ? orderData?.discount_amount : '00.00'}</Text>
+            </View>
+            {orderData?.referral_bonus && useReferralBonus && <View style={styles.summaryRow}>
+                <Text>Referral Discount Amount</Text>
+                <Text>${orderData ? orderData?.referral_bonus : '00.00'}</Text>
+              </View>}
             <View style={styles.summaryRow}>
               <Text>Delivery Charges</Text>
               <Text>${orderData ? orderData.delivery_charges : '00.00'}</Text>
             </View>
             <View style={styles.summaryRow}>
               <Text style={styles.totalLabel}>Total Amount</Text>
-              <Text style={styles.totalAmount}>${orderData ? orderData.total : '00.00'}</Text>
+              <Text style={styles.totalAmount}>${(orderData?.referral_bonus && useReferralBonus) ? orderData?.total - orderData?.referral_bonus : orderData?.total}</Text> 
             </View>
           </View>
 
@@ -253,7 +258,7 @@ const PlaceOrder = (props) => {
             {isLoading ? <ActivityIndicator color='white' size={26} /> : <Text style={styles.verifyButton}>PLACE ORDER</Text>}
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 };

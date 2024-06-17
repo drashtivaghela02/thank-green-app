@@ -27,8 +27,10 @@ const SearchBar = ({ clicked, searchPhrase, setSearchPhrase, setClicked }) => {
           <View style={{ flexDirection: 'row', gap: 5 }}>
             <Entypo name="cross" size={20} color="black" style={{ padding: 1 }} onPress={() => {
               setSearchPhrase("")
+              Keyboard.dismiss();
+                setClicked(false);
             }} />
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => {
                 Keyboard.dismiss();
                 setClicked(false);
@@ -37,7 +39,7 @@ const SearchBar = ({ clicked, searchPhrase, setSearchPhrase, setClicked }) => {
               <View style={styles.btnSecondary}>
                 <Text style={styles.btnSecondaryText}>Cancel</Text>
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         )}
       </View>
@@ -76,7 +78,7 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 20,
     marginLeft: 10,
-    width: "59%",
+    width: "80%",
   },
   btnSecondary: {
     flexDirection: 'row',

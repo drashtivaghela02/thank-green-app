@@ -31,11 +31,16 @@ const VerificationCode = props => {
         setIsLoading(true);
 
         const formData = new FormData();
-        formData.append('profileImage', {
+      if(statusOfOtp.profileImage !== null){  formData.append('profileImage', {
             uri: statusOfOtp.profileImage,
             type: 'image/jpeg', // adjust the type according to your image
             name: 'photo.jpg',
-        });
+        });}
+
+        if (statusOfOtp.referralCode !== "") {
+            formData.append('referralCode', statusOfOtp.referralCode);
+        }
+        
         formData.append('name', statusOfOtp.name);
         formData.append('email', statusOfOtp.email);
         formData.append('countryCode', statusOfOtp.countryCode);
@@ -45,13 +50,14 @@ const VerificationCode = props => {
         formData.append('otp', otp);
 
         try {
-            dispatch(authActions.verifyOTP(formData)).then((state) => {
-                if (state.status == 'success') {
+            dispatch(authActions.verifyOTP(formData)).then((response) => {
+                console.log(response)
+                if (response.status == 'success') {
                     setIsLoading(false);
                     props.navigation.navigate('FormNavigator');
                 }
                 else {
-                    Alert.alert('Alert', state.msg || state.error , [
+                    Alert.alert('Alert', response.msg || response.error, [
                         {
                             text: 'Cancel',
                             onPress: () => console.log('Cancel Pressed'),
@@ -63,6 +69,7 @@ const VerificationCode = props => {
                 }
             })
         } catch (err) {
+            setIsLoading(false)
             setError(err.message);
             Alert.alert('Alert', err, [
                 {
@@ -109,7 +116,7 @@ const VerificationCode = props => {
                 <View style={styles.resendContainer}>
                     <Text>Didn't Receive code?</Text>
                     <TouchableOpacity onPress={() => dispatch(authActions.resendOTP(state))}>
-                    {/* <TouchableOpacity onPress={resendOTPHandler}> */}
+                        {/* <TouchableOpacity onPress={resendOTPHandler}> */}
 
                         <Text style={styles.resendText}>Resend</Text>
                     </TouchableOpacity>

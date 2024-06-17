@@ -2,12 +2,13 @@ import React, { useRef, useState } from 'react';
 import { TextInput, StyleSheet, Text, View, TouchableOpacity, KeyboardAvoidingView, ScrollView, Alert, ActivityIndicator } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useDispatch, useSelector } from 'react-redux';
-// import PhoneInput from "react-native-phone-number-input";
+import PhoneInput from "react-native-phone-number-input";
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
 import ImagePicker from '../Components/Image/ImagePicker';
 import * as authActions from '../store/actions/Auth';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const SignUp = props => {
     const [isLoading, setIsLoading] = useState(false);
@@ -16,9 +17,19 @@ const SignUp = props => {
     const [imagePath, setImagePath] = useState(null);
     const [formatedNumber, setFormatedNumber] = useState(''); //for phone number with code
     const [validate, setValidate] = useState(true)
-    // const phoneInput = useRef()
+    const phoneInput = useRef()
     const [phoneNumber, setPhoneNumber] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
+    const [showCPassword, setShowCPassword] = useState(false);
+
+    // Function to toggle the password visibility state 
+    const toggleShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
+    const toggleShowCPassword = () => {
+        setShowCPassword(!showCPassword);
+    };
     const handleImagePicked = (path) => {
         setImagePath(path);
         // Alert.alert('Image Path Received', `Image Path: ${path}`);
@@ -54,11 +65,11 @@ const SignUp = props => {
     const SubmitHandler = (values) => {
         setError(null);
         setIsLoading(true);
-        // const countryCode = '+' + phoneInput.current?.getCallingCode()
+        const countryCode = '+' + phoneInput.current?.getCallingCode()
         values.phoneNumber = phoneNumber
         values.countryCode = countryCode
-        // const checkValid = phoneInput.current?.isValidNumber(phoneNumber)
-        // setValidate(checkValid ? checkValid : false)
+        const checkValid = phoneInput.current?.isValidNumber(phoneNumber)
+        setValidate(checkValid ? checkValid : false)
 
         const formData = new FormData();
         formData.append('profileImage', imagePath);
@@ -77,20 +88,29 @@ const SignUp = props => {
             phoneNumber: values.phoneNumber,
             password: values.password,
             confirmPassword: values.cpassword,
+            referralCode: values.referralCode
         };
+        const signupData = {
+            name: values.name,
+            email: values.email,
+            countryCode: values.countryCode,
+            phoneNumber: values.phoneNumber,
+            password: values.password,
+            confirmPassword: values.cpassword,
+        }
 
         try {
-            dispatch(authActions.signup(value)).then((state) => {
-                console.log("Staet sign up =====> ", state)
-                if (state.status == 'success') {
+            dispatch(authActions.signup(value, signupData)).then((response) => {
+                console.log("Staet sign up =====> ", response)
+                if (response?.status == 'success') {
                     setIsLoading(false)
-                    Alert.alert('Success!!', state.msg, [
+                    Alert.alert('Success!!', response?.msg, [
                         { text: 'OK', onPress: () => props.navigation.navigate('VerificationCode') },
                     ])
                     props.navigation.navigate('VerificationCode');
                 }
                 else {
-                    Alert.alert('Alert', state.msg || state.error || error, [
+                    Alert.alert('Alert', response?.msg || response?.error || error, [
                         {
                             text: 'Cancel',
                             onPress: () => console.log('Cancel Pressed'),
@@ -112,12 +132,12 @@ const SignUp = props => {
             <View style={styles.screen}>
                 <KeyboardAvoidingView>
                     <Formik
-                        initialValues={{ profileImage: '', name: '', email: '', countryCode: '+', phoneNumber: '', password: '', cpassword: '' }}
+                        initialValues={{ profileImage: '', name: '', referralCode: "", email: '', countryCode: '', phoneNumber: '', password: '', cpassword: '' }}
                         validationSchema={Validation}
                         onSubmit={SubmitHandler}
                     >
                         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-                            <ScrollView showsVerticalScrollIndicator={false}>
+                            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 20 }}>
                                 <View style={styles.image}>
                                     <ImagePicker
                                         onImagePicked={handleImagePicked}
@@ -153,7 +173,7 @@ const SignUp = props => {
                                 </View>
                                 <View style={styles.inputContainer}>
                                     <Text style={styles.label}>Phone Number</Text>
-                                    {/* <View>
+                                    <View>
                                         <PhoneInput
                                             ref={phoneInput}
                                             defaultCode='IN'
@@ -174,47 +194,37 @@ const SignUp = props => {
                                             flagButtonStyle={{ color: 'white' }}
                                         />
                                     </View>
-                                       {touched.phoneNumber && errors.phoneNumber
+                                    {touched.phoneNumber && errors.phoneNumber
                                         ? (!phoneInput?.current?.isValidNumber(phoneNumber)
-                                                ? <Text style={styles.errorText}>{errors.phoneNumber}</Text>
-                                                : null
-                                        ) : null} */}
-                                     <View style={{flexDirection: 'row'}}>
-                                    <View style={contact.countryCodeContainer}>
-                                        <TextInput
-                                            style={[contact.countryCodeInput, styles.input]}
-                                            value={values.countryCode}
-                                                onChangeText={handleChange('countryCode')}
-                                            keyboardType="phone-pad"
-                                                
-                                        />
-                                    </View>
-                                    <View style={contact.phoneNumberContainer}>
-                                        <TextInput
+                                            ? <Text style={styles.errorText}>{errors.phoneNumber}</Text>
+                                            : null
+                                        ) : null}
+                                </View>
+
+                                <View style={styles.inputContainer}>
+                                    <Text style={styles.label}>Referral Code(Optional)</Text>
+                                    <TextInput
                                         style={styles.input}
-                                            placeholder="Enter phone number"
-                                            value={values.phoneNumber = phoneNumber}
-                                            onChangeText={(text) => {
-                                                setPhoneNumber(text)
-                                                handleChange('phoneNumber')
-                                            }}
-                                            keyboardType="phone-pad"
-                                        />
-                                    </View>
-                                </View> 
-                                 
+                                        onChangeText={handleChange('referralCode')}
+                                        onBlur={handleBlur('referralCode')}
+                                        value={values.referralCode}
+                                        placeholder="Enter referral code"
+                                    />
                                 </View>
 
                                 <View style={styles.inputContainer}>
                                     <Text style={styles.label}>Password</Text>
-                                    <TextInput
-                                        style={styles.input}
-                                        secureTextEntry={true}
-                                        onChangeText={handleChange('password')}
-                                        onBlur={handleBlur('password')}
-                                        value={values.password}
-                                        placeholder="Enter password"
-                                    />
+                                    <View style={[styles.input, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
+                                        <TextInput
+                                            secureTextEntry={!showPassword}
+                                            onChangeText={handleChange('password')}
+                                            onBlur={handleBlur('password')}
+                                            value={values.password}
+                                            placeholder="Enter password"
+                                            style={{color: 'white'}}
+                                        />
+                                        <MaterialCommunityIcons name={showPassword ? 'eye-off' : 'eye'} size={24} color="white" onPress={toggleShowPassword} />
+                                    </View>
                                     {touched.password && errors.password ? (
                                         <Text style={styles.errorText}>{errors.password}</Text>
                                     ) : null}
@@ -222,22 +232,25 @@ const SignUp = props => {
 
                                 <View style={styles.inputContainer}>
                                     <Text style={styles.label}>Confirm Password</Text>
-                                    <TextInput
-                                        style={styles.input}
-                                        secureTextEntry={true}
-                                        onChangeText={handleChange('cpassword')}
-                                        onBlur={handleBlur('cpassword')}
-                                        value={values.cpassword}
-                                        placeholder="Enter confirm password"
-                                    />
+                                    <View style={[styles.input, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
+                                        <TextInput
+                                            secureTextEntry={!showCPassword}
+                                            onChangeText={handleChange('cpassword')}
+                                            onBlur={handleBlur('cpassword')}
+                                            value={values.cpassword}
+                                            placeholder="Enter confirm password"
+                                            style={{color: 'white'}}
+                                        />
+                                        <MaterialCommunityIcons name={showCPassword ? 'eye-off' : 'eye'} size={24} color="white" onPress={toggleShowCPassword} />
+                                    </View>
                                     {touched.cpassword && errors.cpassword ? (
                                         <Text style={styles.errorText}>{errors.cpassword}</Text>
                                     ) : null}
                                 </View>
-                                
+
                                 <TouchableOpacity disabled={isLoading} style={styles.verify} onPress={handleSubmit}>
                                     {isLoading ?
-                                        <ActivityIndicator size={25} /> :
+                                        <ActivityIndicator size={25} color="white" /> :
                                         <Text style={styles.verifyButton}>SIGN UP</Text>}
                                 </TouchableOpacity>
                             </ScrollView>
@@ -266,9 +279,10 @@ const styles = StyleSheet.create({
     },
     screen: {
         width: '100%',
-        padding: 20,
+        paddingBottom: 20,
         flex: 1,
-        marginVertical: 30
+        marginTop: 10,
+        marginBottom: 30
     },
     image: {
         alignItems: 'center',
@@ -291,7 +305,7 @@ const styles = StyleSheet.create({
         paddingVertical: 8
     },
     verify: {
-        marginTop: 40,
+        marginTop: 10,
         marginBottom: 0,
         paddingVertical: 10,
         paddingHorizontal: 20,
@@ -307,7 +321,7 @@ const styles = StyleSheet.create({
     signUpContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginTop: 20
+        marginTop: 10
     },
     signUpText: {
         color: 'white',
@@ -326,44 +340,17 @@ const styles = StyleSheet.create({
     },
 });
 
-// const contact = StyleSheet.create({
-//     container: {
-//         width: '100%',
-//         borderRadius: 10,
-//         borderWidth: 1,
-//         borderColor: '#1e4c5e',
-//         backgroundColor: '#1e4c5e',
-//     },
-//     countryCodeInput: {
-//         width: 80,
-//         marginRight: 10,
-//     },
-//     phoneNumberInput: {
-//         borderRadius: 10,
-//         backgroundColor: '#1e4c5e',
-//         paddingHorizontal: 10,
-//         paddingVertical: 8
-//     },
-
-// });
-
 const contact = StyleSheet.create({
     container: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        width: '100%',
+        borderRadius: 10,
         borderWidth: 1,
-        borderRadius: 5,
-        borderColor: '#ccc',
-        padding: 10,
-    },
-    countryCodeContainer: {
-        marginRight: 10,
+        borderColor: '#1e4c5e',
+        backgroundColor: '#1e4c5e',
     },
     countryCodeInput: {
         width: 80,
-    },
-    phoneNumberContainer: {
-        flex: 1,
+        marginRight: 10,
     },
     phoneNumberInput: {
         borderRadius: 10,

@@ -6,8 +6,9 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch } from 'react-redux';
 import * as authActions from '../../store/actions/Auth';
-import * as Google from 'expo-auth-session/providers/google';
-import * as WebBrowser from 'expo-web-browser';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -17,51 +18,105 @@ const SignIn = (props) => {
     const [selected, setSelected] = useState(true);
     const dispatch = useDispatch();
 
-    const [request, responseType, promptAsync] = Google.useAuthRequest({
-        androidClientId: '383741119267-f5fgfjo5lksk11s6dumm8ff87nip3kn3.apps.googleusercontent.com',
-        // webClientId: '383741119267-dpo3amhvf5v4k4pmbbi4o191jtrvoe0t.apps.googleusercontent.com',
-    });
 
-    useEffect(() => {
-        console.log("dsklfjl;sd;fk",responseType)
+    const [token, setToken] = useState("");
+  const [userInfo, setUserInfo] = useState(null);
 
-        if (responseType?.type === 'success') {
-            const { authentication } = responseType; 
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    androidClientId: "383741119267-f5fgfjo5lksk11s6dumm8ff87nip3kn3.apps.googleusercontent.com",
+    // iosClientId: "",
+    // webClientId: "",
+  });
 
-            console.log("dsklfjl;sd;fk",responseType)
-            handleGoogleSignIn(authentication.accessToken);
+  useEffect(() => {
+    handleEffect();
+  }, [response, token]);
+
+  async function handleEffect() {
+    const user = await getLocalUser();
+    console.log("user", user);
+    if (!user) {
+      if (response?.type === "success") {
+        // setToken(response.authentication.accessToken);
+        getUserInfo(response.authentication.accessToken);
+      }
+    } else {
+      setUserInfo(user);
+      console.log("loaded locally", user);
+    }
+  }
+
+  const getLocalUser = async () => {
+    const data = await AsyncStorage.getItem("@user");
+    if (!data) return null;
+    return JSON.parse(data);
+  };
+
+  const getUserInfo = async (token) => {
+    if (!token) return;
+    try {
+      const response = await fetch(
+        "https://www.googleapis.com/userinfo/v2/me",
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
-    }, [responseType]);
+      );
 
-    const handleGoogleSignIn = async (accessToken) => {
-        try {
-            const res = await fetch('https://thankgreen.onrender.com/api/auth/google/callback', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    token: 'ya29.a0AXooCgu3iqFeN0Jh0TCXrpopQFEi5_h3j3HgPMGyv5iGfsKP1YisHHJQMBKasrqcu2tr7oqNsrQTmI4pxy4IzYXYaLOOeAXJ9YXGmV7ZubACs91uyjUYGu3OlLdjrvfXPGbrmVpBpq33d5LXRD1n80DD-Msow9ZOdelHaCgYKAXUSARASFQHGX2MiV0vfbgq4RchpfmWyc-A2aQ0171',
-                }),
-            });
+      const user = await response.json();
+      await AsyncStorage.setItem("@user", JSON.stringify(user));
+        setUserInfo(user);
+        console.log("setuserinfo", user)
+    } catch (error) {
+      // Add your own error handler here
+    }
+  };
 
-            const data = await res.json();
-            if (data.status === 'success') {
-                props.navigation.navigate('Home');
-            } else {
-                Alert.alert('Alert', data.msg || data.error, [
-                    {
-                        text: 'Cancel',
-                        onPress: () => console.log('Cancel Pressed'),
-                        style: 'cancel',
-                    },
-                    { text: 'OK', onPress: () => console.log('OK Pressed') },
-                ]);
-            }
-        } catch (error) {
-            console.error('Error authenticating with backend', error);
-        }
-    };
+
+    // const [request, responseType, promptAsync] = Google.useAuthRequest({
+    //     androidClientId: '383741119267-f5fgfjo5lksk11s6dumm8ff87nip3kn3.apps.googleusercontent.com',
+    //     // webClientId: '383741119267-dpo3amhvf5v4k4pmbbi4o191jtrvoe0t.apps.googleusercontent.com',
+    // });
+
+    // useEffect(() => {
+    //     console.log("dsklfjl;sd;fk",responseType)
+
+    //     if (responseType?.type === 'success') {
+    //         const { authentication } = responseType; 
+
+    //         console.log("dsklfjl;sd;fk",responseType)
+    //         handleGoogleSignIn(authentication.accessToken);
+    //     }
+    // }, [responseType]);
+
+    // const handleGoogleSignIn = async (accessToken) => {
+    //     try {
+    //         const res = await fetch('https://thankgreen.onrender.com/api/auth/google/callback', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({
+    //                 token: 'ya29.a0AXooCgu3iqFeN0Jh0TCXrpopQFEi5_h3j3HgPMGyv5iGfsKP1YisHHJQMBKasrqcu2tr7oqNsrQTmI4pxy4IzYXYaLOOeAXJ9YXGmV7ZubACs91uyjUYGu3OlLdjrvfXPGbrmVpBpq33d5LXRD1n80DD-Msow9ZOdelHaCgYKAXUSARASFQHGX2MiV0vfbgq4RchpfmWyc-A2aQ0171',
+    //             }),
+    //         });
+
+    //         const data = await res.json();
+    //         if (data.status === 'success') {
+    //             props.navigation.navigate('Home');
+    //         } else {
+    //             Alert.alert('Alert', data.msg || data.error, [
+    //                 {
+    //                     text: 'Cancel',
+    //                     onPress: () => console.log('Cancel Pressed'),
+    //                     style: 'cancel',
+    //                 },
+    //                 { text: 'OK', onPress: () => console.log('OK Pressed') },
+    //             ]);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error authenticating with backend', error);
+    //     }
+    // };
 
     const Validation = Yup.object({
         emailOrContact: Yup.string()

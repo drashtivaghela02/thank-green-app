@@ -18,7 +18,7 @@ const ShopCategoryScreen = props => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [resData, setResdata] = useState();
-
+  const [SearchData, setSearchdata] = useState()
   const [searchPhrase, setSearchPhrase] = useState("");
   const [clicked, setClicked] = useState(false);
 
@@ -38,7 +38,7 @@ const ShopCategoryScreen = props => {
 
   const onProductSelectHandler = (id, name, subcategories) => {
     console.log("touched", id)
-   props.navigation.navigate('CategoryList', {categoryId: id, name: name, subCategories: subcategories}) 
+    props.navigation.navigate('CategoryList', { categoryId: id, name: name, subCategories: subcategories })
   }
   // const [fakeData, setFakeData] = useState();
 
@@ -53,7 +53,15 @@ const ShopCategoryScreen = props => {
   //   };
   //   getData();
   // }, []);
-
+  const searchFunction = (text) => {
+    const updatedData = resData.filter((item) => {
+      const item_data = `${item.category_name.toUpperCase()})`;
+      const text_data = text.toUpperCase();
+      return item_data.indexOf(text_data) > -1;
+    });
+    setSearchdata(updatedData)
+    setSearchPhrase(text);
+  };
 
   return (
     <View style={styles.container} >
@@ -61,7 +69,7 @@ const ShopCategoryScreen = props => {
       <View style={styles.body}>
         <SearchBar
           searchPhrase={searchPhrase}
-          setSearchPhrase={setSearchPhrase}
+          setSearchPhrase={searchFunction}
           clicked={clicked}
           setClicked={setClicked}
         />
@@ -85,7 +93,7 @@ const ShopCategoryScreen = props => {
           // contentContainerStyle={styles.categoryScreen}
           >
             <FlatList
-              data={resData}
+              data={SearchData ?? resData}
               keyExtractor={(item) => item.category_id}
               renderItem={itemData =>
                 <CategoryFood

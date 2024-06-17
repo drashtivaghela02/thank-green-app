@@ -1,15 +1,29 @@
 import { AntDesign } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
-import { Button, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, ToastAndroid } from "react-native";
+import { Button, Share, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, ToastAndroid, Linking, } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
 import * as homeAction from '../../store/actions/Home';
+import * as Clipboard from 'expo-clipboard';
+import * as Sharing from 'expo-sharing';
 
 const ReferAFriendScreen = props => {
   const accessToken = useSelector(state => state.auth.accessToken)
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [resData, setResdata] = useState([]);
+  const [copiedText, setCopiedText] = useState('');
+
+  const copyToClipboard = async (copyText) => {
+    await Clipboard.setStringAsync(copyText);
+  };
+
+  const fetchCopiedText = async () => {
+    const text = await Clipboard.getStringAsync();
+    setCopiedText(text);
+    console.log("sdjfdjfoj", text)
+  };
+
   useEffect(() => {
     setIsLoading(true);
     console.log(accessToken)
@@ -18,6 +32,7 @@ const ReferAFriendScreen = props => {
         setIsLoading(false);
         console.log("Referral PAge=> ", response?.data)
         setResdata(response?.data?.referralDetails);
+        copyToClipboard(response?.data?.referralDetails?.referral_code)
       })
       .catch(error => {
         setIsLoading(false);
@@ -25,6 +40,26 @@ const ReferAFriendScreen = props => {
       });
   }, [accessToken])
 
+  const whatsappMessageHandler = () => {
+    Linking.openURL(`whatsapp://send?text=Hey👋 \n\nI just found this awesome app and thought you might like it too. Use my referral code *${resData.referral_code}* when you sign up, and we'll both get some cool rewards! 🎉`);
+  }
+
+  const generalShareHandler = async () => {
+    try {
+      await Share.share({
+        message:
+          `Hey👋 \n\nI just found this awesome app and thought you might like it too. Use my referral code *${resData.referral_code}* when you sign up, and we'll both get some cool rewards! 🎉`,
+
+      });
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const telegramMessageHandler = () => {
+    Linking.openURL(`tg://send?text=Hey👋 \n\nI just found this awesome app and thought you might like it too. Use my referral code *${resData.referral_code}* when you sign up, and we'll both get some cool rewards! 🎉`);
+
+  };
 
   return (
     <View style={styles.container} >
@@ -34,42 +69,51 @@ const ReferAFriendScreen = props => {
         end={{ x: 0.7, y: 1 }}
       >
         <View style={styles.header}>
-          <AntDesign name="arrowleft" size={28} color='white' onPress={() => { props.navigation.goBack() }}/>
+          <AntDesign name="arrowleft" size={28} color='white' onPress={() => { props.navigation.goBack() }} />
           <Text style={styles.heading}>Refer a Friend</Text>
           <Text style={styles.subHeading}>Refer a friend and earn.</Text>
         </View>
       </LinearGradient>
 
       <View style={styles.body} >
-          <View style={styles.logoContainer} >
-            <Image source={require('../../assets/ReferAFriend.png')} style={styles.logo} />
-            <Text style={styles.bodyMainText}>Invite A Friend</Text>
-            <Text style={styles.bodyText}>Invite a friend and earn $2</Text>
-          </View>
+        <View style={styles.logoContainer} >
+          <Image source={require('../../assets/ReferAFriend.png')} style={styles.logo} />
+          <Text style={styles.bodyMainText}>Invite A Friend</Text>
+          <Text style={styles.bodyText}>Invite a friend and earn $2</Text>
+        </View>
 
-          <TouchableOpacity style={styles.verify} onPress={() => {ToastAndroid.show('A pikachu appeared nearby !', ToastAndroid.SHORT); }}>
-            <Text style={styles.verifyButton}>GET INVITE CODE</Text>
+        <TouchableOpacity style={styles.verify} onPress={() => {
+          fetchCopiedText()
+          ToastAndroid.show('Referral code coppied to clipboard!', ToastAndroid.SHORT);
+        }}>
+          <Text style={styles.verifyButton}>GET INVITE CODE</Text>
+        </TouchableOpacity>
+
+        <View>
+          <Text style={styles.bodyMainText} >{resData?.referral_code?.replaceAll("", " ")}</Text>
+        </View>
+
+        <View style={styles.orData}>
+          <View style={styles.lines}></View>
+          <View><Text style={{ color: '#333333', marginHorizontal: 15 }}> SHARE VIA </Text></View>
+          <View style={styles.lines}></View>
+        </View>
+
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 15 }}>
+          <TouchableOpacity onPress={generalShareHandler}>
+            <Image source={require('../../assets/facebook_logo.png')} style={styles.FacebookLogo} />
           </TouchableOpacity>
-
-          <View>
-            <Text style={styles.bodyMainText} >{resData?.referral_code?.replaceAll(""," ")}</Text>
-          </View>
-
-          <View style={styles.orData}>
-            <View style={styles.lines}></View>
-            <View><Text style={{ color:'#333333', marginHorizontal: 15 }}> SHARE VIA </Text></View>
-            <View style={styles.lines}></View>
-          </View>
-
-        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap:15}}>
-          <Image source={require('../../assets/facebook_logo.png')} style={styles.FacebookLogo} />
           <Image source={require('../../assets/google_logo.png')} style={styles.GoogleLogo} />
-          <Image source={require('../../assets/whatsapp.png')} style={styles.WhatsappLogo} />
-          <Image source={require('../../assets/instagram.png')} style={styles.InstagramLogo} />
-          <Image source={require('../../assets/telegram.png')} style={styles.TelegramLogo} />
-          
- 
-          </View>
+          <TouchableOpacity onPress={whatsappMessageHandler}>
+            <Image source={require('../../assets/whatsapp.png')} style={styles.WhatsappLogo} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={generalShareHandler}>
+            <Image source={require('../../assets/instagram.png')} style={styles.InstagramLogo} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={telegramMessageHandler}>
+            <Image source={require('../../assets/telegram.png')} style={styles.TelegramLogo} />
+          </TouchableOpacity>
+        </View>
 
       </View>
     </View>
@@ -86,20 +130,20 @@ const styles = StyleSheet.create({
   header: {
     paddingTop: 40,
     paddingHorizontal: 20,
-    height: Dimensions.get('window').height*0.20
-},
-    heading: {
-        fontWeight: '500',
-        fontSize: 30,
-        paddingTop: 8,
-        color: 'white',
-    },
-    subHeading: {
-        paddingTop: 4,
-        color: 'white',
-        fontWeight: 'bold',
-        fontWeight: '400'
-    },
+    height: Dimensions.get('window').height * 0.20
+  },
+  heading: {
+    fontWeight: '500',
+    fontSize: 30,
+    paddingTop: 8,
+    color: 'white',
+  },
+  subHeading: {
+    paddingTop: 4,
+    color: 'white',
+    fontWeight: 'bold',
+    fontWeight: '400'
+  },
   body: {
     flex: 1,
     justifyContent: 'flex-start',
@@ -112,7 +156,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 20,
     color: 'black',
-    paddingVertical: 5, 
+    paddingVertical: 5,
     fontWeight: '700'
   },
   logoContainer: {
@@ -168,7 +212,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 13,marginBottom: 10,
+    marginTop: 13, marginBottom: 10,
     width: '75%'
   },
   lines: {

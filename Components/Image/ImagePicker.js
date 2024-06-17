@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     imagePreview:{
         width : 150,
         height: 150,
-        marginVertical: 8,
+        marginTop: 8,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 10,

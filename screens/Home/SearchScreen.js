@@ -2,10 +2,9 @@ import {
   ActivityIndicator,
   Dimensions,
   FlatList,
-  ScrollView,
+  SafeAreaView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View
 } from "react-native";
 import CustomHeader from "../../Components/UI/CustomHeader";
@@ -19,6 +18,7 @@ import Colors from "../../Constant/Colors";
 import SearchProducts from "../../Components/UI/SearchProducts";
 import CategoryFoodHome from "../../Components/UI/CategoryFoodHome";
 import usePagination from "../../Components/UI/usePagination";
+import { ScrollView } from "react-native-gesture-handler";
 
 const INITIAL_PAGE = 1;
 
@@ -33,11 +33,6 @@ const SearchScreen = (props) => {
   const [searchSubCategoryList, setSearchSubCategoryList] = useState([]);
   const [filterProductCount, setFilterProductCount] = useState(0);
   const [productCount, setProductCount] = useState(0);
-
-  const [filteredCurrentPage, setFilteredCurrentPage] = useState(INITIAL_PAGE);
-  const [filteredTotalPages, setFilteredTotalPages] = useState(1);
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [filter, setFilter] = useState();
 
   const onCategorySelectHandler = (id, name) => {
     props.navigation.navigate('CategoryProducts', { categoryId: id, name: name });
@@ -57,28 +52,34 @@ const SearchScreen = (props) => {
       .then((response) => {
         setSearchCategoryList('No category found');
         setSearchSubCategoryList('No subcategory found');
-        setFilteredProducts((prevData) => page === INITIAL_PAGE ? response?.data?.filterProducts : [...prevData, ...response?.data?.filterProducts]);
+        setSearchProductList((prevData) => page === 1 ? response?.data?.filterProducts : [...prevData, ...response?.data?.filterProducts]);
         setFilterProductCount(response?.data?.total_filter_products);
-        setFilteredTotalPages(Math.ceil(response?.data?.total_filter_products / 10));
         setIsLoading(false);
       })
       .catch((error) => {
         setIsLoading(false);
         console.error("Error fetching user information:", error);
       });
+
+    if (filterProductCount > 10) {
+
+    }
   };
 
   const filterHandler = () => {
+    if(searchPhrase){
     props.navigation.navigate('Filters', {
       onGoBack: (sorted) => {
         if (searchPhrase) {
           sorted.searchText = searchPhrase;
         }
-        setFilter(sorted)
-        applyFilter(sorted, INITIAL_PAGE);
-        setFilteredCurrentPage(INITIAL_PAGE);
+        applyFilter(sorted, 1);
       },
     });
+    }
+    else {
+      Alert.alert("", "search something first")
+    }
   };
 
   const fetchSearchData = (page) => {
@@ -87,7 +88,7 @@ const SearchScreen = (props) => {
       .then((response) => {
         setSearchCategoryList(response?.data?.searchCategoryList || 'No category found');
         setSearchSubCategoryList(response?.data?.searchSubCategoryList || 'No subcategory found');
-        setSearchProductList((prevData) => page === INITIAL_PAGE ? response?.data?.searchProductList : [...prevData, ...response?.data?.searchProductList]);
+        setSearchProductList((prevData) => page === 1 ? response?.data?.searchProductList : [...prevData, ...response?.data?.searchProductList]);
         setProductCount(response?.data?.total_search_products);
         setIsLoading(false);
       })
@@ -114,17 +115,10 @@ const SearchScreen = (props) => {
     return () => clearTimeout(delayDebounceFn);
   }, [searchPhrase]);
 
-  const handleFilteredEndReached = () => {
-    if (filteredCurrentPage < filteredTotalPages && !isLoading) {
-      applyFilter(filter, filteredCurrentPage + 1);
-      setFilteredCurrentPage(prevPage => prevPage + 1);
-    }
-  };
-
   let category;
   if (Array.isArray(searchCategoryList) && searchCategoryList.length > 0) {
     category = (
-      <View style={{ marginHorizontal: 10 }}>
+      <View style={{ marginHorizontal: 10, height: 'auto' }}>
         <FlatList
           data={searchCategoryList}
           keyExtractor={(item) => item.id}
@@ -172,24 +166,7 @@ const SearchScreen = (props) => {
           />
         }
         onEndReached={handleEndReached}
-        ListFooterComponent={isLoading ? <ActivityIndicator size="large" color={Colors.green} /> : null}
-      />
-    );
-  }
-
-  let filteredProductList;
-  if (Array.isArray(filteredProducts) && filteredProducts.length > 0) {
-    filteredProductList = (
-      <FlatList
-        data={filteredProducts}
-        keyExtractor={(item) => item.product_id}
-        renderItem={itemData =>
-          <SearchProducts
-            param={itemData.item}
-            onSelect={onProductSelectHandler}
-          />
-        }
-        onEndReached={handleFilteredEndReached}
+        onEndReachedThreshold={0.5}
         ListFooterComponent={isLoading ? <ActivityIndicator size="large" color={Colors.green} /> : null}
       />
     );
@@ -219,12 +196,12 @@ const SearchScreen = (props) => {
           onPress={filterHandler}
         />
       </View>
-      <ScrollView contentContainerStyle={{}}>
-        {isLoading ? <ActivityIndicator size="large" color={Colors.green} /> : null}
-        {category || noResultsMessage}
-        {subcategory || noResultsMessage}
-        {products || noResultsMessage}
-        {filteredProductList}
+      <ScrollView style={{flex:1, }}>
+      {isLoading && !searchProductList.length ? <ActivityIndicator size="large" color={Colors.green} /> : null}
+      {category || noResultsMessage}
+      {subcategory || noResultsMessage}
+      {products || noResultsMessage}
+
       </ScrollView>
     </View>
   );
