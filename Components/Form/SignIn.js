@@ -35,7 +35,8 @@ const SignIn = (props) => {
   async function handleEffect() {
     const user = await getLocalUser();
     console.log("user", user);
-    if (!user) {
+      if (!user) {
+        console.log("user2", user, response)
       if (response?.type === "success") {
         // setToken(response.authentication.accessToken);
         getUserInfo(response.authentication.accessToken);

@@ -11,16 +11,16 @@ import { useIsFocused } from "@react-navigation/native";
 const SavedAddressScreen = props => {
   const isFocused = useIsFocused();
 
-  const [isLoading, setIsLoading] = useState(false); 
-  const [address, setAddress] = useState([]); 
+  const [isLoading, setIsLoading] = useState(false);
+  const [address, setAddress] = useState([]);
   const accessToken = useSelector(state => state.auth.accessToken);
   const dispatch = useDispatch();
 
   const getAddressHandler = () => {
-    setIsLoading(true); 
+    setIsLoading(true);
     dispatch(userAction.getAddress(accessToken))
       .then((response) => {
-        setIsLoading(false); 
+        setIsLoading(false);
         setAddress(response.data);
         console.log(response.data);
       })
@@ -28,7 +28,7 @@ const SavedAddressScreen = props => {
         setIsLoading(false);
         Alert.alert("Error fetching user information:", error);
       });
-}
+  }
 
   useEffect(() => {
     getAddressHandler()
@@ -82,9 +82,9 @@ const SavedAddressScreen = props => {
   else {
     productPreview = (
       <FlatList
-        data={address} 
+        data={address}
         showsVerticalScrollIndicator={false}
-        keyExtractor={item => item.id} 
+        keyExtractor={item => item.id}
         renderItem={itemData =>
           <AddressCard
             param={itemData.item}
@@ -102,11 +102,11 @@ const SavedAddressScreen = props => {
 
       <View style={styles.body} >
         {isLoading
-          ?
-          <ActivityIndicator style={styles.body} color="#2c843e" size={"large"} />
-          :
-          (<View style={{ flex: 1, paddingTop: 20 }}>{productPreview}</View>)
+          &&
+          <ActivityIndicator color="#2c843e" size={"small"} />
         }
+        <View style={{ flex: 1,}}>{productPreview}</View>
+
 
         <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('LocationPicker') }}>
           <Text style={styles.verifyButton}>ADD NEW ADDRESS</Text>
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 30,
-    paddingBottom: 20,
+    paddingBottom: 10,
   },
   bodyMainText: {
     textAlign: 'center',

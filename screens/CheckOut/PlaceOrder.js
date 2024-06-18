@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   body: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 5,

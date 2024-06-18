@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingHorizontal: 40,
-        paddingVertical: Dimensions.get('window').height * (15/807.3)
+        paddingVertical: Dimensions.get('window').height * (15/852)
         // paddingTop: 28
     },
     firstContainer: {

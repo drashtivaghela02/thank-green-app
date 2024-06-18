@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   header: {
-    paddingTop: 45,
+    paddingTop: Dimensions.get('window').height * 0.04, //45,
     paddingHorizontal: 20,
     height: Dimensions.get('window').height * 0.20
   },
@@ -312,6 +312,7 @@ const styles = StyleSheet.create({
   },
   couponContainer: {
     // paddingHorizontal: 20,
+    alignItems: 'center',
     paddingBottom: 10,
     gap: 20
   },
@@ -328,7 +329,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.3)'
   },
   modalView: {
-    height: 330,
+    height: Dimensions.get('window').height*0.42,
     margin: 20,
     backgroundColor: 'white',
     borderRadius: 8,

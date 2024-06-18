@@ -358,10 +358,13 @@ const CheckOutScreen = (props) => {
               </TouchableOpacity>)
               :
               (<View style={styles.coupons} >
+
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                   <Image source={require('../../assets/discount.png')} style={styles.logo} tintColor={Colors.green} />
-                  <Text>{couponsData ?? couponsData?.code}</Text>
+                <View>
+                    <Text>{couponsData ?? couponsData?.code}</Text>
                   <Text style={{ fontWeight: '500' }}>Saved ${discount}</Text>
+                    </View>
                 </View>
 
                 <TouchableOpacity onPress={() => {

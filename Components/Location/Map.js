@@ -16,8 +16,8 @@ function Map({ route, navigation }) {
     const region = {
         latitude: 20.5937,   // Center lat, long of India
         longitude: 78.9629,  
-        latitudeDelta: 25,    // vertical span of India
-        longitudeDelta: 25,   // horizontal span of India
+        latitudeDelta: 23,    // vertical span of India
+        longitudeDelta: 23,   // horizontal span of India
     };
     
     const getLocationHandler = async () => {
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
         heading: {
             fontWeight: '500',
             fontSize: 30,
-            paddingTop: 8,
+            // paddingTop: 8,
             color: 'white',
         },
 });

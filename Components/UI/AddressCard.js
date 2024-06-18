@@ -48,8 +48,8 @@ const AddressCard = (param) => {
   }
 
   return (
-    <View style={{ padding: 5 }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
+    <View style={{ padding: 5 , paddingTop: 15}}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <View style={styles.product}>
           <View>
             <View style={styles.detail}>
@@ -63,7 +63,7 @@ const AddressCard = (param) => {
             <Text style={styles.price}>{data.address}, {data.zip_code}</Text>
           </View>
 
-          <View style={{ flexDirection: 'row', gap: 30, paddingHorizontal: 10 }}>
+          <View style={{ flexDirection: 'row', gap: 30, paddingHorizontal: 10 , paddingBottom: 5, paddingTop: 12}}>
             <TouchableOpacity style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }} onPress={() => param.onEdit(Id, editData)}  >
               <MaterialIcons name="mode-edit-outline" size={20} color="#888" />
               <Text style={{ fontSize: 16, fontWeight: '500' }}>EDIT</Text>
@@ -103,14 +103,14 @@ const styles = StyleSheet.create({
 
   product: {
     elevation: 8,
-    borderRadius: 10,
+    borderRadius: 8,
     backgroundColor: 'white',
-    height: 120,
+    // height: 120,
     width: '100%',
     // margin: 20,
     overflow: 'hidden',
     alignSelf: 'flex-end',
-    paddingHorizontal: 10,
+    padding: 10,
     justifyContent: 'space-around'
   },
   detail: {
