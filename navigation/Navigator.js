@@ -55,6 +55,8 @@ import CustomIntent from '../screens/CheckOut/CustomIntent';
 import DeliveryTimeScreen from '../screens/CheckOut/DeliveryTimeScreen';
 import CategoryProducts from '../screens/Shop/CategoryProducts';
 import BannerScreen from '../screens/Home/BannerScreen';
+import ResetPasswordScreen from '../screens/ResetPasswordScreen';
+import { Linking } from 'react-native';
 // import WebViewScreen from '../Components/Form/WebViewScreen';
 
 
@@ -69,6 +71,17 @@ const FormNavigator = () => {
 }
 
 const AuthStack = createStackNavigator();
+
+const linking = {
+  prefixes: ['exp://192.168.1.7:8081/--/'],
+  config: {
+    screens: {
+
+      ResetPassword: "ResetPassword/:resetToken"
+    },
+  },
+};
+
 const AuthNavigator = () => {
 
   const authState = useSelector(state => state.auth.accessToken);
@@ -106,7 +119,7 @@ const AuthNavigator = () => {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       <AuthStack.Navigator >
         {(authState)
           ?
@@ -115,9 +128,11 @@ const AuthNavigator = () => {
           (
             <AuthStack.Screen name="auth" component={AuthState} options={{ headerShown: false }} />
 
-            )
+          )
         }
         {/* <AuthStack.Screen name="FormNavigator1" component={FormNavigator} options={{ headerShown: false }} /> */}
+      <AuthStack.Screen name="ResetPassword" component={ResetPasswordScreen} options={{ headerShown: false }} />
+
         <AuthStack.Screen name='ReferAFriends' component={ReferAFriendScreen} options={{ headerShown: false, }} />
         <AuthStack.Screen name="Map" component={Map} options={{ headerShown: false }} />
         <AuthStack.Screen name='LocationPicker' component={LocationPicker} options={{ headerShown: false }} />
@@ -141,12 +156,13 @@ const AuthState = () => {
   return (
     <AuthStateStack.Navigator>
 
-  <AuthStateStack.Screen name="FormNavigator" component={FormNavigator} options={{ headerShown: false }} />
-  <AuthStateStack.Screen name="VerificationCode" component={VerificationCode} options={{ headerShown: false }} />
-  <AuthStateStack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
-  <AuthStateStack.Screen name="ForgetPassword" component={ForgetPassword} options={{ headerShown: false }} />
+      <AuthStateStack.Screen name="FormNavigator" component={FormNavigator} options={{ headerShown: false }} />
+      <AuthStateStack.Screen name="VerificationCode" component={VerificationCode} options={{ headerShown: false }} />
+      <AuthStateStack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
+      <AuthStateStack.Screen name="ForgetPassword" component={ForgetPassword} options={{ headerShown: false }} />
+      <AuthStateStack.Screen name="ResetPassword1" component={ResetPasswordScreen} options={{ headerShown: false }} />
       <AuthStateStack.Screen name="Home" component={DrawerNavigator} options={{ headerShown: false }} />
-      </AuthStateStack.Navigator>)
+    </AuthStateStack.Navigator>)
 }
 
 const LocationStack = createStackNavigator();
@@ -298,7 +314,7 @@ const MyAccountScreen = () => {
 }
 
 const BottomTab = createMaterialBottomTabNavigator();
-const TabsNavigator = ({navigation}) => {
+const TabsNavigator = ({ navigation }) => {
   const dispatch = useDispatch();
   const HandleLogout = (props) => {
     navigation.dispatch(
@@ -371,7 +387,7 @@ const TabsNavigator = ({navigation}) => {
           tabBarIcon: ({ color }) => (
             <FontAwesome name="user" size={26} color={color} />
           ),
-          
+
         }}
       />
     </BottomTab.Navigator>

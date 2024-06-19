@@ -258,4 +258,58 @@ export const verifyOTP = (values) => {
 
   export const signOut = () => {
     return { type: SIGNOUT };
-  }
+}
+  
+export const resetPassword = (password, resetToken) => {
+  return async dispatch => {
+    try {
+      console.log("verify otp values ", password, resetToken);
+      const response = await fetch(`https://thankgreen.onrender.com/api/auth/reset-password/${resetToken}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: {
+          newPassword: password
+        },
+      });
+
+      const resData = await response.json();
+      console.log('new password reset', resData);
+      
+      return resData;
+    } catch (error) {
+      console.error('new password reset:', error);
+      if (error.message === 'Network request failed') {
+        throw new Error('Network request failed. Please check your internet connection.');
+      }
+      throw error;
+    }
+  };
+};
+
+export const forgetPassword  = (email) => {
+  return async dispatch => {
+    try {
+      console.log("forgetPassword values ", email);
+      const response = await fetch(`https://thankgreen.onrender.com/api/auth/reset-password`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(email),
+      });
+
+      const resData = await response.json();
+      console.log('forgetPassword resData', resData);
+      
+      return resData;
+    } catch (error) {
+      console.error('forgetPassword error:', error);
+      if (error.message === 'Network request failed') {
+        throw new Error('Network request failed. Please check your internet connection.');
+      }
+      throw error;
+    }
+  };
+};

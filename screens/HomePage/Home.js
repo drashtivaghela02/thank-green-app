@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, ScrollView, ActivityIndicator, ImageBackground, Modal, Pressable } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, ScrollView, ActivityIndicator, ImageBackground, Modal, Pressable, StatusBar, Platform } from "react-native";
 import CustomHeader from "../../Components/UI/CustomHeader";
 import { LinearGradient } from "expo-linear-gradient";
 import { AntDesign, Entypo, Feather, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   header: {
-    paddingTop: Dimensions.get('window').height * 0.04, //45,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight + 10 : 0, //45,
     paddingHorizontal: 20,
     height: Dimensions.get('window').height * 0.20
   },

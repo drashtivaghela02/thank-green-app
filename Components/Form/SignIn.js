@@ -23,9 +23,10 @@ const SignIn = (props) => {
   const [userInfo, setUserInfo] = useState(null);
 
   const [request, response, promptAsync] = Google.useAuthRequest({
+      expoClientId: '383741119267-dpo3amhvf5v4k4pmbbi4o191jtrvoe0t.apps.googleusercontent.com',
     androidClientId: "383741119267-f5fgfjo5lksk11s6dumm8ff87nip3kn3.apps.googleusercontent.com",
     // iosClientId: "",
-    // webClientId: "",
+
   });
 
   useEffect(() => {
