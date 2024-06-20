@@ -218,7 +218,7 @@ const Home = props => {
           />
         </View>
 
-        {accessToken !== null && <View>
+        {accessToken !== null && pastOrders.length > 0 && <View>
           <Text style={styles.categoryList}>Past Orders</Text>
           <FlatList
             data={pastOrders}
@@ -249,7 +249,7 @@ const Home = props => {
               <ProductsHome
                 param={itemData.item}
                 onSelect={onProductSelectHandler}
-                onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.productId}-${itemData?.item?.quantity_variants[0]?.quantity_variant_id}`)) }}
+                onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0]?.quantity_variant_id}`)) }}
               />}
             onEndReached={handleRecomendedEndReached}
             onEndReachedThreshold={0.5}

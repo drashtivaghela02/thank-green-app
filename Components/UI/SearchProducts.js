@@ -9,17 +9,17 @@ import * as cartItem from '../../store/actions/Cart'
 import { useDispatch, useSelector } from 'react-redux';
 
 
-const Products = (props) => {
+const SearchProducts  = (props) => {
   const cartItems = useSelector(state => state?.cart?.items)
-// console.log("search products ddata",props.param)
-  const data = props.param;
+  // console.log("search products ddata",props.param)
+  const data = props?.param;
 
-  const [quantityVarientId, setQuantityVarientId] = useState(props.param?.quantity_variants[0]?.quantity_variant_id ?? '')
-  const [cartItemId, setCartitemId] = useState(`${data.product_id}-${data?.quantity_variants[0]?.quantity_variant_id}`)
+  const [quantityVarientId, setQuantityVarientId] = useState(data?.quantity_variants[0]?.quantity_variant_id ?? '')
+  const [cartItemId, setCartitemId] = useState(`${data?.product_id}-${data?.quantity_variants[0]?.quantity_variant_id}`)
 
-  const [selectedOption, setSelectedOption] = useState(props.param.quantity_variants[0].quantity_variant); // Assuming the first size as the initial value
-  const [actual, setActuals] = useState(props.param.quantity_variants[0].actual_price)
-  const [selling, setSelling] = useState(props.param.quantity_variants[0].selling_price)
+  const [selectedOption, setSelectedOption] = useState(data?.quantity_variants[0]?.quantity_variant ?? 'null'); // Assuming the first size as the initial value
+  const [actual, setActuals] = useState(data?.quantity_variants[0]?.actual_price ?? 0)
+  const [selling, setSelling] = useState(data?.quantity_variants[0]?.selling_price ?? 0)
   const [showOptions, setShowOptions] = useState(false);
 
   const dispatch = useDispatch();
@@ -30,7 +30,7 @@ const Products = (props) => {
   return (
     <View>
       <TouchableOpacity
-          onPress={() => props.onSelect(data.product_id, data)}
+        onPress={() => props.onSelect(data?.product_id, data)}
         style={styles.mainscreen}>
         <TouchableOpacity
           // onPress={() => props.onSelect(data.product_id, data)}
@@ -39,11 +39,11 @@ const Products = (props) => {
               borderWidth: 2, marginHorizontal: 10, borderRadius: 7,
             }
           }}>
-          <Image style={styles.images} source={{ uri: data.images }} />
+          <Image style={styles.images} source={{ uri: data?.images }} />
         </TouchableOpacity>
         <View style={styles.textcontainer}>
           <Text style={{ fontSize: 16, fontWeight: '500', color: '#555' }}>
-            {data.product_title}
+            {data?.product_title}
           </Text>
           <View style={{ width: '100%', borderColor: '#555', borderWidth: 1, borderRadius: 5, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 5, paddingHorizontal: 10 }}>
             <Text style={{ fontSize: 14, color: '#555' }}>Net wt. {selectedOption}</Text>
@@ -123,4 +123,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Products;
+export default SearchProducts ;

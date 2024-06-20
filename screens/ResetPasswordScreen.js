@@ -1,27 +1,30 @@
 import { AntDesign } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Button, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Alert } from "react-native";
+import { Button, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import * as authActions from '../store/actions/Auth';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useRoute } from '@react-navigation/native';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 
 const ResetPasswordScreen = props => {
   const route = useRoute();
-  const { token } = route.params;
+  const { resetToken } = route.params;
   const [isLoading, setIsLoading] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const dispatch = useDispatch();
 
 
-  console.log("getting token", token)
-  handleSubmit = (newPassword,confirmPassword ) => {
-    if (!newPassword && !confirmPassword) {
-      Alert.alert('password is required');
-      return;
-    }
-    dispatch(authActions.resetPassword(newPassword, token)).then((state) => {
+  console.log("getting token", resetToken)
+  const handleSubmit = (value) => {
+    console.log("newPassword", value)
+    // if (!newPassword && !confirmPassword) {
+    //   Alert.alert('password is required');
+    //   return;
+    // }
+    dispatch(authActions.resetPassword(value.newPassword, resetToken)).then((state) => {
       if (state.status === 'success') {
         setIsLoading(false);
         props.navigation.navigate('FormNavigator');
@@ -35,9 +38,25 @@ const ResetPasswordScreen = props => {
           { text: 'OK', color: 'pink', onPress: () => console.log('OK Pressed') },
         ]);
         setIsLoading(false);
+        props.navigation.navigate('FormNavigator');
+
       }
     });
   }
+
+  const Validation = Yup.object({
+    newPassword: Yup.string()
+      .min(6, '*Must be at least 6 characters')
+      .matches(/(?=.*[0-9])/, '*Password must contain a number.')
+      .matches(/(?=.*[a-z])/, '*Password must contain a lowercase letter.')
+      .matches(/(?=.*[A-Z])/, '*Password must contain an uppercase letter.')
+      // .matches(/(?=.*[!@#$%^&*])/, 'Password must contain a Symbol')
+      .required('*New Password is Required'),
+    newCPassword: Yup.string()
+      .min(6, '*Must be at least 6 characters')
+      .oneOf([Yup.ref('newPassword'), null], '*Passwords must match')
+      .required('*Confirm New Password is Required')
+  });
 
   return (
     <View style={styles.container} >
@@ -54,32 +73,50 @@ const ResetPasswordScreen = props => {
       </LinearGradient>
 
       <View style={styles.body} >
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.logoContainer} >
-            <Image source={require('../assets/Secure_login-pana.png')} style={styles.logo} />
-            <Text style={styles.bodyText}>Enter the passwords and secure your account.</Text>
-          </View>
-          <View style={{ marginVertical: 30 }}>
-            <Text style={styles.email} >Enter new password</Text>
-            <TextInput
-              style={styles.textInput}
-              secureTextEntry
-              value={newPassword}
-              onChangeText={setNewPassword}
-            />
-            <Text style={styles.email} >Confirm new password</Text>
-            <TextInput
-              style={styles.textInput}
-              secureTextEntry
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-            />
-          </View>
-          <TouchableOpacity style={styles.verify} onPress={() => handleSubmit(newPassword, setConfirmPassword)}>
-
-            <Text style={styles.verifyButton}>SUBMIT</Text>
-          </TouchableOpacity>
-        </ScrollView>
+        <Formik
+          initialValues={{ newPassword: '', newCPassword: '' }}
+          validationSchema={Validation}
+          onSubmit={handleSubmit}
+        >
+          {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <View style={styles.logoContainer} >
+                <Image source={require('../assets/Secure_login-pana.png')} style={styles.logo} />
+                <Text style={styles.bodyText}>Enter the passwords and secure your account.</Text>
+              </View>
+              <View style={{ marginVertical: 30, width: '100%' }}>
+                <Text style={styles.email} >Enter new password</Text>
+                <TextInput
+                  secureTextEntry={true}
+                  onChangeText={handleChange('newPassword')}
+                  onBlur={handleBlur('newPassword')}
+                  value={values.newPassword}
+                  style={styles.textInput}
+                />
+                {touched.newPassword && errors.newPassword ? (
+                  <Text style={styles.errorText}>{errors.newPassword}</Text>
+                ) : null}
+                <Text style={styles.email} >Confirm new password</Text>
+                <TextInput
+                  secureTextEntry={true}
+                  onChangeText={handleChange('newCPassword')}
+                  onBlur={handleBlur('newCPassword')}
+                  value={values.newCPassword}
+                  style={styles.textInput}
+                />
+                {touched.newCPassword && errors.newCPassword ? (
+                  <Text style={styles.errorText}>{errors.newCPassword}</Text>
+                ) : null}
+              </View>
+              <TouchableOpacity style={styles.verify} onPress={handleSubmit}>
+                {isLoading
+                  ? <ActivityIndicator size={25} color='white' />
+                  : <Text style={styles.verifyButton}>SUBMIT</Text>
+                }
+              </TouchableOpacity>
+            </ScrollView>
+          )}
+        </Formik>
       </View>
     </View>
   );
@@ -130,6 +167,9 @@ const styles = StyleSheet.create({
 
 
   },
+  errorText: {
+    color: 'red',
+},
   email: {
     color: '#b4b4b4',
     fontSize: 16,
@@ -142,7 +182,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6
   },
   verify: {
-    marginTop: 20,
+    // marginTop: 20,
     marginBottom: 60,
     paddingVertical: 10,
     paddingHorizontal: 20,
@@ -158,7 +198,7 @@ const styles = StyleSheet.create({
 
   },
   submit: {
-    marginVertical: 20
+    marginBottom: 20
   },
   submitButton: {
     borderRadius: 10

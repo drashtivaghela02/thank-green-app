@@ -54,11 +54,11 @@ const MyAccount = props => {
 
         dispatch(userAction.updateInfo(formData, accessToken)).then(response => {
             console.log('Personal info update : :: ', response);
-            if (response.status === 'error') {
+            if (response.status == 'error') {
                 Alert.alert("Alert!", response.msg || error)
                 setIsLoading(false)
             }
-            if (response.status === "success") {
+            if (response.status == "success") {
                 Alert.alert("Successs!", response.msg)
                 setIsLoading(false)
             }

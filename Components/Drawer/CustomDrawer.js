@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import { Divider } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import * as productAction from '../../store/actions/Products';
+import SearchBar from "../UI/SearchBar";
 
 const CustomDrawer = props => {
 
@@ -21,6 +22,9 @@ const CustomDrawer = props => {
 
   const [showDetails, setShowDetails] = useState(Array(resData?.length).fill(false));
 
+  const [SearchData, setSearchdata] = useState()
+  const [searchPhrase, setSearchPhrase] = useState("");
+  const [clicked, setClicked] = useState(false);
   useEffect(() => {
     setIsLoading(true);
     dispatch(productAction.getCategory(accessToken))
@@ -36,6 +40,15 @@ const CustomDrawer = props => {
       });
   }, [accessToken])
 
+  const searchFunction = (text) => {
+    const updatedData = resData.filter((item) => {
+      const item_data = `${item.category_name.toUpperCase()})`;
+      const text_data = text.toUpperCase();
+      return item_data.indexOf(text_data) > -1;
+    });
+    setSearchdata(updatedData)
+    setSearchPhrase(text);
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -57,50 +70,59 @@ const CustomDrawer = props => {
               >Categories</Text>
               <Entypo name="menu" size={28} color="white" onPress={() => props.navigation.toggleDrawer()} />
             </View>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => props.navigation.navigate('HomeSearch')}
               style={styles.searchBarContainer}>
               <Feather name="search" size={18} color="black" style={{ marginLeft: 1 }} />
               <Text style={{ fontSize: 17 }}>Search</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+            <View style={styles.body}> 
+            <SearchBar
+              searchPhrase={searchPhrase}
+              setSearchPhrase={searchFunction}
+              clicked={clicked}
+              setClicked={setClicked}
+            />
+
+            </View>
           </View>
         </LinearGradient>
 
-        {resData?.map((item, index) =>
+        {(SearchData ?? resData)?.map((item, index) =>
           <View key={index}>
             {/* <TouchableOpacity > */}
-              <View style={styles.mainscreen}>
-                <View style={{ ...styles.imagePreview, ...{ borderWidth: 1, marginHorizontal: 10, borderRadius: 7, } }}>
-                  <Image style={styles.image} source={{ uri: item.category_image }} />
-                </View>
-                <View style={styles.textcontainer}>
-                  <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: '500' }}>
-                    {item.category_name}
+            <View style={styles.mainscreen}>
+              <View style={{ ...styles.imagePreview, ...{ borderWidth: 1, marginHorizontal: 10, borderRadius: 7, } }}>
+                <Image style={styles.image} source={{ uri: item.category_image }} />
+              </View>
+              <View style={styles.textcontainer}>
+                <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: '500' }}>
+                  {item.category_name}
                 </Text>
                 <TouchableOpacity hitSlop={10} onPress={() => {
-                      console.log(showDetails[index])
-                      setSelectedCategory(item.category_id)
-                      setShowDetails(prevState => {
-                        // prevState.forEach((i) => {
-                          // })
-                          const newState = [...prevState];
-                          newState[index] = !newState[index];
-                          console.log("i Value ajsaf;jsjcdskfp'mkp", prevState)
-                        return newState;
-                      });
-                    }} >
+                  console.log(showDetails[index])
+                  setSelectedCategory(item.category_id)
+                  setShowDetails(prevState => {
+                    // prevState.forEach((i) => {
+                    // })
+                    const newState = [...prevState];
+                    newState[index] = !newState[index];
+                    console.log("i Value ajsaf;jsjcdskfp'mkp", prevState)
+                    return newState;
+                  });
+                }} >
                   <AntDesign name={showDetails[index] ? 'up' : 'down'} size={16} color="#a6a6aa"
-                    />
+                  />
 
                 </TouchableOpacity>
-                </View>
               </View>
+            </View>
             {/* </TouchableOpacity> */}
 
             {showDetails[index] && item.category_id === selectedCategory && item.subcategories && (
               <View style={styles.subcategoryContainer}>
                 {item.subcategories.map((subcategory, subIndex) => (
-                  <TouchableOpacity key={subIndex} onPress={() => props.navigation.navigate('ProductsListing',{SubCatId: item.category_id, SubCatName: subcategory.subcategory_name})}>
+                  <TouchableOpacity key={subIndex} onPress={() => props.navigation.navigate('ProductsListing', { SubCatId: item.category_id, SubCatName: subcategory.subcategory_name })}>
                     <View style={styles.drawerItem}>
                       <Text style={{ fontSize: 16, fontWeight: '500', color: '#666' }}>{subcategory.subcategory_name}</Text>
                     </View>
@@ -123,6 +145,13 @@ const CustomDrawer = props => {
 };
 
 const styles = StyleSheet.create({
+  body: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+    width: Dimensions.get('window').width * 0.85,
+    paddingTop: 10
+  },
   headerContainer: {
     paddingTop: 40,
     paddingHorizontal: 20,

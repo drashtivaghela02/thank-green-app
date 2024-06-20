@@ -1,6 +1,6 @@
 import { AntDesign } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Button, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, SafeAreaView } from "react-native";
+import { Button, Dimensions, Image, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, SafeAreaView, ActivityIndicator } from "react-native";
 import CustomHeader from '../../Components/UI/CustomHeader';
 import SearchBar from '../../Components/UI/SearchBar';
 import { useState } from 'react';
@@ -10,6 +10,7 @@ import CategoryFood from '../../Components/UI/CategoryFood';
 import { FlatList } from 'react-native';
 import * as productAction from '../../store/actions/Products';
 import { useDispatch, useSelector } from 'react-redux';
+import Colors from '../../Constant/Colors';
 
 
 const ShopCategoryScreen = props => {
@@ -81,17 +82,17 @@ const ShopCategoryScreen = props => {
           />
         )} */}
         <View style={{ flex: 1 }}>
-
           <View
             style={{
               // height: Dimensions.get('screen').height,
               width: Dimensions.get('window').width,
-              backgroundColor: '#f1f0f5',
+              backgroundColor: 'white',
               gap: 5,
               // paddingHorizontal:10
             }}
-          // contentContainerStyle={styles.categoryScreen}
-          >
+            // contentContainerStyle={styles.categoryScreen}
+            >
+            {isLoading && <ActivityIndicator size={40} color={Colors.green} />}
             <FlatList
               data={SearchData ?? resData}
               keyExtractor={(item) => item.category_id}

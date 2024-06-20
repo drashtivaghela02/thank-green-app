@@ -1,6 +1,7 @@
 import { AntDesign, Feather, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
+import React from "react";
 import { ActivityIndicator, FlatList, TouchableOpacity } from "react-native";
 import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,6 +11,7 @@ import * as cartItem from '../../store/actions/Cart'
 import CartIcon from "../../Components/UI/CartIcon";
 import Colors from "../../Constant/Colors";
 import usePagination from "../../Components/UI/usePagination";
+import SearchBar from "../../Components/UI/SearchBar";
 const INITIAL_PAGE = 1;
 
 const ProductsListing = props => {
@@ -23,6 +25,9 @@ const ProductsListing = props => {
 
   const [resData, setResdata] = useState([]);
   const [productCount, setProductCount] = useState(0);
+  const [SearchData, setSearchdata] = useState()
+  const [searchPhrase, setSearchPhrase] = useState("");
+  const [clicked, setClicked] = useState(false);
 
   const fetchProductData = (page) => {
     setIsLoading(true);
@@ -53,6 +58,16 @@ const ProductsListing = props => {
     props.navigation.navigate('ProductDescription', { ProductId: id, data: data })
   }
 
+  const searchFunction = (text) => {
+    const updatedData = resData.filter((item) => {
+      const item_data = `${item?.product_title.toUpperCase()})`;
+      const text_data = text.toUpperCase();
+      return item_data.indexOf(text_data) > -1;
+    });
+    setSearchdata(updatedData)
+    setSearchPhrase(text);
+  };
+
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -73,6 +88,12 @@ const ProductsListing = props => {
       </LinearGradient>
 
       <View style={styles.body}>
+      <SearchBar
+          searchPhrase={searchPhrase}
+          setSearchPhrase={searchFunction}
+          clicked={clicked}
+          setClicked={setClicked}
+        />
       {isLoading ? (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
             <ActivityIndicator size={40} color ={Colors.green} />
@@ -84,7 +105,7 @@ const ProductsListing = props => {
         ) 
           : (<View style={{ flex: 1, width: '100%' }}>
             <FlatList
-              data={resData}
+              data={SearchData ?? resData}
               keyExtractor={(item) => item.product_id}
               renderItem={itemData =>
                 <Products
@@ -123,6 +144,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
+    paddingTop: 10
+
     // paddingHorizontal: 30,
   },
   image: {

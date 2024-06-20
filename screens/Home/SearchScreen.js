@@ -83,6 +83,7 @@ const SearchScreen = (props) => {
   };
 
   const fetchSearchData = (page) => {
+    if (isLoading) return;
     setIsLoading(true);
     dispatch(productAction.search(searchPhrase, page, accessToken))
       .then((response) => {
@@ -158,10 +159,10 @@ const SearchScreen = (props) => {
     products = (
       <FlatList
         data={searchProductList}
-        keyExtractor={(item) => item.product_id}
+        keyExtractor={(item) => item?.product_id}
         renderItem={itemData =>
           <SearchProducts
-            param={itemData.item}
+            param={itemData?.item}
             onSelect={onProductSelectHandler}
           />
         }
@@ -196,10 +197,10 @@ const SearchScreen = (props) => {
           onPress={filterHandler}
         />
       </View>
-      <ScrollView style={{flex:1, }}>
-      {isLoading && !searchProductList.length ? <ActivityIndicator size="large" color={Colors.green} /> : null}
-      {category || noResultsMessage}
-      {subcategory || noResultsMessage}
+      <ScrollView style={{flex:1, }} scrollsToTop={searchPhrase}>
+      {isLoading ? <ActivityIndicator size="large" color={Colors.green} /> : null}
+      {/* {category || noResultsMessage} */}
+      {/* {subcategory || noResultsMessage} */}
       {products || noResultsMessage}
 
       </ScrollView>

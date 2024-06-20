@@ -8,7 +8,8 @@ import {
   CHANGE_PASSWORD,
   LOAD_STATE,
   SIGNOUT,
-  SET_LOADING
+  SET_LOADING,
+  GET_ACCESSTOKEN
 } from '../actions/Auth';
 
 const initialState = {
@@ -71,6 +72,11 @@ export default (state = initialState, action) => {
       return {
         initialState
       }
+    case GET_ACCESSTOKEN:
+      return {
+        ...state,
+        accessToken: action.accessToken,
+      };
     default:
       return state;
   }

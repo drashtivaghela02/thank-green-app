@@ -127,11 +127,10 @@ const AuthNavigator = () => {
           :
           (
             <AuthStack.Screen name="auth" component={AuthState} options={{ headerShown: false }} />
-
           )
         }
         {/* <AuthStack.Screen name="FormNavigator1" component={FormNavigator} options={{ headerShown: false }} /> */}
-      <AuthStack.Screen name="ResetPassword" component={ResetPasswordScreen} options={{ headerShown: false }} />
+        {/* <AuthStack.Screen name="ResetPassword" component={ResetPasswordScreen} options={{ headerShown: false }} /> */}
 
         <AuthStack.Screen name='ReferAFriends' component={ReferAFriendScreen} options={{ headerShown: false, }} />
         <AuthStack.Screen name="Map" component={Map} options={{ headerShown: false }} />
@@ -160,7 +159,7 @@ const AuthState = () => {
       <AuthStateStack.Screen name="VerificationCode" component={VerificationCode} options={{ headerShown: false }} />
       <AuthStateStack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
       <AuthStateStack.Screen name="ForgetPassword" component={ForgetPassword} options={{ headerShown: false }} />
-      <AuthStateStack.Screen name="ResetPassword1" component={ResetPasswordScreen} options={{ headerShown: false }} />
+      <AuthStateStack.Screen name="ResetPassword" component={ResetPasswordScreen} options={{ headerShown: false }} />
       <AuthStateStack.Screen name="Home" component={DrawerNavigator} options={{ headerShown: false }} />
     </AuthStateStack.Navigator>)
 }

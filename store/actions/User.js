@@ -11,10 +11,22 @@ export const EDIT_CARD = 'EDIT_CARD';
 export const DELETE_CARD = 'DELETE_CARD';
 
 export const getInfo = (accessToken) => {
+
   return async dispatch => {
     try {
-      const resData = await makeApiCall('userprofile/info', 'GET', null, accessToken);
-      console.log("getinfo resData", resData);
+      const response = await fetch('https://thankgreen.onrender.com/api/userprofile/info',
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + accessToken,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Failed to fetch user info');
+      }
+      const resData = await response.json();
+      console.log("getinfo resData", resData?.data[0]);
       dispatch({
         type: GET_INFO,
         userdata: resData?.data[0],
@@ -25,7 +37,8 @@ export const getInfo = (accessToken) => {
       });
       return resData;
     } catch (error) {
-      console.log("Get Info error", error);
+      console.error("Get Info error", error);
+      // Optionally dispatch an action to update the state with the error
       dispatch({ type: GET_INFO, error: error.message });
     }
   };
@@ -34,12 +47,12 @@ export const getInfo = (accessToken) => {
 export const updateInfo = (formData, accessToken) => {
   return async dispatch => {
     try {
-      const resData = await makeApiCall('userprofile/info', 'PUT', formData, accessToken);
+      const resData = await makeApiCall('userprofile/info', 'PUT', formData, accessToken, {}, true);
       console.log('update info resdata: ', resData);
       dispatch({ type: UPDATE_INFO, data: resData });
       return resData;
     } catch (error) {
-      console.error('Error Update Information : ', error);
+      console.error('Error Update Information: ', error);
     }
   };
 };

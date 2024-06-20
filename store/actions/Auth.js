@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
 
 export const SIGNUP = 'SIGNUP';
@@ -9,7 +10,7 @@ export const CHANGE_PASSWORD = 'CHANGE_PASSWORD';
 export const LOAD_STATE = 'LOAD_STATE';
 export const SIGNOUT = 'SIGNOUT';
 export const SET_LOADING = 'SET_LOADING';
-
+export const GET_ACCESSTOKEN = 'GET_ACCESSTOKEN';
 export const GOOGLE_SIGNIN = 'GOOGLE_SIGNIN'
 
 export const google_signin = () => {
@@ -34,7 +35,7 @@ export const signup = (values, signupData) => {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(signupData )
+          body: JSON.stringify(signupData)
         }
       );
       const resData = await response.json();
@@ -69,7 +70,7 @@ export const verifyOTP = (values) => {
 
       const resData = await response.json();
       console.log('otpVerify resData', resData);
-      
+
       dispatch({ type: VERIFYOTP, resData });
       return resData;
     } catch (error) {
@@ -84,82 +85,30 @@ export const verifyOTP = (values) => {
 
 
 
-  export const resendOTP = (otpId) => {
-    console.log(otpId)
-    return async (dispatch) => {
-      try {
-        const response = await fetch('https://thankgreen.onrender.com/api/auth/resend-otp', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ otpId: otpId }),
-        });
+export const resendOTP = (otpId) => {
+  console.log(otpId)
+  return async (dispatch) => {
+    try {
+      const response = await fetch('https://thankgreen.onrender.com/api/auth/resend-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ otpId: otpId }),
+      });
 
-        console.log("resend response : ", response);
-        const resData = await response.json();
-        console.log("res data resend: ", resData);
-        dispatch({ type: RESENDOTP, resData: resData });
-        dispatch({
-          type: LOGINEMAIL,
-          status: resData.status,
-          accessToken: resData.data.accessToken,
-          refreshToken: resData.data.refreshToken,
-        });
-        if (resData.status === 'error') {
-          Alert.alert('Alert', resData.msg, [
-            {
-              text: 'Cancel',
-              onPress: () => console.log('Cancel Pressed'),
-              style: 'cancel',
-            },
-            { text: 'OK', onPress: () => console.log('OK Pressed') },
-          ])
-        }
-        else if (resData.status === 'success') {
-          Alert.alert('Success!', resData.msg)
-        }
-        return resData;
-      } catch (error) {
-        console.error('Resend OTP error:', error);
-        // Handle error, dispatch an action if needed ex. resend again
-      }
-    };
-  };
-
-
-  export const loginEmail = (email, password) => {
-    return async dispatch => {
-      try {
-        const response = await fetch('https://thankgreen.onrender.com/api/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            email: email,
-            password: password
-          })
-        });
-
-        const resData = await response.json();
-        console.log("Login email response data", resData);
-
-        if (resData.status === 'error' || resData.error) {
-          return resData;
-        }
-
-        dispatch({
-          type: LOGINEMAIL,
-          status: resData.status,
-          accessToken: resData.data.accessToken,
-          refreshToken: resData.data.refreshToken,
-          password: password
-        });
-        return resData;
-
-      } catch (error) {
-        Alert.alert('Alert', error, [
+      console.log("resend response : ", response);
+      const resData = await response.json();
+      console.log("res data resend: ", resData);
+      dispatch({ type: RESENDOTP, resData: resData });
+      dispatch({
+        type: LOGINEMAIL,
+        status: resData.status,
+        accessToken: resData.data.accessToken,
+        refreshToken: resData.data.refreshToken,
+      });
+      if (resData.status === 'error') {
+        Alert.alert('Alert', resData.msg, [
           {
             text: 'Cancel',
             onPress: () => console.log('Cancel Pressed'),
@@ -167,99 +116,183 @@ export const verifyOTP = (values) => {
           },
           { text: 'OK', onPress: () => console.log('OK Pressed') },
         ])
-        // console.error("login error", error)
       }
-    };
+      else if (resData.status === 'success') {
+        Alert.alert('Success!', resData.msg)
+      }
+      return resData;
+    } catch (error) {
+      console.error('Resend OTP error:', error);
+      // Handle error, dispatch an action if needed ex. resend again
+    }
   };
+};
 
 
-  export const loginContact = (contact, password) => {
-    return async dispatch => {
-      const response = await fetch('https://thankgreen.onrender.com/api/auth/login',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            phoneNumber: contact,
-            password: password
-          })
-        }
-      );
+export const loginEmail = (email, password) => {
+  return async dispatch => {
+    try {
+      const response = await fetch('https://thankgreen.onrender.com/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
+      });
 
       const resData = await response.json();
-      console.log("Login Contact response data", resData);
+      console.log("Login email response data", resData);
 
       if (resData.status === 'error' || resData.error) {
         return resData;
       }
 
       dispatch({
-        type: LOGINCONTACT,
+        type: LOGINEMAIL,
         status: resData.status,
         accessToken: resData.data.accessToken,
         refreshToken: resData.data.refreshToken,
         password: password
       });
       return resData;
-    };
+
+    } catch (error) {
+      Alert.alert('Alert', error, [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ])
+      // console.error("login error", error)
+    }
   };
+};
 
-  export const changePassword = (value, accessToken) => {
-    return async dispatch => {
-      try {
-        const response = await fetch('https://thankgreen.onrender.com/api/auth/change-password',
-          {
-            method: 'PUT',
-            headers: {
-              'Authorization': 'Bearer ' + accessToken,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              oldPassword: value.oldPassword,
-              newPassword: value.newPassword,
-              confirmNewPassword: value.newCPassword
-            })
-          }
-        );
-        const resData = await response.json();
-        console.log("response change data", resData);
-        if (resData.status === 'error' || resData.error) {
-          return resData;
+
+export const loginContact = (contact, password) => {
+  return async dispatch => {
+    const response = await fetch('https://thankgreen.onrender.com/api/auth/login',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          phoneNumber: contact,
+          password: password
+        })
+      }
+    );
+
+    const resData = await response.json();
+    console.log("Login Contact response data", resData);
+
+    if (resData.status === 'error' || resData.error) {
+      return resData;
+    }
+
+    dispatch({
+      type: LOGINCONTACT,
+      status: resData.status,
+      accessToken: resData.data.accessToken,
+      refreshToken: resData.data.refreshToken,
+      password: password
+    });
+    return resData;
+  };
+};
+
+export const accessTokenGenerate = (contact, password) => {
+  return async dispatch => {
+    const response = await fetch('https://thankgreen.onrender.com/api/auth/store-device-token',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          deviceToken: contact
+        })
+      }
+    );
+
+    const resData = await response.json();
+    console.log("Login Contact response data", resData);
+
+    if (resData.status === 'error' || resData.error) {
+      return resData;
+    }
+
+    dispatch({
+      type: LOGINCONTACT,
+      status: resData.status,
+      accessToken: resData.data.accessToken,
+      refreshToken: resData.data.refreshToken,
+      password: password
+    });
+    return resData;
+  };
+};
+
+export const changePassword = (value, accessToken) => {
+  return async dispatch => {
+    try {
+      const response = await fetch('https://thankgreen.onrender.com/api/auth/change-password',
+        {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + accessToken,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            oldPassword: value.oldPassword,
+            newPassword: value.newPassword,
+            confirmNewPassword: value.newCPassword
+          })
         }
-
-        dispatch({ type: CHANGE_PASSWORD, password: value.newPassword });
+      );
+      const resData = await response.json();
+      console.log("response change data", resData);
+      if (resData.status === 'error' || resData.error) {
         return resData;
-
-      } catch (error) {
-        console.error("change password error", error)
       }
-    };
+
+      dispatch({ type: CHANGE_PASSWORD, password: value.newPassword });
+      return resData;
+
+    } catch (error) {
+      console.error("change password error", error)
+    }
   };
+};
 
 
 
 
-  export const loadInitialState = () => {
-    return async (dispatch) => {
-      try {
-        const serializedState = await AsyncStorage.getItem('reduxState');
-        if (serializedState !== null) {
-          const state = JSON.parse(serializedState);
-          dispatch({ type: LOAD_STATE, state });
-        }
-        dispatch({ type: SET_LOADING, payload: false });
-      } catch (error) {
-        console.error('Error loading state from AsyncStorage:', error);
+export const loadInitialState = () => {
+  return async (dispatch) => {
+    try {
+      const serializedState = await AsyncStorage.getItem('reduxState');
+      if (serializedState !== null) {
+        const state = JSON.parse(serializedState);
+        dispatch({ type: LOAD_STATE, state });
       }
-    };
+      dispatch({ type: SET_LOADING, payload: false });
+    } catch (error) {
+      console.error('Error loading state from AsyncStorage:', error);
+    }
   };
+};
 
-  export const signOut = () => {
-    return { type: SIGNOUT };
+export const signOut = () => {
+  return { type: SIGNOUT };
 }
-  
+
 export const resetPassword = (password, resetToken) => {
   return async dispatch => {
     try {
@@ -269,14 +302,14 @@ export const resetPassword = (password, resetToken) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: {
+        body: JSON.stringify({
           newPassword: password
-        },
+        }),
       });
 
       const resData = await response.json();
       console.log('new password reset', resData);
-      
+
       return resData;
     } catch (error) {
       console.error('new password reset:', error);
@@ -288,7 +321,7 @@ export const resetPassword = (password, resetToken) => {
   };
 };
 
-export const forgetPassword  = (email) => {
+export const forgetPassword = (email) => {
   return async dispatch => {
     try {
       console.log("forgetPassword values ", email);
@@ -302,7 +335,7 @@ export const forgetPassword  = (email) => {
 
       const resData = await response.json();
       console.log('forgetPassword resData', resData);
-      
+
       return resData;
     } catch (error) {
       console.error('forgetPassword error:', error);
@@ -313,3 +346,33 @@ export const forgetPassword  = (email) => {
     }
   };
 };
+
+export const refreshAccessToken = async (refreshToken) => {
+  const refreshTokenEndpoint = 'auth/refresh-token';
+  return async dispatch => {
+    try {
+      const response = await fetch(`https://thankgreen.onrender.com/api/auth/refresh-token`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refreshToken: refreshToken}),
+      });
+
+      if (!response.ok) {
+        Alert.alert('Failed to refresh token', "You have to Sign in again");
+      }
+
+      const resData = await response.json();
+      dispatch({
+        type: GET_ACCESSTOKEN,
+        accessToken: resData.data.accessToken,
+      });
+      return resData.accessToken;
+    } catch (error) {
+      console.log('Error refreshing access token:', error);
+      throw error;
+    }
+  }
+};
+

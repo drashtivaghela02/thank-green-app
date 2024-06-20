@@ -56,7 +56,7 @@ const CategoryList = props => {
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, }}>
             <Text style={styles.heading}>{name}</Text>
-            <MaterialIcons name="filter-list" size={28} color="white" onPress={() => { props.navigation.navigate('Filters') }} />
+            {/* <MaterialIcons name="filter-list" size={28} color="white" onPress={() => { props.navigation.navigate('Filters') }} /> */}
           </View>
         </View>
       </LinearGradient>
