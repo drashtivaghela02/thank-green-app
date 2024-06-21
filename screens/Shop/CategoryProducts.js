@@ -36,7 +36,9 @@ const CategoryProducts = props => {
       })
       .catch(error => {
         setIsLoading(false);
-        console.error("Error fetching user information:", error);
+        // console.error("Error fetching user information:", error);
+        console.log("Error fetching user information:", error);
+
       });
   }
 
@@ -53,6 +55,7 @@ const CategoryProducts = props => {
   const onProductSelectHandler = (id, data) => {
     props.navigation.navigate('ProductDescription', { ProductId: id, data: data })
   }
+
 
   return (
     <View style={styles.container}>
@@ -74,22 +77,25 @@ const CategoryProducts = props => {
       </LinearGradient>
 
       <View style={styles.body}>
-        <View style={{ flex: 1, width: '100%' }}>
-          <FlatList
-            data={resData}
-            keyExtractor={(item) => item?.product_id}
-            renderItem={itemData =>
-              <Products
-                param={itemData.item}
-                onSelect={onProductSelectHandler}
-                onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0]?.quantity_variant_id}`)) }}
-              />
-            }
-            onEndReached={handleEndReached}
-            onEndReachedThreshold={0.1}
-            ListFooterComponent={isLoading ? <ActivityIndicator size="large" color={Colors.green} /> : null}
-          />
-        </View>
+        {!isLoading && ( productCount == 0
+          ? (<View style={{ alignItems: 'center', justifyContent: 'center' }}><Text>No products available</Text></View>)
+          : (<View style={{ flex: 1, width: '100%' }}>
+            <FlatList
+              data={resData}
+              keyExtractor={(item) => item?.product_id}
+              renderItem={itemData =>
+                <Products
+                  param={itemData.item}
+                  onSelect={onProductSelectHandler}
+                  onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0]?.quantity_variant_id}`)) }}
+                />
+              }
+              onEndReached={handleEndReached}
+              onEndReachedThreshold={0.1}
+              ListFooterComponent={isLoading ? <ActivityIndicator size="large" color={Colors.green} /> : null}
+            />
+          </View>)
+          )}
 
       </View>
     </View>

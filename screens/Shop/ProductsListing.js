@@ -40,7 +40,9 @@ const ProductsListing = props => {
       })
       .catch(error => {
         setIsLoading(false);
-        console.error("Error fetching user information:", error);
+        console.log("Error fetching user information:", error);
+        // console.error("Error fetching user information:", error);
+
       });
   }
 
@@ -82,7 +84,7 @@ const ProductsListing = props => {
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8, }}>
             <Text numberOfLines={1} style={styles.heading}>{name}</Text>
-            <MaterialIcons name="filter-list" size={28} color="white" onPress={() => { props.navigation.navigate('Filters') }} />
+            {/* <MaterialIcons name="filter-list" size={28} color="white" onPress={() => { props.navigation.navigate('Filters') }} /> */}
           </View>
         </View>
       </LinearGradient>
@@ -98,7 +100,7 @@ const ProductsListing = props => {
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
             <ActivityIndicator size={40} color ={Colors.green} />
           </View>
-        ) : (resData?.length === 0 || resData === 'No Products found') ? (
+        ) : (productCount === 0 || resData === 'No Products found') ? (
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
             <Text style={{fontSize: 16}}>No products available for this category ..</Text>
           </View>

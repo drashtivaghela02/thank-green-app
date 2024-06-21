@@ -1,5 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
+import { useSelector } from "react-redux";
+import { store } from "../store";
 
 export const SIGNUP = 'SIGNUP';
 export const LOGINEMAIL = 'LOGINEMAIL';
@@ -20,7 +22,7 @@ export const google_signin = () => {
       console.log("Google resData", resData);
     } catch (error) {
       console.error("Google error", error);
-      Alert.alert('Error', error.message);
+      // Alert.alert('Error', error.message);
     }
   };
 };
@@ -45,7 +47,9 @@ export const signup = (values, signupData) => {
       }
       return resData;
     } catch (error) {
-      console.error("Sign up error", error);
+      // console.error("Sign up error", error);
+      console.log("Sign up error", error);
+
     }
   };
 };
@@ -74,7 +78,9 @@ export const verifyOTP = (values) => {
       dispatch({ type: VERIFYOTP, resData });
       return resData;
     } catch (error) {
-      console.error('Verify OTP error:', error);
+      // console.error('Verify OTP error:', error);
+      console.log('Resend OTP error:', error);
+
       if (error.message === 'Network request failed') {
         throw new Error('Network request failed. Please check your internet connection.');
       }
@@ -122,7 +128,9 @@ export const resendOTP = (otpId) => {
       }
       return resData;
     } catch (error) {
-      console.error('Resend OTP error:', error);
+      // console.error('Resend OTP error:', error);
+      console.log('Resend OTP error:', error);
+
       // Handle error, dispatch an action if needed ex. resend again
     }
   };
@@ -266,7 +274,9 @@ export const changePassword = (value, accessToken) => {
       return resData;
 
     } catch (error) {
-      console.error("change password error", error)
+      console.log('Resend OTP error:', error);
+
+      // console.error("change password error", error)
     }
   };
 };
@@ -284,7 +294,9 @@ export const loadInitialState = () => {
       }
       dispatch({ type: SET_LOADING, payload: false });
     } catch (error) {
-      console.error('Error loading state from AsyncStorage:', error);
+      // console.error('Error loading state from AsyncStorage:', error);
+      console.log('Error loading state from AsyncStorage:', error);
+
     }
   };
 };
@@ -312,7 +324,9 @@ export const resetPassword = (password, resetToken) => {
 
       return resData;
     } catch (error) {
-      console.error('new password reset:', error);
+      console.log('new password reset:', error);
+      // console.error('new password reset:', error);
+
       if (error.message === 'Network request failed') {
         throw new Error('Network request failed. Please check your internet connection.');
       }
@@ -338,7 +352,9 @@ export const forgetPassword = (email) => {
 
       return resData;
     } catch (error) {
-      console.error('forgetPassword error:', error);
+      // console.error('forgetPassword error:', error);
+      console.log('forgetPassword error:', error);
+
       if (error.message === 'Network request failed') {
         throw new Error('Network request failed. Please check your internet connection.');
       }
@@ -347,8 +363,10 @@ export const forgetPassword = (email) => {
   };
 };
 
-export const refreshAccessToken = async (refreshToken) => {
-  const refreshTokenEndpoint = 'auth/refresh-token';
+export const refreshAccessToken = async () => {
+  const refreshToken = store.getState();
+  console.log('refreshtyuruyrtu', refreshToken.auth.accessToken)
+
   return async dispatch => {
     try {
       const response = await fetch(`https://thankgreen.onrender.com/api/auth/refresh-token`, {
@@ -356,13 +374,13 @@ export const refreshAccessToken = async (refreshToken) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ refreshToken: refreshToken}),
+        body: JSON.stringify({ refreshToken: refreshToken.auth.accessToken}),
       });
 
+      console.log("refreshing aasdsgildh",response)
       if (!response.ok) {
         Alert.alert('Failed to refresh token', "You have to Sign in again");
       }
-
       const resData = await response.json();
       dispatch({
         type: GET_ACCESSTOKEN,

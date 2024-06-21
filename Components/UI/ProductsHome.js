@@ -13,7 +13,7 @@ const ProductsHome = (props) => {
   const id = props.param.product_id;
   const data = props.param;
   const [qty, setQty] = useState(0);
-  const [fav, setFav] = useState(props.favourites ? props.favourites : data?.is_favorite)
+  const [fav, setFav] = useState(data?.is_favorite)
   const dispatch = useDispatch();
   console.log("Home product data", data)
   let actual_price = '$' + data.quantity_variants[0].actual_price ?? 0

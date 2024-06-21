@@ -3,12 +3,12 @@ import { StyleSheet, View } from "react-native";
 import CustomHeader from "../../Components/UI/CustomHeader";
 import * as productAction from '../../store/actions/Products';
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ProductsHome from "../../Components/UI/ProductsHome";
 import * as cartItem from '../../store/actions/Cart';
 import usePagination from "../../Components/UI/usePagination";
 import Colors from "../../Constant/Colors";
-
+import { useFocusEffect } from '@react-navigation/native';
 const INITIAL_PAGE = 1;
 
 const FavoritesScreen = props => {
@@ -34,15 +34,20 @@ const FavoritesScreen = props => {
       });
   };
 
-  const { currentPage, handleEndReached } = usePagination({
+  const { currentPage, handleEndReached, resetPagination } = usePagination({
     fetchFunction: fetchFavourites,
     totalPages: Math.ceil(productCount / 10),
     initialPage: INITIAL_PAGE,
   });
 
-  useEffect(() => {
-    fetchFavourites(INITIAL_PAGE);
-  }, [accessToken]);
+  useFocusEffect(
+    useCallback(() => {
+      resetPagination();
+      setResdata([]);
+      fetchFavourites(INITIAL_PAGE);
+    }, [accessToken])
+  );
+
 
   const onProductSelectHandler = (id, data) => {
     props.navigation.navigate('ProductDescription', { ProductId: id, data: data });

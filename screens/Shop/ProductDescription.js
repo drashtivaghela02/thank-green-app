@@ -25,7 +25,7 @@ const ProductDescription = props => {
   const [cartItemId, setCartitemId] = useState(`${ProductId}-${data?.quantity_variants[0]?.quantity_variant_id}`)
   const [quantityVarientId, setQuantityVarientId] = useState(data?.quantity_variants[0]?.quantity_variant_id ?? '')
   const [selectedOption, setSelectedOption] = useState(data?.quantity_variants[0]?.quantity_variant ?? '');
-  const [isFavourite, setIsFavourite] = useState(data?.is_favorite != null ? data?.is_favorite : 0)
+  const [isFavourite, setIsFavourite] = useState(data?.is_favorite ? data?.is_favorite : 0)
   const [actual, setActuals] = useState(data?.quantity_variants[0]?.actual_price ?? 0)
   const [selling, setSelling] = useState(data?.quantity_variants[0]?.selling_price ?? 0)
   const [qty, setQty] = useState(cartItems[cartItemId]?.quantity ?? 1);
@@ -37,9 +37,11 @@ const ProductDescription = props => {
 
   const handleFavouriteToggle = () => {
     if (isFavourite === 1) {
+      console.log("Second")
       dispatch(productAction.removeFromFavorites(ProductId, accessToken));
       setIsFavourite(0)
     } else {
+      console.log("first")
       dispatch(productAction.addToFavorites(ProductId, accessToken));
       setIsFavourite(1)
     }
@@ -62,7 +64,9 @@ const ProductDescription = props => {
       })
       .catch(error => {
         setIsLoading(false);
-        console.error("Error fetching user information:", error);
+        // console.error("Error fetching user information:", error);
+        console.log("Error fetching user information:", error);
+
       });
   }, [accessToken, qty])
 

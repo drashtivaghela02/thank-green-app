@@ -16,27 +16,26 @@ const CustomDrawer = props => {
   const accessToken = useSelector(state => state.auth.accessToken)
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-
   const [resData, setResdata] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
-
   const [showDetails, setShowDetails] = useState(Array(resData?.length).fill(false));
 
   const [SearchData, setSearchdata] = useState()
   const [searchPhrase, setSearchPhrase] = useState("");
   const [clicked, setClicked] = useState(false);
+  
   useEffect(() => {
     setIsLoading(true);
     dispatch(productAction.getCategory(accessToken))
       .then((response) => {
         setIsLoading(false);
-        console.log("sgdagfv xzv=> ", response?.data?.categoryList)
         setResdata(response?.data?.categoryList);
         setShowDetails(Array(response?.data.length).fill(false));
       })
       .catch(error => {
         setIsLoading(false);
-        console.error("Error fetching user information:", error);
+        // console.error("Error fetching user information:", error);
+        console.log("Error fetching user information:", error);
       });
   }, [accessToken])
 
@@ -76,13 +75,13 @@ const CustomDrawer = props => {
               <Feather name="search" size={18} color="black" style={{ marginLeft: 1 }} />
               <Text style={{ fontSize: 17 }}>Search</Text>
             </TouchableOpacity> */}
-            <View style={styles.body}> 
-            <SearchBar
-              searchPhrase={searchPhrase}
-              setSearchPhrase={searchFunction}
-              clicked={clicked}
-              setClicked={setClicked}
-            />
+            <View style={styles.body}>
+              <SearchBar
+                searchPhrase={searchPhrase}
+                setSearchPhrase={searchFunction}
+                clicked={clicked}
+                setClicked={setClicked}
+              />
 
             </View>
           </View>
@@ -100,19 +99,15 @@ const CustomDrawer = props => {
                   {item.category_name}
                 </Text>
                 <TouchableOpacity hitSlop={10} onPress={() => {
-                  console.log(showDetails[index])
+                  setShowDetails(Array(resData?.length).fill(false));
                   setSelectedCategory(item.category_id)
                   setShowDetails(prevState => {
-                    // prevState.forEach((i) => {
-                    // })
                     const newState = [...prevState];
                     newState[index] = !newState[index];
-                    console.log("i Value ajsaf;jsjcdskfp'mkp", prevState)
                     return newState;
                   });
                 }} >
-                  <AntDesign name={showDetails[index] ? 'up' : 'down'} size={16} color="#a6a6aa"
-                  />
+                  {showDetails[index] ? <AntDesign name='up' size={16} color="#a6a6aa" /> : <AntDesign name='down' size={16} color="#a6a6aa" />}
 
                 </TouchableOpacity>
               </View>

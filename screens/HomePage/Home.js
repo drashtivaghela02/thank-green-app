@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, ScrollView, ActivityIndicator, ImageBackground, Modal, Pressable, StatusBar, Platform } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList, ScrollView, ActivityIndicator, ImageBackground, Modal, Pressable, StatusBar, Platform, Alert } from "react-native";
 import CustomHeader from "../../Components/UI/CustomHeader";
 import { LinearGradient } from "expo-linear-gradient";
 import { AntDesign, Entypo, Feather, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
@@ -6,7 +6,7 @@ import CategoryFood from "../../Components/UI/CategoryFood";
 import CategoryFoodHome from "../../Components/UI/CategoryFoodHome";
 import { useDispatch, useSelector } from "react-redux";
 import * as homeAction from '../../store/actions/Home';
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Carousel from "react-native-reanimated-carousel";
 import { Image } from "react-native";
 import ProductsHome from "../../Components/UI/ProductsHome";
@@ -17,6 +17,7 @@ import Colors from "../../Constant/Colors";
 import CouponHome from "../../Components/UI/CouponHome";
 import * as orderAction from '../../store/actions/Orders';
 import usePagination from "../../Components/UI/usePagination";
+import { useFocusEffect } from "@react-navigation/native";
 
 const INITIAL_PAST_PAGE = 1;
 const INITIAL_RECO_PAGE = 1;
@@ -58,9 +59,15 @@ const Home = props => {
       })
       .catch(error => {
         setIsLoading(false);
-        console.error("Error fetching user information:", error);
+        Alert.alert("Error fetching user information:", error);
       });
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchHomePage(1, 1)
+    }, [accessToken])
+  );
 
   const { currentPage: pastPage, handleEndReached: handlePastOrdersEndReached } = usePagination({
     fetchFunction: (page) => {
@@ -95,7 +102,9 @@ const Home = props => {
       })
       .catch((error) => {
         setIsLoading(false);
-        console.error('Error fetching user information:', error);
+        // console.error('Error fetching user information:', error);
+        console.log('Error fetching user information:', error);
+
       });
   };
 
@@ -143,121 +152,121 @@ const Home = props => {
           </View>
         </View>
       </LinearGradient>
-      
-      {isLoading && again ? <ScreenLoader />
-        :
-      <ScrollView contentContainerStyle={styles.body}>
-        <View style={styles.container1}>
-          <Carousel
-            data={bannerData}
-            renderItem={renderItem}
-            sliderWidth={Dimensions.get("window").width}
-            itemWidth={Dimensions.get("window").width}
-            width={Dimensions.get("window").width}
-          />
-        </View>
 
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(!modalVisible);
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={[styles.modalText, { fontWeight: '600', fontSize: 16 }]}>Terms and Conditions</Text>
-              <FlatList
-                data={keyValuePairs}
-                keyExtractor={item => item.key}
-                renderItem={({ item }) => (
-                  <Text style={styles.modalText}>
-                    {item.key}: {item.value}
-                  </Text>
-                )}
-              />
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Text style={styles.textStyle}>Close</Text>
-              </Pressable>
-            </View>
+      {/* {isLoading && again && <ActivityIndicator />} */}
+        
+        <ScrollView contentContainerStyle={styles.body}>
+          <View style={styles.container1}>
+            <Carousel
+              data={bannerData}
+              renderItem={renderItem}
+              sliderWidth={Dimensions.get("window").width}
+              itemWidth={Dimensions.get("window").width}
+              width={Dimensions.get("window").width}
+            />
           </View>
-        </Modal>
 
-        <View style={styles.couponContainer}>
-          <FlatList
-            data={couponsData}
-            keyExtractor={(item) => item.id}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            renderItem={itemData =>
-              <CouponHome
-                param={itemData.item}
-                onShowTerms={() => {
-                  setModalVisible(true);
-                  handleTnC(itemData.item.id);
-                }}
-              />}
-          />
-        </View>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              setModalVisible(!modalVisible);
+            }}
+          >
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Text style={[styles.modalText, { fontWeight: '600', fontSize: 16 }]}>Terms and Conditions</Text>
+                <FlatList
+                  data={keyValuePairs}
+                  keyExtractor={item => item.key}
+                  renderItem={({ item }) => (
+                    <Text style={styles.modalText}>
+                      {item.key}: {item.value}
+                    </Text>
+                  )}
+                />
+                <Pressable
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={() => setModalVisible(!modalVisible)}
+                >
+                  <Text style={styles.textStyle}>Close</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
 
-        <View>
-          <Text style={styles.categoryList}>Categories</Text>
-          <FlatList
-            data={category}
-            keyExtractor={(item) => item.category_id}
-            horizontal={true}
-            renderItem={itemData =>
-              <CategoryFoodHome
-                param={itemData.item}
-                onSelect={onCategorySelectHandler}
-              />}
-          />
-        </View>
+          <View style={styles.couponContainer}>
+            <FlatList
+              data={couponsData}
+              keyExtractor={(item) => item.id}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              renderItem={itemData =>
+                <CouponHome
+                  param={itemData.item}
+                  onShowTerms={() => {
+                    setModalVisible(true);
+                    handleTnC(itemData.item.id);
+                  }}
+                />}
+            />
+          </View>
 
-        {accessToken !== null && pastOrders.length > 0 && <View>
-          <Text style={styles.categoryList}>Past Orders</Text>
-          <FlatList
-            data={pastOrders}
-            keyExtractor={(item) => item.product_id}
-            horizontal={true}
-            style={{ paddingHorizontal: 10 }}
-            renderItem={itemData =>
-              <ProductsHome
-                param={itemData.item}
-                favourites={favoriteProductIds[itemData?.item?.product_id] ? 1 : 0}
-                onSelect={onProductSelectHandler}
-                onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0].quantity_variant_id}`)) }}
-              />}
-            onEndReached={handlePastOrdersEndReached}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={isLoading ? <ActivityIndicator size="large" color={Colors.green} style= {{paddingHorizontal: 10, paddingVertical: 75,}} /> : null}
-          />
-        </View>}
+          <View>
+            <Text style={styles.categoryList}>Categories</Text>
+            <FlatList
+              data={category}
+              keyExtractor={(item) => item.category_id}
+              horizontal={true}
+              renderItem={itemData =>
+                <CategoryFoodHome
+                  param={itemData.item}
+                  onSelect={onCategorySelectHandler}
+                />}
+            />
+          </View>
 
-        <View>
-          <Text style={styles.categoryList}>Recommended Products</Text>
-          <FlatList
-            data={recommendedProducts}
-            keyExtractor={(item) => item.product_id}
-            horizontal={true}
-            style={{ paddingHorizontal: 10 }}
-            renderItem={itemData =>
-              <ProductsHome
-                param={itemData.item}
-                onSelect={onProductSelectHandler}
-                onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0]?.quantity_variant_id}`)) }}
-              />}
-            onEndReached={handleRecomendedEndReached}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={isLoading ? <ActivityIndicator size="large" color={Colors.green} style= {{paddingHorizontal: 10, paddingVertical: 75,}} /> : null}
-          />
-        </View>
-      </ScrollView>
-      }
+          {accessToken !== null && pastOrders?.length > 0 && <View>
+            <Text style={styles.categoryList}>Past Orders</Text>
+            <FlatList
+              data={pastOrders}
+              keyExtractor={(item) => item.product_id}
+              horizontal={true}
+              style={{ paddingHorizontal: 10 }}
+              renderItem={itemData =>
+                <ProductsHome
+                  param={itemData.item}
+                  // favourites={favoriteProductIds[itemData?.item?.product_id] ? 1 : 0}
+                  onSelect={onProductSelectHandler}
+                  onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0].quantity_variant_id}`)) }}
+                />}
+              onEndReached={handlePastOrdersEndReached}
+              onEndReachedThreshold={0.5}
+              ListFooterComponent={isLoading ? <ActivityIndicator size="large" color={Colors.green} style={{ paddingHorizontal: 10, paddingVertical: 75, }} /> : null}
+            />
+          </View>}
+
+          <View>
+            <Text style={styles.categoryList}>Recommended Products</Text>
+            <FlatList
+              data={recommendedProducts}
+              keyExtractor={(item) => item.product_id}
+              horizontal={true}
+              style={{ paddingHorizontal: 10 }}
+              renderItem={itemData =>
+                <ProductsHome
+                  param={itemData.item}
+                  onSelect={onProductSelectHandler}
+                  onRemoveItem={() => { dispatch(cartItem.removeFromCart(`${itemData?.item?.product_id}-${itemData?.item?.quantity_variants[0]?.quantity_variant_id}`)) }}
+                />}
+              onEndReached={handleRecomendedEndReached}
+              onEndReachedThreshold={0.5}
+              ListFooterComponent={isLoading ? <ActivityIndicator size="large" color={Colors.green} style={{ paddingHorizontal: 10, paddingVertical: 75, }} /> : null}
+            />
+          </View>
+        </ScrollView>
+      
     </View>
   );
 };
@@ -329,7 +338,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.3)'
   },
   modalView: {
-    height: Dimensions.get('window').height*0.42,
+    height: Dimensions.get('window').height * 0.42,
     margin: 20,
     backgroundColor: 'white',
     borderRadius: 8,

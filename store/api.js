@@ -1,6 +1,9 @@
 // import { Alert } from "react-native";
 // import { useSelector } from "react-redux";
-// import * as authActions from './actions/Auth';
+import * as authActions from './actions/Auth';
+// import Redux from './store';
+import { Alert } from "react-native";
+import { store } from './store';
 
 const BASE_URL = 'https://thankgreen.onrender.com/api/';
 
@@ -9,7 +12,6 @@ const buildQueryString = (params) => {
     .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
     .join('&');
 };
-// const refreshToken = useSelector((state) => state?.auth?.refreshToken);
 
 const makeApiCall = async (endpoint, method , body , accessToken, queryParams = {}, isFormData = false) => {
   const headers = {
@@ -43,15 +45,21 @@ const makeApiCall = async (endpoint, method , body , accessToken, queryParams = 
 
   try {
     const response = await fetch(url, options);
-    if (!response.ok) {
-      // if (response.statusCode === 403 && response.msg === 'jwt expired') {
-      //   const response = await dispatch(authActions.accessTokenGenerate(refreshToken))
-      // }
-      throw new Error(`Failed to fetch: ${response.msg}`);
+    const resData = await response.json();
+    console.log('resData', resData)
+    if (resData.statusCode === 403 || resData.msg === 'jwt expired') {
+      console.log("first")
+      store.dispatch(authActions.refreshAccessToken())
+      return resData;
     }
-    return await response.json();
+
+  
+    if (!response.ok) {
+      throw new Error(`Failed to fetch: ${error}`);
+    }
+    return await resData;
   } catch (error) {
-    console.log(`Error in API call to ${endpoint}:`, error);
+    console.log(`Error in API call to ${endpoint}:`, resData.msg);
     throw error;
   }
 };

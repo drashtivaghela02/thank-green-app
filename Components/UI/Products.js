@@ -15,7 +15,7 @@ const Products = (props) => {
 
   const data = props.param;
 
-  const [quantityVarientId, setQuantityVarientId] = useState(props.param.quantity_variants[0].quantity_variant_id ?? '')
+  const [quantityVarientId, setQuantityVarientId] = useState(props?.param?.quantity_variants[0]?.quantity_variant_id ?? '')
   const [cartItemId, setCartitemId] = useState(`${data.product_id}-${data?.quantity_variants[0].quantity_variant_id ?? ''}`)
 
 
