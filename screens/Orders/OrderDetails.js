@@ -6,6 +6,7 @@ import CustomHeader from "../../Components/UI/CustomHeader";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as orderAction from '../../store/actions/Orders';
+import moment from "moment";
 
 
 const OrderDetails = (props) => {
@@ -62,7 +63,7 @@ const OrderDetails = (props) => {
                 </View>
 
                 <View style={{ gap: 8 }}>
-                  <Text style={styles.subTitle}>{details?.Order_date}</Text>
+                  <Text style={styles.subTitle}>{moment(details.Order_date).format("Do MMMM YYYY")}</Text>
                   <Text style={styles.subTitle}>{details?.order_number}</Text>
                   <Text style={styles.subTitle}>Order {details?.order_status[0].toUpperCase() + details?.order_status.substring(1)}</Text>
 

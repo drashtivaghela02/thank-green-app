@@ -76,7 +76,7 @@ const PlaceOrder = (props) => {
     setSelectedAddressId(id);
   };
 
-  const initializePaymentSheet = async (data) => {
+  const initializePaymentSheet = async (data, orderId) => {
     const { paymentIntent_client_secret } = data;
     const { error } = await initPaymentSheet({
       merchantDisplayName: "Example, Inc.",
@@ -154,7 +154,7 @@ const PlaceOrder = (props) => {
         setIsLoading(false);
         if (response.statusCode === 200) {
           setOrderId(response.data.order_id)
-          if (value === 'card') { initializePaymentSheet(response.data); }
+          if (value === 'card') { initializePaymentSheet(response.data, response.data.order_id); }
 
 
           else {

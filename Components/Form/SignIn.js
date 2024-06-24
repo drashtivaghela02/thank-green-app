@@ -207,7 +207,7 @@ const SignIn = (props) => {
             <View style={styles.screen} >
                 <KeyboardAvoidingView>
                     <ScrollView showsVerticalScrollIndicator={false}>
-                        <TouchableOpacity onPress={() => props.navigation.navigate('Home')}>
+                        <TouchableOpacity disabled={isLoading} onPress={() => props.navigation.navigate('Home')}>
                             <Text style={styles.skipText}>SKIP</Text>
                         </TouchableOpacity>
                         <View style={styles.logoContainer}>

@@ -63,11 +63,11 @@ const Home = props => {
       });
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchHomePage(1, 1)
-    }, [accessToken])
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     fetchHomePage(1, 1)
+  //   }, [accessToken])
+  // );
 
   const { currentPage: pastPage, handleEndReached: handlePastOrdersEndReached } = usePagination({
     fetchFunction: (page) => {
@@ -125,6 +125,11 @@ const Home = props => {
     );
   };
 
+  // if (isLoading && again) {
+  //   return (
+  //     <ScreenLoader /> 
+  //   )
+  // }
   return (
     <View style={styles.container}>
       <LinearGradient
@@ -153,7 +158,7 @@ const Home = props => {
         </View>
       </LinearGradient>
 
-      {/* {isLoading && again && <ActivityIndicator />} */}
+      {isLoading && again ?<ScreenLoader/>:
         
         <ScrollView contentContainerStyle={styles.body}>
           <View style={styles.container1}>
@@ -265,7 +270,7 @@ const Home = props => {
               ListFooterComponent={isLoading ? <ActivityIndicator size="large" color={Colors.green} style={{ paddingHorizontal: 10, paddingVertical: 75, }} /> : null}
             />
           </View>
-        </ScrollView>
+        </ScrollView>}
       
     </View>
   );

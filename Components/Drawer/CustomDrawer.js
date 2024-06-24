@@ -23,7 +23,7 @@ const CustomDrawer = props => {
   const [SearchData, setSearchdata] = useState()
   const [searchPhrase, setSearchPhrase] = useState("");
   const [clicked, setClicked] = useState(false);
-  
+
   useEffect(() => {
     setIsLoading(true);
     dispatch(productAction.getCategory(accessToken))
@@ -82,7 +82,6 @@ const CustomDrawer = props => {
                 clicked={clicked}
                 setClicked={setClicked}
               />
-
             </View>
           </View>
         </LinearGradient>
@@ -90,28 +89,27 @@ const CustomDrawer = props => {
         {(SearchData ?? resData)?.map((item, index) =>
           <View key={index}>
             {/* <TouchableOpacity > */}
-            <View style={styles.mainscreen}>
+            <TouchableOpacity style={styles.mainscreen} hitSlop={10}
+              onPress={() => {
+                setShowDetails(Array(resData?.length).fill(false));
+                setSelectedCategory(item.category_id)
+                setShowDetails(prevState => {
+                  const newState = [...prevState];
+                  newState[index] = !newState[index];
+                  return newState;
+                });
+              }} >
               <View style={{ ...styles.imagePreview, ...{ borderWidth: 1, marginHorizontal: 10, borderRadius: 7, } }}>
                 <Image style={styles.image} source={{ uri: item.category_image }} />
               </View>
               <View style={styles.textcontainer}>
-                <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: '500' }}>
-                  {item.category_name}
-                </Text>
-                <TouchableOpacity hitSlop={10} onPress={() => {
-                  setShowDetails(Array(resData?.length).fill(false));
-                  setSelectedCategory(item.category_id)
-                  setShowDetails(prevState => {
-                    const newState = [...prevState];
-                    newState[index] = !newState[index];
-                    return newState;
-                  });
-                }} >
+                <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: '500' }}>{item.category_name}</Text>
+                <TouchableOpacity
+                >
                   {showDetails[index] ? <AntDesign name='up' size={16} color="#a6a6aa" /> : <AntDesign name='down' size={16} color="#a6a6aa" />}
-
                 </TouchableOpacity>
               </View>
-            </View>
+            </TouchableOpacity>
             {/* </TouchableOpacity> */}
 
             {showDetails[index] && item.category_id === selectedCategory && item.subcategories && (
@@ -128,9 +126,6 @@ const CustomDrawer = props => {
             <Divider />
           </View>
         )}
-
-
-
         <View style={{}}>
           {/* <DrawerItemList {...props} /> */}
         </View>

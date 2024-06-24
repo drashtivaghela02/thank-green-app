@@ -145,7 +145,7 @@ const SignUp = props => {
                                     />
                                 </View>
                                 <View style={styles.inputContainer}>
-                                    <Text style={styles.label}>Name</Text>
+                                    <Text style={styles.label}>Name*</Text>
                                     <TextInput
                                         style={styles.input}
                                         onChangeText={handleChange('name')}
@@ -158,7 +158,7 @@ const SignUp = props => {
                                     ) : null}
                                 </View>
                                 <View style={styles.inputContainer}>
-                                    <Text style={styles.label}>Email</Text>
+                                    <Text style={styles.label}>Email*</Text>
                                     <TextInput
                                         style={styles.input}
                                         keyboardType='email-address'
@@ -172,7 +172,7 @@ const SignUp = props => {
                                     ) : null}
                                 </View>
                                 <View style={styles.inputContainer}>
-                                    <Text style={styles.label}>Phone Number</Text>
+                                    <Text style={styles.label}>Phone Number*</Text>
                                     <View>
                                         <PhoneInput
                                             ref={phoneInput}
@@ -202,7 +202,7 @@ const SignUp = props => {
                                 </View>
 
                                 <View style={styles.inputContainer}>
-                                    <Text style={styles.label}>Referral Code(Optional)</Text>
+                                    <Text style={styles.label}>Referral Code</Text>
                                     <TextInput
                                         style={styles.input}
                                         onChangeText={handleChange('referralCode')}
@@ -213,7 +213,7 @@ const SignUp = props => {
                                 </View>
 
                                 <View style={styles.inputContainer}>
-                                    <Text style={styles.label}>Password</Text>
+                                    <Text style={styles.label}>Password*</Text>
                                     <View style={[styles.input, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
                                         <TextInput
                                             secureTextEntry={!showPassword}
@@ -231,7 +231,7 @@ const SignUp = props => {
                                 </View>
 
                                 <View style={styles.inputContainer}>
-                                    <Text style={styles.label}>Confirm Password</Text>
+                                    <Text style={styles.label}>Confirm Password*</Text>
                                     <View style={[styles.input, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
                                         <TextInput
                                             secureTextEntry={!showCPassword}

@@ -22,20 +22,20 @@ const ProductsHome = (props) => {
   //   selling_price = data.quantity_variants[0].actual_price
   //   actual_price = ''
   // }
-
+// console.log("Quantityupdate", pa)
   useEffect(() => {
     if (cartItems[`${id}-${data.quantity_variants[0].quantity_variant_id}`]) {
       setQty(cartItems[`${id}-${data.quantity_variants[0].quantity_variant_id}`]?.quantity)
     }
     else {
       console.log("hiiiezlkjflz");
+      setQty(0)
     }
     if (props.favourites && favoriteProductIds[id]) {
       console.log("yesyesyesyeysyeysy", favoriteProductIds[id])
       setFav(1);
     }
-
-  })
+  },[cartItems])
 
   return (
     <View style={styles.gridItem}>
@@ -43,9 +43,9 @@ const ProductsHome = (props) => {
         <View style={styles.container} >
           <View style={{ flex: 1 }}>
             <Image source={{ uri: data.images[0] }} style={styles.image} />
-            <View style={{ position: 'absolute', top: 0, right: 0, padding: 5, backgroundColor: 'white', borderBottomLeftRadius: 10, elevation: 6, opacity: 0.8 }}>
+            {/* <View style={{ position: 'absolute', top: 0, right: 0, padding: 5, backgroundColor: 'white', borderBottomLeftRadius: 10, elevation: 6, opacity: 0.8 }}>
               {fav === 1 ? <MaterialIcons name="favorite" size={24} color="red" /> : <MaterialIcons name="favorite-border" size={24} color="#888" />}
-            </View>
+            </View> */}
           </View>
           <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 10, paddingVertical: 5 }}>
             <View style={{ flex: 1 }}>

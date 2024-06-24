@@ -7,7 +7,7 @@ const CouponCard = ({ param, onApply, onShowTerms, NotApplyable }) => {
   console.log("Coupon data in card ", data);
   return (
     // <View style={styles.card}>
-    <View style={{ flex: 1, paddingLeft: 10 }}>
+    <View style={{ flex: 1, paddingLeft: 10, }}>
 
       <ImageBackground source={{ uri: "https://static.gostor.com/images/images/apply-coupon.png" }} resizeMode="stretch" style={styles.coupon}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',width: '100%', paddingHorizontal: 30 }}>

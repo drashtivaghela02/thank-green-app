@@ -11,11 +11,13 @@ import * as cartItem from '../../store/actions/Cart';
 import * as orderAction from '../../store/actions/Orders';
 import CouponCard from '../../Components/UI/CouponCard';
 import Colors from '../../Constant/Colors';
+import ScreenLoader from '../../Components/UI/ScreenLoader';
 
 const CheckOutScreen = (props) => {
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
+  const [isCouponLoading, setIsCouponLoading] = useState(false)
   const [orderData, setOrderData] = useState([]);
   const [isCoupon, setIsCoupon] = useState(true)
   const accessToken = useSelector((state) => state?.auth?.accessToken);
@@ -79,6 +81,7 @@ const CheckOutScreen = (props) => {
   }, []);
 
   const fetchData = (summaryData) => {
+    if (Object.keys(cartItems).length === 0) return;
     setCouponsData([]);
     setIsLoading(true);
     dispatch(orderAction.postOrder(summaryData, accessToken))
@@ -111,7 +114,8 @@ const CheckOutScreen = (props) => {
   }, 1);
 
   useEffect(() => {
-    if (cartItems.length !== 0) {
+    if (Object.keys(cartItems).length !== 0 || cartItems.length !== 0 ) {
+      console.log("lenght", Object.keys(cartItems).length)
       const summaryData = calculateSummaryData(cartItems);
       debouncedFetchData(summaryData);
     }
@@ -120,6 +124,7 @@ const CheckOutScreen = (props) => {
 
   const couponHandler = () => {
     setModalVisible(true)
+    setIsCouponLoading(true)
     const couponItem = CouponData(cartItems);
     console.log("Sure", couponItem)
     dispatch(orderAction.getCouponInfo(couponItem, accessToken))
@@ -127,10 +132,11 @@ const CheckOutScreen = (props) => {
         setApplicableCoupons(response?.data?.ApplicableCoupons)
         setNotApplicableCoupons(response?.data?.NotApplicableCoupons)
         console.log("Coupon data getting", response?.data?.NotApplicableCoupons)
-        setIsLoading(false);
+        setIsCouponLoading(false);
       })
       .catch((error) => {
-        setIsLoading(false);
+        setIsCouponLoading
+          (false);
         console.error('Error fetching user information:', error);
       });
 
@@ -192,7 +198,7 @@ const CheckOutScreen = (props) => {
         text: 'Login',
         onPress: () => {
           props.navigation.dispatch(
-            CommonActions.reset({ index: 0, routes: [{ name: 'auth' }], }));
+            CommonActions.reset({ index: 0, routes: [{ name: 'auth' }],}));
         }
       }])
     }
@@ -207,6 +213,7 @@ const CheckOutScreen = (props) => {
     ApplicableCoupons = <FlatList
       data={applicableCoupons}
       keyExtractor={(item) => item.id}
+      contentContainerStyle={{gap:10}}
       renderItem={itemData =>
         <CouponCard
           param={itemData.item}
@@ -218,6 +225,7 @@ const CheckOutScreen = (props) => {
             setModalVisible(true);
             setModalVisible2(true);
             handleTnC(itemData.item.id)
+
           }}
         />}
     />
@@ -229,6 +237,7 @@ const CheckOutScreen = (props) => {
     NotApplicableCoupons = <FlatList
       data={notApplicableCoupons}
       keyExtractor={(item) => item.id}
+      contentContainerStyle={{gap:10}}
       renderItem={itemData =>
         <CouponCard
           param={itemData.item}
@@ -332,12 +341,14 @@ const CheckOutScreen = (props) => {
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
                 <Text style={styles.cardTitle}>               Coupon Card            <Text onPress={() => { setModalVisible(false) }} style={{ fontWeight: '500', color: Colors.green }}>close</Text></Text>
-                <View style={{ flex: 1 }}>
+                {isCouponLoading ? 
+                  <ScreenLoader />
+                : <View style={{ flex: 1 }}>
                   {applicableCoupons.length !== 0 && (<Text style={styles.cardTitle}>Applicable Coupons</Text>)}
                   {ApplicableCoupons}
                   {notApplicableCoupons.length !== 0 && (<Text style={styles.cardTitle}> Not Applicable Coupons</Text>)}
                   {NotApplicableCoupons}
-                </View>
+                </View>}
               </View>
             </View>
           </Modal>

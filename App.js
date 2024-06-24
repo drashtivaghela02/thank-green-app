@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button, Platform } from 'react-native';
+import { StyleSheet, Text, View, Button, Platform, LogBox } from 'react-native';
 import AuthNavigator from './navigation/Navigator'
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
@@ -160,7 +160,8 @@ function DetailsScreen({ route }) {
   );
 }
 
-export default function App({navigation}) {
+export default function App({ navigation }) {
+  LogBox.ignoreAllLogs();
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState(undefined);
   const notificationListener = useRef();
