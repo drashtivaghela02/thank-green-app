@@ -107,7 +107,7 @@ const PaymentScreen = props => {
         }
 
         
-          <TouchableOpacity style={styles.verify} onPress={() => { props.navigation.navigate('AddNewCard') }}>
+          <TouchableOpacity disabled={isLoading} style={styles.verify} onPress={() => { props.navigation.navigate('AddNewCard') }}>
             <Text style={styles.verifyButton}>ADD NEW CARD</Text>
           </TouchableOpacity>
       </View>

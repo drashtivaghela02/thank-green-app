@@ -108,7 +108,7 @@ const ResetPasswordScreen = props => {
                   <Text style={styles.errorText}>{errors.newCPassword}</Text>
                 ) : null}
               </View>
-              <TouchableOpacity style={styles.verify} onPress={handleSubmit}>
+              <TouchableOpacity disabled={isLoading} style={styles.verify} onPress={handleSubmit}>
                 {isLoading
                   ? <ActivityIndicator size={25} color='white' />
                   : <Text style={styles.verifyButton}>SUBMIT</Text>

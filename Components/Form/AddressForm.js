@@ -133,7 +133,7 @@ const AddressForm = props => {
                 <Text style={styles.errorText}>{errors.address_type}</Text>
               ) : null}
             </View>
-            <TouchableOpacity style={styles.verify} onPress={handleSubmit}>
+            <TouchableOpacity disabled={isLoading} style={styles.verify} onPress={handleSubmit}>
               {isLoading ?
                 <ActivityIndicator size={25} /> :
                 <Text style={styles.verifyButton}>ADD ADDRESS</Text>

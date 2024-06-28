@@ -93,3 +93,85 @@ const cart = (state = initialState, action) => {
 };
 
 export default cart;
+
+
+
+
+
+// // reducer/Cart.js
+// import { createSlice } from '@reduxjs/toolkit';
+
+// const initialState = {
+//   items: {},
+//   totalAmount: 0,
+// };
+// class CartItem {
+//   constructor(quantity, quantityId, productPrice, productData, sum) {
+//     this.quantity = quantity;
+//     this.quantityId = quantityId;
+//     this.productPrice = productPrice;
+//     this.productData = productData;
+//     this.sum = sum;
+//   }
+// }
+
+// const cartSlice = createSlice({
+//   name: 'cart',
+//   initialState,
+//   reducers: {
+//     addToCart(state, action) {
+//       console.log("reducerState", action.payload)
+//       const addedProduct = action.payload.data;
+//       const quantityId = action.payload.data.quantityVarientId;
+//       const prodPrice = 12;
+//       const prodData = addedProduct;
+//       const cartItemId = `${addedProduct?.product_id}-${quantityId}`;
+
+//       let updatedOrNewCartItem;
+
+//       if (state.items[cartItemId]) {
+//         updatedOrNewCartItem = new CartItem(
+//           state.items[cartItemId].quantity + 1,
+//           quantityId,
+//           prodPrice,
+//           prodData,
+//           state.items[cartItemId].sum + prodPrice
+//         );
+//       } else {
+//         updatedOrNewCartItem = new CartItem(1, quantityId, prodPrice, prodData, prodPrice);
+//       }
+
+//       state.items[cartItemId] = updatedOrNewCartItem;
+//       state.totalAmount += prodPrice;
+//     },
+//     removeItem(state, action) {
+//       const removeItem = state.items[action.payload];
+//       const currentQty = removeItem.quantity;
+
+//       if (currentQty > 1) {
+//         const updatedCartItem = new CartItem(
+//           removeItem.quantity - 1,
+//           removeItem.quantityId,
+//           removeItem.productPrice,
+//           removeItem.productData,
+//           removeItem.sum - removeItem.productPrice
+//         );
+//         state.items[action.payload] = updatedCartItem;
+//       } else {
+//         delete state.items[action.payload];
+//       }
+//       state.totalAmount -= removeItem.productPrice;
+//     },
+//     deleteFromCart(state, action) {
+//       const deleteItem = state.items[action.payload];
+//       delete state.items[action.payload];
+//       state.totalAmount -= deleteItem.productPrice;
+//     },
+//     resetState() {
+//       return initialState;
+//     },
+//   },
+// });
+
+// export const { addToCart, removeItem, deleteFromCart, resetState } = cartSlice.actions;
+// export default cartSlice.reducer;

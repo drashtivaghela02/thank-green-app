@@ -284,7 +284,7 @@ function LocationPicker({ navigation, route }) {
                                     ) : null}
                                     </RadioButton.Group>
                                 </View>
-                                <TouchableOpacity style={styles.verify} onPress={handleSubmit}>
+                                <TouchableOpacity style={styles.verify} disabled={isLoading} onPress={handleSubmit}>
                                     {isLoading ?
                                         <ActivityIndicator size={25} color='#2c843e' /> :
                                         <Text style={styles.verifyButton}>{editedAddress ? 'EDIT ADDRESS' : 'ADD ADDRESS'}</Text>

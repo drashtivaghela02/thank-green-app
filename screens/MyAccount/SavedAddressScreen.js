@@ -70,7 +70,7 @@ const SavedAddressScreen = props => {
 
   let productPreview;
 
-  if (address.length === 0) {
+  if (!isLoading && address.length === 0) {
 
     productPreview = (<View style={styles.logoContainer} >
       <Image source={require('../../assets/Navigation-pana.png')} style={styles.logo} />

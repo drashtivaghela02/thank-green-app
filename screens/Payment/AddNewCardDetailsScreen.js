@@ -159,7 +159,7 @@ const AddNewCardDetailsScreen = ({ navigation, route }) => {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.verify} onPress={handleAddCard}>
+        <TouchableOpacity disabled={isLoading} style={styles.verify} onPress={handleAddCard}>
           {isLoading
             ? <ActivityIndicator size={27} color="white" />
             :<Text style={styles.verifyButton}>{editedCard ? 'EDIT CARD' : 'ADD CARD'}</Text>}

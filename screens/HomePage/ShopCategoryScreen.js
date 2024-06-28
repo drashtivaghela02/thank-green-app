@@ -73,7 +73,8 @@ const ShopCategoryScreen = props => {
           setSearchPhrase={searchFunction}
           clicked={clicked}
           setClicked={setClicked}
-        />
+          />
+          {isLoading && <ActivityIndicator style={{ justifyContent: 'center', alignItems: 'center'}} size={40} color={Colors.green} />}
         {/* {!clicked && (
           <List
             searchPhrase={searchPhrase}
@@ -92,7 +93,6 @@ const ShopCategoryScreen = props => {
             }}
             // contentContainerStyle={styles.categoryScreen}
             >
-            {isLoading && <ActivityIndicator size={40} color={Colors.green} />}
             <FlatList
               data={SearchData ?? resData}
               keyExtractor={(item) => item.category_id}

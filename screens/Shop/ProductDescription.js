@@ -145,7 +145,7 @@ const ProductDescription = props => {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5, alignItems: 'center' }}>
             <Text style={{ fontSize: 20, fontWeight: '500' }}>Quantity</Text>
             <View style={[styles.Cart, { justifyContent: 'space-between', alignItems: 'center' }]}>
-              <TouchableOpacity disabled={qty === 1}
+              <TouchableOpacity disabled={qty < 1}
                 onPress={() => {
                   setQty(qty - 1)
                   dispatch(cartItem.removeFromCart(`${ProductId}-${quantityVarientId}`))
@@ -154,7 +154,6 @@ const ProductDescription = props => {
               </TouchableOpacity>
               <Text style={{ fontSize: 18, fontWeight: '500', color: cartItems[cartItemId] ? Colors.green : '#666' }}>{cartItems[cartItemId] ? String(cartItems[cartItemId].quantity).padStart(2, '0') : String(qty).padStart(2, '0')}</Text>
               <TouchableOpacity
-                disabled={!cartItems[cartItemId]}
                 onPress={() => {
                   setQty(qty + 1)
                   dispatch(cartItem.addToCart(data, quantityVarientId))
@@ -189,7 +188,7 @@ const ProductDescription = props => {
 
           <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
             <MaterialCommunityIcons name="truck-minus-outline" size={24} color="black" />
-            <Text style={{ color: '#2c843e' }}> Free Delivery on purchase above $10</Text>
+            <Text style={{ color: '#2c843e' }}> Free Delivery on purchase above $600</Text>
           </View>
 
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, marginBottom: 25 }}>

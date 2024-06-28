@@ -4,7 +4,7 @@ import { Image } from "react-native";
 import { StyleSheet } from "react-native";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Divider } from "react-native-paper";
-import { addToCart } from '../../store/actions/Cart';
+import { addToCart } from '../../store/reducer/Cart';
 import * as cartItem from '../../store/actions/Cart'
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -53,7 +53,7 @@ const Products = (props) => {
       console.log("hiiiezlkjflz");
       setQty(0)
     }
-  }, [cartItemId])
+  }, [cartItems])
   // console.log("etwtuoafevy7na8ohyf7ar0n7",data.images)
 
   return (

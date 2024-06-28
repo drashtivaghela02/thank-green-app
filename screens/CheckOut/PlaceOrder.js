@@ -50,6 +50,11 @@ const PlaceOrder = (props) => {
 
 
   const handleSuccess = (id) => {
+    if (value == "COD") {
+      dispatch(cartItem.resetState())
+      props.navigation.navigate('Home');
+      return;
+    }
     console.log("testtesttesting", id)
     setIsLoading(true);
     dispatch(orderAction.getOrderDetailsInfo(id, accessToken))
@@ -87,6 +92,7 @@ const PlaceOrder = (props) => {
         name: 'Jane Doe',
       },
     });
+    
 
     if (!error) {
       console.log("Payment sheet initialized successfully.");
@@ -250,11 +256,11 @@ const PlaceOrder = (props) => {
             </View>
             <View style={styles.summaryRow}>
               <Text style={styles.totalLabel}>Total Amount</Text>
-              <Text style={styles.totalAmount}>${(orderData?.referral_bonus && useReferralBonus) ? orderData?.total - orderData?.referral_bonus : orderData?.total}</Text> 
+              <Text style={styles.totalAmount}>${(orderData?.referral_bonus && useReferralBonus) ? (orderData?.total - orderData?.referral_bonus).toFixed(2) : orderData?.total}</Text> 
             </View>
           </View>
 
-          <TouchableOpacity style={styles.verify} onPress={handlePlaceOrder}>
+          <TouchableOpacity style={styles.verify} disabled={isLoading} onPress={handlePlaceOrder}>
             {isLoading ? <ActivityIndicator color='white' size={26} /> : <Text style={styles.verifyButton}>PLACE ORDER</Text>}
           </TouchableOpacity>
         </View>

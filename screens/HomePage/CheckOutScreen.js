@@ -416,11 +416,11 @@ const CheckOutScreen = (props) => {
               </View>}
               <View style={styles.summaryRow}>
                 <Text>Delivery Charges</Text>
-                <Text>${orderData ? orderData?.delivery_charges : '00.00'}</Text>
+                <Text>{(orderData?.delivery_charges == '0' ? <Text style={{color: Colors.green, fontWeight: '500', fontSize: 16}}>Free</Text> : `$${orderData?.delivery_charges}`) ?? '$00.00'}</Text>
               </View>
               <View style={styles.summaryRow}>
                 <Text style={styles.totalLabel}>Total Amount</Text>
-                <Text style={styles.totalAmount}>${(orderData?.referral_bonus && useReferralBonus) ? orderData?.total - orderData?.referral_bonus : orderData?.total}</Text>
+                <Text style={styles.totalAmount}>${(orderData?.referral_bonus && useReferralBonus) ? (orderData?.total - orderData?.referral_bonus).toFixed(2) : orderData?.total}</Text>
               </View>
             </View>
             <View style={styles.buttonsContainer}>
@@ -437,8 +437,8 @@ const CheckOutScreen = (props) => {
                 style={styles.verify1}
                 onPress={() => {
                   props.navigation.goBack();
-                }}
-              >
+                }}>
+                
                 <Text style={styles.verifyButton1}>Continue Shopping</Text>
               </TouchableOpacity>
             </View>
@@ -584,6 +584,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     marginBottom: 10,
+    fontWeight: '600'
   },
 });
 
